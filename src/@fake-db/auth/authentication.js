@@ -59,7 +59,7 @@ mock.onPost("/api/authenticate/login/user").reply( request => {
     error = "Email Or Password Invalid"
   }
 
-  return [200, {error}]
+  return [400, {error}]
 })
 
 mock.onPost("/api/authenticate/register/user").reply( request => {
