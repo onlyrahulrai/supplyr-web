@@ -86,13 +86,13 @@ class Layout extends React.Component {
           state: this.state,
           fullLayout: layouts["full"],
           VerticalLayout: layouts["vertical"],
-          horizontalLayout: layouts["horizontal"],
-          switchLayout: layout => {
-            this.setState({ activeLayout: layout })
-          },
-          switchDir: dir => {
-            this.setState({ direction: dir })
-          }
+          // horizontalLayout: layouts["horizontal"],
+          // switchLayout: layout => {
+          //   this.setState({ activeLayout: layout })
+          // },
+          // switchDir: dir => {
+          //   this.setState({ direction: dir })
+          // }
         }}
       >
         {children}

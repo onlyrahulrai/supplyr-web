@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from "react"
-import { Router, Switch, Route } from "react-router-dom"
+import { Router, Switch, Route, Redirect } from "react-router-dom"
 import { history } from "./history"
 import { connect } from "react-redux"
 import Spinner from "./components/@vuexy/spinner/Loading-spinner"
@@ -24,33 +24,47 @@ const RouteConfig = ({
   fullLayout,
   permission,
   user,
+  authenticated=true,
   ...rest
 }) => (
   <Route
     {...rest}
     render={props => {
-      return (
-        <ContextLayout.Consumer>
-          {context => {
-            let LayoutTag =
-              fullLayout === true
-                ? context.fullLayout
-                : context.state.activeLayout === "horizontal"
-                ? context.horizontalLayout
-                : context.VerticalLayout
-              return (
-                <LayoutTag {...props} permission={props.user}>
-                  <Suspense fallback={<Spinner />}>
-                    <Component {...props} />
-                  </Suspense>
-                </LayoutTag>
-              )
-          }}
-        </ContextLayout.Consumer>
-      )
+      return authenticated
+        ? (
+          <ContextLayout.Consumer>
+            {context => {
+              let LayoutTag = fullLayout
+              ? context.fullLayout
+              : context.VerticalLayout
+                return (
+                  <LayoutTag {...props} permission={props.user}>
+                    <Suspense fallback={<Spinner />}>
+                      <Component {...props} />
+                    </Suspense>
+                  </LayoutTag>
+                )
+            }}
+          </ContextLayout.Consumer>
+        )
+        : (
+          <Redirect to={{
+            pathname: '/pages/login',
+            state: { from: props.location }
+          }}/>
+        )
     }}
   />
 )
+
+const PrivateRouteConfig = ({ authenticated = true, ...rest}) => (
+  <RouteConfig
+    {...rest}
+    authenticated={authenticated}
+  />
+);
+
+
 const mapStateToProps = state => {
   return {
     user: state.auth.login.userRole
@@ -58,6 +72,7 @@ const mapStateToProps = state => {
 }
 
 const AppRoute = connect(mapStateToProps)(RouteConfig)
+const PrivateAppRoute = connect(mapStateToProps)(PrivateRouteConfig)
 
 class AppRouter extends React.Component {
   render() {
@@ -70,9 +85,10 @@ class AppRouter extends React.Component {
             path="/"
             component={Home}
           />
-          <AppRoute
+          <PrivateAppRoute
             path="/page2"
             component={Page2}
+            authenticated={false}
           />
           <AppRoute
             path="/pages/login"
