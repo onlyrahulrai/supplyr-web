@@ -43,8 +43,8 @@ const UserDropdown = props => {
       <DropdownItem divider />
       <DropdownItem
         tag="a"
-        href="#"
-        onClick={e => history.push("/pages/login")}
+        href="/logout"
+        onClick={e => {e.preventDefault(); history.push("/logout")}}
       >
         <Icon.Power size={14} className="mr-50" />
         <span className="align-middle">Log Out</span>

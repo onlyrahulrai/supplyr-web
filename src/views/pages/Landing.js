@@ -11,7 +11,7 @@ class Landing extends React.Component{
             LANDING PAGE TO LAND HERE
         </h3>
         <div>
-            <a href="/pages/login"><Button.Ripple outline color="light" size="lg">PROCEED TO LOGIN</Button.Ripple></a>
+            <a href="/login"><Button.Ripple outline color="light" size="lg">PROCEED TO LOGIN</Button.Ripple></a>
         </div>
     </div>
     )

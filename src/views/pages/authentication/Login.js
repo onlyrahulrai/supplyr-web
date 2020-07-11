@@ -12,14 +12,14 @@ import {
 } from "reactstrap"
 import { connect } from "react-redux"
 import { Mail, Lock, Check, Facebook, Twitter, GitHub } from "react-feather"
-import { history } from "../../../../history"
+import { history } from "../../../history"
 import { Link } from "react-router-dom"
-import Checkbox from "../../../../components/@vuexy/checkbox/CheckboxesVuexy"
-import googleSvg from "../../../../assets/img/svg/google.svg"
+import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy"
+import googleSvg from "../../../assets/img/svg/google.svg"
 
-import loginImg from "../../../../assets/img/pages/login.png"
-import { loginWithJWT } from "../../../../redux/actions/auth/loginActions"
-import "../../../../assets/scss/pages/authentication.scss"
+import loginImg from "../../../assets/img/pages/login.png"
+import { loginWithJWT } from "../../../redux/actions/auth/loginActions"
+import "../../../assets/scss/pages/authentication.scss"
 
 
 class Login extends React.Component {

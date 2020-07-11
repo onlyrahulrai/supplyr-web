@@ -15,7 +15,11 @@ const Page2 = lazy(() =>
 )
 
 const login = lazy(() =>
-  import("./views/pages/authentication/login/Login")
+  import("./views/pages/authentication/Login")
+)
+
+const Logout = lazy(() =>
+  import("./views/pages/authentication/Logout")
 )
 
 const Landing = lazy(() => import("./views/pages/Landing"))
@@ -56,7 +60,7 @@ const RouteConfig = ({
 
       let guestUserRedirect = (
           <Redirect to={{
-            pathname: '/pages/login',
+            pathname: '/login',
             state: { from: props.location }
           }}/>
         )
@@ -134,8 +138,14 @@ class AppRouter extends React.Component {
             authenticated={true}
           />
           <PublicOnlyAppRoute
-            path="/pages/login"
+            path="/login"
             component={login}
+            fullLayout
+          />
+
+          <AppRoute
+            path="/logout"
+            component={Logout}
             fullLayout
           />
         </Switch>
