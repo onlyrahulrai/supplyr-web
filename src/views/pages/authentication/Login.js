@@ -24,8 +24,8 @@ import "../../../assets/scss/pages/authentication.scss"
 
 class Login extends React.Component {
   state = {
-    email : "talha@glam.com",
-    password: "123"
+    email : "",
+    password: ""
   }
   handleLogin = e => {
     e.preventDefault()
