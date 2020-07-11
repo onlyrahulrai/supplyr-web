@@ -7,7 +7,7 @@ class Landing extends React.Component{
     return (
     <div id="landing-box">
         <h1 className="text-light display-4">SUPPLYR</h1>
-        <h3 class="text-light">
+        <h3>
             LANDING PAGE TO LAND HERE
         </h3>
         <div>
