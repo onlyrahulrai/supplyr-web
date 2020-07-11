@@ -338,7 +338,7 @@ class HorizontalSidebar extends React.Component {
 }
 const mapStateToProps = state => {
   return {
-    currentUser: state.auth.login.userRole
+    currentUser: state.auth.userRole
   }
 }
 export default connect(mapStateToProps)(HorizontalSidebar)

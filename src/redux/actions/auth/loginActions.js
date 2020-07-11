@@ -1,9 +1,10 @@
+import axios from "axios"
+import { history } from "../../../history"      
+
 // export const changeRole = role => {
 //   return dispatch => dispatch({ type: "CHANGE_ROLE", userRole: role })
 // }
 
-import axios from "axios"
-import { history } from "../../../history"      
 export const loginWithJWT = user => {
   return dispatch => {
     axios
@@ -16,9 +17,11 @@ export const loginWithJWT = user => {
         if (response.data) {
           loggedInUser = response.data.user
           dispatch({
-            type: "LOGIN_WITH_JWT",
-            payload: { loggedInUser, loggedInWith: "jwt" }
+            type: "LOGIN",
+            user: loggedInUser
           })
+
+          localStorage.setItem('token', response.data.access_token)
           history.push("/")
         }
       })

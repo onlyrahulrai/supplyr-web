@@ -18,24 +18,30 @@ const login = lazy(() =>
   import("./views/pages/authentication/login/Login")
 )
 
+const Landing = lazy(() => import("./views/pages/Landing"))
+
 // Set Layout and Component Using App Route
 const RouteConfig = ({
   component: Component,
   fullLayout,
+  noLayout,
   permission,
   user,
-  authenticated=true,
+  authenticated,
+  publicUrl=false,
+  publicOnlyUrl=false,
   ...rest
 }) => (
   <Route
     {...rest}
     render={props => {
-      return authenticated
-        ? (
+      let actualContent = (
           <ContextLayout.Consumer>
             {context => {
               let LayoutTag = fullLayout
               ? context.fullLayout
+              : noLayout
+              ? context.noLayout
               : context.VerticalLayout
                 return (
                   <LayoutTag {...props} permission={props.user}>
@@ -47,32 +53,63 @@ const RouteConfig = ({
             }}
           </ContextLayout.Consumer>
         )
-        : (
+
+      let guestUserRedirect = (
           <Redirect to={{
             pathname: '/pages/login',
             state: { from: props.location }
           }}/>
         )
+
+      let authenticatedUserRedirect = (
+        <Redirect to={{
+            pathname: '/dashboard',
+            state: { from: props.location }
+          }}/>
+      )
+
+      if (publicOnlyUrl) {
+        return authenticated
+        ? authenticatedUserRedirect
+        : actualContent
+      }
+
+      let accessAllowed = publicUrl || authenticated
+
+      return accessAllowed
+        ? actualContent
+        : guestUserRedirect
     }}
   />
 )
 
-const PrivateRouteConfig = ({ authenticated = true, ...rest}) => (
+const PublicRouteConfig = ({ ...rest}) => (
   <RouteConfig
     {...rest}
-    authenticated={authenticated}
+    publicUrl = {true}
+  />
+);
+
+const PublicOnlyRouteConfig = ({ ...rest}) => (
+  <RouteConfig
+    {...rest}
+    publicOnlyUrl = {true}
   />
 );
 
 
+
 const mapStateToProps = state => {
   return {
-    user: state.auth.login.userRole
+    // user: state.auth.userRole
+    user: state.auth.user,
+    authenticated: state.auth.authenticated,
   }
 }
 
 const AppRoute = connect(mapStateToProps)(RouteConfig)
-const PrivateAppRoute = connect(mapStateToProps)(PrivateRouteConfig)
+const PublicAppRoute = connect(mapStateToProps)(PublicRouteConfig)
+const PublicOnlyAppRoute = connect(mapStateToProps)(PublicOnlyRouteConfig)
 
 class AppRouter extends React.Component {
   render() {
@@ -80,17 +117,23 @@ class AppRouter extends React.Component {
       // Set the directory path if you are deploying in sub-folder
       <Router history={history}>
         <Switch>
-          <AppRoute
+          <PublicOnlyAppRoute
             exact
             path="/"
-            component={Home}
-          />
-          <PrivateAppRoute
-            path="/page2"
-            component={Page2}
-            authenticated={false}
+            component={Landing}
+            noLayout
           />
           <AppRoute
+            exact
+            path="/dashboard"
+            component={Home}
+          />
+          <AppRoute
+            path="/page2"
+            component={Page2}
+            authenticated={true}
+          />
+          <PublicOnlyAppRoute
             path="/pages/login"
             component={login}
             fullLayout
