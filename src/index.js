@@ -7,28 +7,18 @@ import { store } from "./redux/storeConfig/store"
 import Spinner from "./components/@vuexy/spinner/Fallback-spinner"
 import "./index.scss"
 import "./@fake-db"
+import apiClient from "api/base"
 
-import axios from "axios"
 
 const LazyApp = lazy(() => import("./App"))
 
 
 const token = localStorage.getItem('token');
 if (token) {
-
-  axios.get('http://127.0.0.1:8000/user-details/', {
-    headers: {
-      Authorization: "Bearer " + token
-    },
-    // withCredentials: true
-    // set withCredentials to allow cookies
-  }).then(response => {
+  apiClient.get('user-details/')
+  .then(response => {
     store.dispatch({ type: 'LOGIN', user: response.data });
   })
-  .catch(error => {
-    store.dispatch({ type: 'LOGOUT' });
-  })
-    // store.dispatch({ type: 'FETCH_USER_DATA', token: token });
 }
 
 

@@ -74,7 +74,7 @@ class Login extends React.Component {
                     <p>Welcome back, please login to your account.</p>
 
                     <br />
-                    <Alert color="danger" isOpen={this.state.error_msg}>
+                    <Alert color="danger" isOpen={Boolean(this.state.error_msg)}>
                       <AlertCircle size={15} />
                       {this.state.error_msg}
                     </Alert>

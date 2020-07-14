@@ -1,5 +1,6 @@
 import axios from "axios"
-import { history } from "../../../history"      
+import { history } from "../../../history"    
+import apiClient from "api/base"
 
 // export const changeRole = role => {
 //   return dispatch => dispatch({ type: "CHANGE_ROLE", userRole: role })
@@ -7,13 +8,9 @@ import { history } from "../../../history"
 
 export const loginWithJWT = (user, onError) => {
   return dispatch => {
-    axios
-      .post("http://127.0.0.1:8000/login/", {
+      apiClient.post("login/", {
         email: user.email,
         password: user.password,
-      }, {
-        // withCredentials: true
-        // set withCredentials to allow cookies
       })
       .then(response => {
         var loggedInUser
