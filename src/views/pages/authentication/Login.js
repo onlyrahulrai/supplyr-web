@@ -8,10 +8,11 @@ import {
   Form,
   FormGroup,
   Input,
-  Label
+  Label,
+  Alert,
 } from "reactstrap"
 import { connect } from "react-redux"
-import { Mail, Lock, Check, Facebook, Twitter, GitHub } from "react-feather"
+import { Mail, Lock, Check, Facebook, Twitter, GitHub, AlertCircle } from "react-feather"
 import { history } from "../../../history"
 import { Link } from "react-router-dom"
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy"
@@ -24,13 +25,27 @@ import "../../../assets/scss/pages/authentication.scss"
 
 class Login extends React.Component {
   state = {
-    email : "",
-    password: ""
+    email: "",
+    password: "",
+    error_msg: "",
+    is_submitting: false,
+  }
+  handleError = e => {
+    let error = e.response?.data?.non_field_errors || e.message
+    this.setState({ 
+      error_msg: error || "Login Error! Please try again.",
+      is_submitting: false,
+    })
   }
   handleLogin = e => {
     e.preventDefault()
-    this.props.loginWithJWT(this.state)
+    this.setState({
+      error_msg: "", 
+      is_submitting: true
+    })
+    this.props.loginWithJWT(this.state, this.handleError)
   }
+
   render() {
     return (
       <Row className="m-0 justify-content-center">
@@ -54,88 +69,94 @@ class Login extends React.Component {
 
 
 
-                      <CardBody>
-                        <h4>Login</h4>
-                        <p>Welcome back, please login to your account.</p>
+                  <CardBody>
+                    <h4>Login</h4>
+                    <p>Welcome back, please login to your account.</p>
 
-                        <Form action="/" onSubmit={this.handleLogin}>
-            <FormGroup className="form-label-group position-relative has-icon-left">
-              <Input
-                type="email"
-                placeholder="Email"
-                value={this.state.email}
-                onChange={e => this.setState({ email: e.target.value })}
-                required
-              />
-              <div className="form-control-position">
-                <Mail size={15} />
-              </div>
-              <Label>Email</Label>
-            </FormGroup>
-            <FormGroup className="form-label-group position-relative has-icon-left">
-              <Input
-                type="password"
-                placeholder="Password"
-                value={this.state.password}
-                onChange={e => this.setState({ password: e.target.value })}
-                required
-              />
-              <div className="form-control-position">
-                <Lock size={15} />
-              </div>
-              <Label>Password</Label>
-            </FormGroup>
-            <FormGroup className="d-flex justify-content-between align-items-center">
-              <Checkbox
-                color="primary"
-                icon={<Check className="vx-icon" size={16} />}
-                label="Remember me"
-                defaultChecked={false}
-                onChange={this.handleRemember}
-              />
-              <div className="float-right">
-                <Link to="/pages/forgot-password">Forgot Password?</Link>
-              </div>
-            </FormGroup>
-            <div className="d-flex justify-content-between">
-              <Button.Ripple
-                color="primary"
-                outline
-                onClick={() => {
-                  history.push("/pages/register")
-                }}
-              >
-                Register
-              </Button.Ripple>
-              <Button.Ripple color="primary" type="submit">
-                Login
-              </Button.Ripple>
-            </div>
-          </Form>
-
-                      </CardBody>
-
-
-                      
-                      <div className="auth-footer">
-                        <div className="divider">
-                          <div className="divider-text">OR</div>
+                    <br />
+                    <Alert color="danger" isOpen={this.state.error_msg}>
+                      <AlertCircle size={15} />
+                      {this.state.error_msg}
+                    </Alert>
+                    <br />
+                    <Form action="/" onSubmit={this.handleLogin}>
+                      <FormGroup className="form-label-group position-relative has-icon-left">
+                        <Input
+                          type="email"
+                          placeholder="Email"
+                          value={this.state.email}
+                          onChange={e => this.setState({ email: e.target.value })}
+                          required
+                        />
+                        <div className="form-control-position">
+                          <Mail size={15} />
                         </div>
-                        <div className="footer-btn">
-                          <Button.Ripple className="btn-facebook" color="">
-                            <Facebook size={14} />
-                          </Button.Ripple>
-                          <Button.Ripple className="btn-twitter" color="">
-                            <Twitter size={14} stroke="white" />
-                          </Button.Ripple>
-                          <Button.Ripple className="btn-google" color="">
-                            <img src={googleSvg} alt="google" height="15" width="15" />
-                          </Button.Ripple>
-                          <Button.Ripple className="btn-github" color="">
-                            <GitHub size={14} stroke="white" />
-                          </Button.Ripple>
+                        <Label>Email</Label>
+                      </FormGroup>
+                      <FormGroup className="form-label-group position-relative has-icon-left">
+                        <Input
+                          type="password"
+                          placeholder="Password"
+                          value={this.state.password}
+                          onChange={e => this.setState({ password: e.target.value })}
+                          required
+                        />
+                        <div className="form-control-position">
+                          <Lock size={15} />
                         </div>
+                        <Label>Password</Label>
+                      </FormGroup>
+                      <FormGroup className="d-flex justify-content-between align-items-center invisible">
+                        <Checkbox
+                          color="primary"
+                          icon={<Check className="vx-icon" size={16} />}
+                          label="Remember me"
+                          defaultChecked={false}
+                          onChange={this.handleRemember}
+                        />
+                        <div className="float-right invisible">
+                          <Link to="/pages/forgot-password">Forgot Password?</Link>
+                        </div>
+                      </FormGroup>
+                      <div className="d-flex justify-content-between">
+                        <Button.Ripple
+                          color="primary"
+                          outline
+                          onClick={() => {
+                            history.push("/pages/register")
+                          }}
+                        >
+                          Register
+                         </Button.Ripple>
+                        <Button.Ripple color="primary" type="submit" disabled={this.state.is_submitting}>
+                          Login
+                        </Button.Ripple>
                       </div>
+                    </Form>
+
+                  </CardBody>
+
+
+
+                  <div className="auth-footer">
+                    <div className="divider">
+                      <div className="divider-text">OR</div>
+                    </div>
+                    <div className="footer-btn">
+                      <Button.Ripple className="btn-facebook" color="">
+                        <Facebook size={14} />
+                      </Button.Ripple>
+                      <Button.Ripple className="btn-twitter" color="">
+                        <Twitter size={14} stroke="white" />
+                      </Button.Ripple>
+                      <Button.Ripple className="btn-google" color="">
+                        <img src={googleSvg} alt="google" height="15" width="15" />
+                      </Button.Ripple>
+                      <Button.Ripple className="btn-github" color="">
+                        <GitHub size={14} stroke="white" />
+                      </Button.Ripple>
+                    </div>
+                  </div>
                 </Card>
               </Col>
             </Row>

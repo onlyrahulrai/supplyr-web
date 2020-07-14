@@ -5,7 +5,7 @@ import { history } from "../../../history"
 //   return dispatch => dispatch({ type: "CHANGE_ROLE", userRole: role })
 // }
 
-export const loginWithJWT = user => {
+export const loginWithJWT = (user, onError) => {
   return dispatch => {
     axios
       .post("http://127.0.0.1:8000/login/", {
@@ -28,6 +28,8 @@ export const loginWithJWT = user => {
           history.push("/")
         }
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        onError(err)
+      })
   }
 }      
