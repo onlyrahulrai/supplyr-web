@@ -19,7 +19,9 @@ if (token) {
   axios.get('http://127.0.0.1:8000/user-details/', {
     headers: {
       Authorization: "Bearer " + token
-    }
+    },
+    // withCredentials: true
+    // set withCredentials to allow cookies
   }).then(response => {
     store.dispatch({ type: 'LOGIN', user: response.data });
   })

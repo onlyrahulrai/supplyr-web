@@ -8,9 +8,12 @@ import { history } from "../../../history"
 export const loginWithJWT = user => {
   return dispatch => {
     axios
-      .post("http://127.0.0.1:8000/dj-rest-auth/login/", {
+      .post("http://127.0.0.1:8000/login/", {
         email: user.email,
-        password: user.password
+        password: user.password,
+      }, {
+        // withCredentials: true
+        // set withCredentials to allow cookies
       })
       .then(response => {
         var loggedInUser
