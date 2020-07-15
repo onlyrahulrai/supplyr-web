@@ -18,6 +18,10 @@ const login = lazy(() =>
   import("./views/pages/authentication/Login")
 )
 
+const register = lazy(() =>
+  import("views/pages/authentication/Register")
+)
+
 const Logout = lazy(() =>
   import("./views/pages/authentication/Logout")
 )
@@ -140,6 +144,12 @@ class AppRouter extends React.Component {
           <PublicOnlyAppRoute
             path="/login"
             component={login}
+            fullLayout
+          />
+
+          <PublicOnlyAppRoute
+            path="/register"
+            component={register}
             fullLayout
           />
 

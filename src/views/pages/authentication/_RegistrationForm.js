@@ -1,0 +1,134 @@
+import React from "react"
+import { Form, FormGroup, Input, Label, Button, FormFeedback, Alert } from "reactstrap"
+import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy"
+import { Check, AlertCircle } from "react-feather"
+import { connect } from "react-redux"
+import { signupWithJWT } from "../../../redux/actions/auth/registerActions"
+import { history } from "../../../history"
+
+class CustomFormFeedback extends React.Component {
+  render() {
+    return this.props.text
+      ? (<FormFeedback>{this.props.text}</FormFeedback>)
+      : null
+  }
+}
+
+class RegisterJWT extends React.Component {
+  state = {
+    email: "",
+    password1: "",
+    name: "",
+    password2: "",
+    errors: {}
+  }
+
+  handleError = (e) => {
+    window.er = e
+    let errors = e.response?.data
+    if (!errors) {
+      errors = {
+        "non_field_errors": e.message
+      }
+    }
+    this.setState({ errors: errors })
+    // this.setState({ 
+    //   error_msg: error || "Login Error! Please try again.",
+    //   is_submitting: false,
+    // })
+  }
+
+  handleRegister = e => {
+    e.preventDefault();
+    this.setState({ errors: {}})
+    this.props.signupWithJWT(this.state, this.handleError)
+  }
+
+  render() {
+    return (
+      
+      <Form action="/" onSubmit={this.handleRegister}>
+        <Alert color="danger" isOpen={Boolean(this.state.errors?.non_field_errors)}>
+          <AlertCircle size={15} />
+          {this.state.errors.non_field_errors}
+        </Alert>
+        <br />
+        <FormGroup className="form-label-group">
+          <Input
+            type="text"
+            placeholder="Name"
+            required
+            value={this.state.name}
+            onChange={e => this.setState({ name: e.target.value })}
+          />
+          <Label>Name</Label>
+        </FormGroup>
+        <FormGroup className="form-label-group">
+          <Input
+            invalid={this.state?.errors?.email}
+            type="email"
+            placeholder="Email"
+            required
+            value={this.state.email}
+            onChange={e => this.setState({ email: e.target.value })}
+          />
+          <Label>Email</Label>
+          <CustomFormFeedback text={this.state?.errors?.email} />
+        </FormGroup>
+        <FormGroup className="form-label-group">
+          <Input
+            invalid={this.state?.errors?.password1}
+            type="password"
+            placeholder="Password"
+            required
+            value={this.state.password1}
+            onChange={e => this.setState({ password1: e.target.value })}
+          />
+          <Label>Password</Label>
+          <CustomFormFeedback text={this.state?.errors?.password1} />
+        </FormGroup>
+        <FormGroup className="form-label-group">
+          <Input
+            invalid={this.state?.errors?.password2}
+            type="password"
+            placeholder="Confirm Password"
+            required
+            value={this.state.password2}
+            onChange={e => this.setState({ password2: e.target.value })}
+          />
+          <Label>Confirm Password</Label>
+          <CustomFormFeedback text={this.state?.errors?.password2} />
+        </FormGroup>
+        <FormGroup>
+          <Checkbox
+            color="primary"
+            required
+            icon={<Check className="vx-icon" size={16} />}
+            label=" I accept the terms & conditions."
+            defaultChecked={true}
+          />
+        </FormGroup>
+        <div className="d-flex justify-content-between">
+          <Button.Ripple
+            color="primary"
+            outline
+            onClick={() => {
+              history.push("/pages/login")
+            }}
+          >
+            Login
+          </Button.Ripple>
+          <Button.Ripple color="primary" type="submit">
+            Register
+          </Button.Ripple>
+        </div>
+      </Form>
+    )
+  }
+}
+// const mapStateToProps = state => {
+//   return {
+//     values: state.auth.register
+//   }
+// }
+export default connect(null, { signupWithJWT })(RegisterJWT)
