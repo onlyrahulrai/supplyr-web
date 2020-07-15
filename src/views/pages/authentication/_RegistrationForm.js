@@ -20,7 +20,9 @@ class RegisterJWT extends React.Component {
     password1: "",
     name: "",
     password2: "",
-    errors: {}
+    errors: {},
+
+    isSubmitting: false,
   }
 
   handleError = (e) => {
@@ -31,16 +33,18 @@ class RegisterJWT extends React.Component {
         "non_field_errors": e.message
       }
     }
-    this.setState({ errors: errors })
-    // this.setState({ 
-    //   error_msg: error || "Login Error! Please try again.",
-    //   is_submitting: false,
-    // })
+    this.setState({ 
+      errors: errors,
+      isSubmitting: false,
+    })
   }
 
   handleRegister = e => {
     e.preventDefault();
-    this.setState({ errors: {}})
+    this.setState({ 
+      errors: {},
+      isSubmitting: true,
+    })
     this.props.signupWithJWT(this.state, this.handleError)
   }
 
@@ -118,7 +122,7 @@ class RegisterJWT extends React.Component {
           >
             Login
           </Button.Ripple>
-          <Button.Ripple color="primary" type="submit">
+          <Button.Ripple color="primary" type="submit" disabled={this.state.isSubmitting}>
             Register
           </Button.Ripple>
         </div>
