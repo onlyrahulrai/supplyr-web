@@ -22,6 +22,10 @@ const register = lazy(() =>
   import("views/pages/authentication/Register")
 )
 
+const ProfilingWizard = lazy(() =>
+  import("views/pages/ProfilingWizard")
+)
+
 const Logout = lazy(() =>
   import("./views/pages/authentication/Logout")
 )
@@ -82,11 +86,25 @@ const RouteConfig = ({
         : actualContent
       }
 
-      let accessAllowed = publicUrl || authenticated
 
-      return accessAllowed
-        ? actualContent
-        : guestUserRedirect
+      if(publicUrl) {
+        return actualContent
+      }
+
+      //Since user disn't pass the conditions above, this means the URL is pointing to private content
+      if(authenticated) {
+        if(user.state === 'approved' || props.location.pathname === '/profiling' || props.location.pathname === '/logout'){
+          return actualContent;
+        }
+        return (<Redirect to={{
+            pathname: '/profiling',
+            state: { from: props.location }
+          }}/>)
+      }
+
+      else {
+        return guestUserRedirect
+      }
     }}
   />
 )
@@ -132,6 +150,10 @@ class AppRouter extends React.Component {
             noLayout
           />
           <AppRoute
+            path="/profiling"
+            component={ProfilingWizard}
+          />
+          <AppRoute
             exact
             path="/dashboard"
             component={Home}
@@ -139,7 +161,6 @@ class AppRouter extends React.Component {
           <AppRoute
             path="/page2"
             component={Page2}
-            authenticated={true}
           />
           <PublicOnlyAppRoute
             path="/login"
