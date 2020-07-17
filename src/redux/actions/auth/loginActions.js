@@ -13,15 +13,17 @@ export const loginWithJWT = (user, onError) => {
         password: user.password,
       })
       .then(response => {
-        var loggedInUser
+        var loggedInUser, token
         if (response.data) {
           loggedInUser = response.data.user
+          token = response.data.access_token
           dispatch({
             type: "LOGIN",
-            user: loggedInUser
+            user: loggedInUser,
+            token: token,
           })
 
-          localStorage.setItem('token', response.data.access_token)
+          // localStorage.setItem('token', response.data.access_token)
           history.push("/")
         }
       })

@@ -12,17 +12,17 @@ export const signupWithJWT = (form_data, onError) => {
         name: form_data.name
       })
       .then(response => {
-        var loggedInUser
+        var loggedInUser, token
 
         if(response.data){
 
           loggedInUser = response.data.user
-
-          localStorage.setItem("token", response.data.access_token)
+          token = response.data.access_token
 
           dispatch({
             type: "LOGIN",
             user: loggedInUser,
+            token: token,
           })
 
           history.push("/")

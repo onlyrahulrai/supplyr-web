@@ -6,14 +6,24 @@ const apiClient = axios.create({
     // headers: {'X-Custom-Header-ATD': 'foobar'}
 })
 
-const token = localStorage.getItem('token');
-if(token) {
-    apiClient.defaults.headers.common['Authorization'] = "Bearer " + token
-}
 
 apiClient.interceptors.response.use(response => response, error => {
-    store.dispatch({ type: 'LOGOUT' });
+    if(error.response?.status === 401){
+        store.dispatch({ type: 'LOGOUT' });
+    }
     return Promise.reject(error);
 })
 
+apiClient.authorize = token => {
+    token = token || localStorage.getItem('token')
+    if (token) {
+        apiClient.defaults.headers.common['Authorization'] = "Bearer " + token
+    }
+}
+
+apiClient.deauthorize = () => {
+    delete apiClient.defaults.headers.common['Authorization'];
+}
+
+apiClient.authorize()
 export default apiClient
