@@ -4,6 +4,7 @@ import classnames from "classnames"
 import NavbarBookmarks from "./NavbarBookmarks"
 import NavbarUser from "./NavbarUser"
 import userImg from "../../../assets/img/portrait/small/avatar-s-11.jpg"
+import { connect } from "react-redux"
 
 
 const ThemeNavbar = props => {
@@ -63,7 +64,7 @@ const ThemeNavbar = props => {
               <NavbarUser
                 handleAppOverlay={props.handleAppOverlay}
                 changeCurrentLang={props.changeCurrentLang}
-                userName="John Doe"
+                userName={props.user.name}
                 userImg={ userImg }
               />
             </div>
@@ -75,4 +76,10 @@ const ThemeNavbar = props => {
 }
 
 
-export default ThemeNavbar
+const mapStateToProps = state => {
+  return {
+    user: state.auth.user
+  }
+}
+
+export default connect(mapStateToProps)(ThemeNavbar)

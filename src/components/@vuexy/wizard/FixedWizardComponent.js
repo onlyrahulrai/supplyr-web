@@ -71,10 +71,12 @@ class VuexyWizard extends React.Component {
   }
 
   handleEnableAllSteps = index => {
-    if (this.props.enableAllSteps) {
+    if (this.props.enableAllSteps && !this.isStepLocked(index)) {
       this.setState({ activeStep: index })
     }
   }
+
+  isStepLocked = index => this.props?.lockStepsAfter < index
 
   handleSubmit = e => {
     if (

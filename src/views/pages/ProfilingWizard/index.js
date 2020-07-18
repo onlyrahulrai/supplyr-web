@@ -64,7 +64,7 @@ class ProfilingWizard extends React.Component{
                 It only takes around 2 minutes
               </p>
               <hr />
-              <Wizard enableAllSteps pagination={false} steps={steps} activeStep={this.state.activeStep} />
+              <Wizard enableAllSteps pagination={false} steps={steps} activeStep={this.state.activeStep} lockStepsAfter={this.state.activeStep} />
             </CardBody>
           </Card>
 
