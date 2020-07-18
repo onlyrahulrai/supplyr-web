@@ -15,6 +15,9 @@ import {
   hideScrollToTop
 } from "../redux/actions/customizer/index"
 
+import { routesWithoutSidebar } from "configs/layoutConfig"
+
+
 class VerticalLayout extends PureComponent {
   state = {
     width: window.innerWidth,
@@ -25,7 +28,8 @@ class VerticalLayout extends PureComponent {
     currentLang: "en",
     appOverlay: false,
     customizer: false,
-    currRoute: this.props.location.pathname
+    currRoute: this.props.location.pathname,
+    displaySidebar: true,
   }
   collapsedPaths = []
   mounted = false
@@ -161,6 +165,19 @@ class VerticalLayout extends PureComponent {
     }
   }
 
+  refreshSidebarExistance = () => {
+    this.setState({
+      'displaySidebar': !routesWithoutSidebar.includes(this.props.match.path)
+    })
+  }
+
+  componentWillUpdate() {
+    this.refreshSidebarExistance()
+  }
+  componentWillMount() {
+    this.refreshSidebarExistance()
+  }
+
   componentWillUnmount() {
     this.mounted = false
   }
@@ -261,10 +278,13 @@ class VerticalLayout extends PureComponent {
             "navbar-sticky": appProps.navbarType === "sticky",
             "navbar-floating": appProps.navbarType === "floating",
             "navbar-hidden": appProps.navbarType === "hidden",
-            "theme-primary": !menuThemeArr.includes(appProps.menuTheme)
+            "theme-primary": !menuThemeArr.includes(appProps.menuTheme),
+            "no-sidebar": !this.state.displaySidebar
           }
         )}>
-        <Sidebar {...sidebarProps} />
+        {this.state.displaySidebar &&
+          <Sidebar {...sidebarProps} />
+        }
         <div
           className={classnames("app-content content", {
             "show-overlay": this.state.appOverlay === true

@@ -36,7 +36,9 @@ const UserDropdown = props => {
         <Icon.MessageSquare size={14} className="mr-50" />
         <span className="align-middle">Chats</span>
       </DropdownItem>
-      <DropdownItem tag="a" href="#">
+      <DropdownItem tag="a" href="#"
+      onClick={e => {e.preventDefault(); history.push("/dashboard")}}
+      >
         <Icon.Heart size={14} className="mr-50" />
         <span className="align-middle">WishList</span>
       </DropdownItem>

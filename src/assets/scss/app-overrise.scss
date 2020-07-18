@@ -1,0 +1,8 @@
+.no-sidebar {
+    .content {
+        margin-left: 0 !important;
+    }
+    .header-navbar {
+        width: calc(100% - 4.4rem);
+    }
+}
