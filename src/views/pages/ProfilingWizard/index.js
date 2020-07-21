@@ -42,7 +42,7 @@ class ProfilingWizard extends React.Component{
     ],
 
     activeStep: (() => {
-      let current_user_state = this.props.user.state
+      let current_user_state = this.props.user.status
       switch (current_user_state) {
         case 'registered': return 0;
         case 'verified': return 1;
@@ -55,21 +55,26 @@ class ProfilingWizard extends React.Component{
     const { steps } = this.state
 
     return (
-        <div>
-          <Card>
-            <CardBody>
-              <h3>Welcome to Supplyr</h3>
-              <p>
-                Please fill some quick details.
-                It only takes around 2 minutes
-              </p>
-              <hr />
-              <Wizard enableAllSteps pagination={false} steps={steps} activeStep={this.state.activeStep} lockStepsAfter={this.state.activeStep} />
-            </CardBody>
-          </Card>
-
-        </div>
-      )
+      <div>
+        <Card>
+          <CardBody>
+            <h3>Welcome to Supplyr</h3>
+            <p>
+              Please fill some quick details. It only takes around 2 minutes
+            </p>
+            <hr />
+            <Wizard
+              enableAllSteps
+              pagination={false}
+              steps={steps}
+              activeStep={this.state.activeStep}
+              lockStepsAfter={this.state.activeStep}
+              formless={true}
+            />
+          </CardBody>
+        </Card>
+      </div>
+    );
   }
 }
 

@@ -88,7 +88,11 @@ class VuexyWizard extends React.Component {
   }
 
   render() {
-    let FormTag = this.props.validate ? AvForm : Form
+    let FormTag = this.props.formless 
+      ? "div"
+      : this.props.validate 
+      ? AvForm 
+      : Form
 
     return (
       <React.Fragment>

@@ -1,6 +1,114 @@
 import React from "react"
 import { Button } from "reactstrap"
 import DynamicForm from "components/forms/DynamicForm"
+import apiClient from "api/base"
+
+const formSchema = {
+  fields: [
+    {
+      type: "text",
+      name: "business_name",
+      label: "Your Entity's Business Name",
+      required: true
+    },
+    {
+      type: "radio",
+      name: "entity_category",
+      label: "Entity Category",
+      horizontal: true,
+      options: [
+        {
+          label: "Wholeseller",
+          value: "3"
+        },
+        {
+          label: "Distributer",
+          value: "2",
+        },
+        {
+          label: "Manufacturer",
+          value: "1"
+        }
+
+      ]
+    },
+
+    {
+      type: "select",
+      name: "entity_type",
+      label: "Entity Type",
+      required: true,
+      horizontal: true,
+      options: [
+        {
+          label: "Select Entity Type",
+          value: "",
+          disabled: true,
+          selected: true,
+        },
+        {
+          label: "Private Limited",
+          value: "pvtltd"
+        },
+        {
+          label: "Limited Liablity Partnership",
+          value: "llp",
+        },
+        {
+          label: "Partnership",
+          value: "part"
+        },
+        {
+          label: "Proprietership",
+          value: "prop"
+        }
+      ]
+    },
+
+    {
+      type: "radio",
+      name: "is_gst_enrolled",
+      label: "Have you enrolled for GST ?",
+      options: [
+        {
+          label: "Yes",
+          value: "yes",
+        },
+        {
+          label: "No",
+          value: "no",
+        },
+      ],
+
+      dependentFieldsSet: [
+        {
+          displayOnValue: "yes",
+          fields: [
+            {
+              type: "text",
+              label: "GSTIN",
+              name: "gst_number",
+              required: true,
+            },
+          ],
+        },
+      ],
+
+    },
+
+    {
+      type: "text",
+      name: "pan_number",
+      label: "Your PAN number",
+    },
+
+    {
+      type: "text",
+      name: "tan_number",
+      label: "Your entity's TAN number",
+    }
+  ]
+}
 
 
 class Profiling extends React.Component {
@@ -10,148 +118,25 @@ class Profiling extends React.Component {
         <h4 className="mb-3">Business Details</h4>
 
         <DynamicForm
-          formSchema={[
-            {
-              type: "text",
-              label: "Business Name",
-              name: "entity_name",
-              required: true,
-            },
-
-            {
-              type: "select",
-              name: "entity_type",
-              required: true,
-              label: "Select your entity type",
-              horizontal: true,
-              horizontalColSplitOn: 5,
-              options: [
-                {
-                  label: "Private Limited",
-                  value: "pvtltd",
-                },
-                {
-                  label: "Limited Liablity Partnership",
-                  value: "llp",
-                },
-                {
-                  label: "Partnership Firm",
-                  value: "partnership",
-                },
-              ],
-
-              dependentFieldsSet: [
-                {
-                  displayOnValue: "pvtltd",
-                  fields: [
-                    {
-                      type: "file",
-                      label: "Certificate of incorporation",
-                      name: "incorp_cert",
-                      required: true,
-                    }
-                  ]
-                },
-                {
-                  displayOnValue: "llp",
-                  fields: [
-                    {
-                      type: "text",
-                      label: "LLP Number",
-                      name: "llp_num",
-                      required: true,
-                    }
-                  ]
-                }
-              ]
-            },
-
-
-            {
-              type: "text",
-              value: "",
-              label: "PAN Number",
-              name: "pan",
-              required: true,
-            },
-
-
-            {
-              type: "radio",
-              name: "is_gst",
-              required: true,
-              label: "Have you enrolled for GST?",
-              horizontal: true,
-              options: [
-                {
-                  label: "Yes",
-                  value: "yes",
-                },
-                {
-                  label: "No",
-                  value: "no",
-                },
-              ],
-
-              dependentFieldsSet: [
-                {
-                  displayOnValue: "yes",
-                  fields: [
-                    {
-                      type: "text",
-                      label: "Enter GST Number",
-                      name: "gst_number",
-                      required: true,
-                    },
-                    {
-                      type: "text",
-                      label: "Enter GST random detail 2?",
-                      name: "gst_regid",
-                      required: true,
-                    },
-                  ],
-                },
-                {
-                  displayOnValue: "no",
-                  fields: [
-                    {
-                      type: "radio",
-                      name: "var_enroll",
-                      required: true,
-                      label: "Have you enrolled for VAT?",
-                      horizontal: true,
-                      horizontalColSplitOn: 5,
-                      options: [
-                        {
-                          label: "Yes",
-                          value: "yes",
-                        },
-                        {
-                          label: "No",
-                          value: "no",
-                        },
-                      ],
-
-                      dependentFieldsSet: [
-                        {
-                          displayOnValue: "yes",
-                          fields: [
-                            {
-                              type: "text",
-                              label: "VAT Number",
-                              name: "vat_num",
-                              required: true,
-                            },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-
-          ]}
+          schema={formSchema}
+          initialValues = {{
+            business_name: '',
+            gst_number: '',
+            entity_type: '',
+            pan_number: '',
+            tan_number: '',
+          }}
+          onSubmit = {(data, setSubmitting) => {
+            console.log("DATAAA", data)
+            setSubmitting(true)
+            apiClient.post('/user-profiling/', data)
+            .then((response) => {
+              console.log(response)
+              alert("Entry Saved")
+              setSubmitting(false)
+            })
+            .catch(error => console.log(error))
+          }}
         />
         <br />
         <br />
