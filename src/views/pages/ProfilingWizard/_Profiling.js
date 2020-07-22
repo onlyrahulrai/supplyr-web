@@ -69,6 +69,7 @@ const formSchema = {
       type: "radio",
       name: "is_gst_enrolled",
       label: "Have you enrolled for GST ?",
+      horizontal: true,
       options: [
         {
           label: "Yes",
@@ -123,7 +124,11 @@ class Profiling extends React.Component {
         entity_category: '',
         pan_number: '',
         tan_number: '',
-      }
+      },
+      errors: {
+        fields: {},
+        global: "",
+      },
     }
 
   }
@@ -141,6 +146,9 @@ class Profiling extends React.Component {
         initialValues: {...initialValues, ...data},
       })
     })
+    .catch(error => {
+      console.log(error)
+    })
   }
 
   render() {
@@ -151,6 +159,7 @@ class Profiling extends React.Component {
         <DynamicForm
           schema={formSchema}
           initialValues = {this.state.initialValues}
+          errors={this.state.errors}
           onSubmit = {(data, setSubmitting) => {
             console.log("DATAAA", data)
             setSubmitting(true)
@@ -160,7 +169,27 @@ class Profiling extends React.Component {
               alert("Entry Saved")
               setSubmitting(false)
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+              console.log("error", error)
+              window.eeee = error
+
+              if(error.response?.status === 400){
+                this.setState({
+                  errors: {...this.state.errors,
+                    fields  : error.response.data,
+                  }
+                })
+              }
+              else {
+                this.setState({
+                  errors: { ...this.state.errors,
+                    global: error.message
+                  }
+                })
+              }
+
+              setSubmitting(false)
+            })
           }}
         />
         <br />

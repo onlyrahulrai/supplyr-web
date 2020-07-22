@@ -1,5 +1,5 @@
 import React from "react";
-import { Input, FormGroup, Label, Col, Row } from "reactstrap";
+import { Input, FormGroup, Label, Col, Row, FormFeedback } from "reactstrap";
 import { Field } from "formik";
 import Radio from "components/@vuexy/radio/RadioVuexyEnhanced"
 // import Select from 'react-select';
@@ -8,6 +8,7 @@ import classnames from "classnames"
 export default class DynamicField extends React.Component {
     render() {
         let schema = this.props.schema;
+        let fieldError = this.props.error;
         let field = "";
 
         switch (schema.type) {
@@ -22,8 +23,12 @@ export default class DynamicField extends React.Component {
                         as={Input}
                         placeholder={schema.label}
                         disabled={schema.disabled}
+                        invalid={fieldError}
                     />
                     <Label for="nameFloating">{schema.label}</Label>
+                    {fieldError &&
+                        <FormFeedback>{fieldError}</FormFeedback>
+                    }
                 </FormGroup>
             );
             break;
@@ -56,8 +61,11 @@ export default class DynamicField extends React.Component {
                         <Col md="auto mr-auto">
                             <Label>{schema.label}</Label>
                         </Col>
-                        <Col md="auto">
+                        <Col md="auto text-right">
                             {options}  
+                            {fieldError &&
+                                <p><small className="text-danger">{fieldError}</small></p>
+                            }
                         </Col>
                     </FormGroup>
                 )
@@ -96,6 +104,7 @@ export default class DynamicField extends React.Component {
                     
                     required= {schema.required}
                     as={Input}
+                    invalid={fieldError}
                     // onChange={(e)=>{
                     //     this.props.setValue(e.value )
                     // }}
@@ -112,6 +121,9 @@ export default class DynamicField extends React.Component {
                         </Col>
                         <Col md={`${12-horizontalColSplitOn} mr-auto`}>
                             {selectField}
+                            {fieldError &&
+                                <FormFeedback>{fieldError}</FormFeedback>
+                            }
                         </Col>
                     </Row>
                 )
@@ -119,6 +131,9 @@ export default class DynamicField extends React.Component {
                     <FormGroup>
                         <Label for="nameVertical">{schema.label}</Label>
                         {selectField}
+                        {fieldError &&
+                            <FormFeedback>{fieldError}</FormFeedback>
+                        }
                     </FormGroup>
                 )
 

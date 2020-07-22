@@ -1,20 +1,23 @@
 import React from "react";
-import { Input, FormGroup, Label, Col, Row, Button } from "reactstrap";
+import { Input, FormGroup, Label, Col, Row, Button, Alert } from "reactstrap";
 import { Form, Formik, Field } from "formik";
 import Radio from "components/@vuexy/radio/RadioVuexyEnhanced"
 import Select from 'react-select';
 import classnames from "classnames"
 import DynamicField from "./DynamicField"
+import { AlertCircle } from "react-feather"
 
 
 class DynamicForm extends React.Component {
 
-    getDynamicField(fieldSchema, values, setFieldValue) {
+    getDynamicField(fieldSchema, values, errors) {
+        let field_error = errors[fieldSchema.name]
         let dynamicField = (
             <DynamicField
                 schema={fieldSchema}
                 key={fieldSchema.name}
-                setValue = {value => setFieldValue(fieldSchema.name, value)}
+                error={field_error}
+                // setValue = {value => setFieldValue(fieldSchema.name, value)}
             />
         )
         if (fieldSchema.dependentFieldsSet) {
@@ -23,7 +26,7 @@ class DynamicForm extends React.Component {
                 if(dependentFields.displayOnValue!=undefined && values[fieldSchema.name] == dependentFields.displayOnValue){
                     renderedDependentFields = dependentFields.fields.map(dependentFieldSchema => {
                         return (
-                            this.getDynamicField(dependentFieldSchema, values, setFieldValue)
+                            this.getDynamicField(dependentFieldSchema, values, errors)
                         )
                     })
                 }
@@ -48,10 +51,15 @@ class DynamicForm extends React.Component {
                 >
                     { ({values, isSubmitting, setFieldValue}) => {
                         let fields = this.props.schema.fields.map((fieldSchema, i) => {
-                            return this.getDynamicField(fieldSchema, values, setFieldValue)
+                            return this.getDynamicField(fieldSchema, values, this.props.errors?.fields)
                         })
+                        let global_error = this.props.errors?.global
                         return (
                             <Form>
+                                <Alert color="danger" isOpen={Boolean(global_error) && typeof global_error == 'string'}>
+                                    <AlertCircle size={15} />
+                                    {global_error}
+                                </Alert>
                                 {fields}
                                 <pre>{JSON.stringify(values, null, 2)}</pre>
                                 <Button color="primary" disabled={isSubmitting} type="submit">Submit</Button>
