@@ -5,6 +5,7 @@ import Radio from "components/@vuexy/radio/RadioVuexyEnhanced"
 import Select from 'react-select';
 import classnames from "classnames"
 import DynamicField from "./DynamicField"
+import DynamicUncontrolledField from "./DynamicUncontrolledField";
 import { AlertCircle } from "react-feather"
 
 
@@ -12,6 +13,17 @@ class DynamicForm extends React.Component {
 
     getDynamicField(fieldSchema, values, errors) {
         let field_error = errors[fieldSchema.name]
+        let uncontrolledFieldState = this.props.uncontrolledFieldsState?.[fieldSchema.name]
+        if (fieldSchema.uncontrolled) {
+            return (
+                <DynamicUncontrolledField
+                schema={fieldSchema}
+                key={fieldSchema.name}
+                error={field_error}
+                {...uncontrolledFieldState}
+                />
+            )
+        }
         let dynamicField = (
             <DynamicField
                 schema={fieldSchema}
