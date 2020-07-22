@@ -112,6 +112,33 @@ const formSchema = {
 
 
 class Profiling extends React.Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      initialValues: {
+        business_name: '',
+        gst_number: '',
+        entity_type: '',
+        pan_number: '',
+        tan_number: '',
+      }
+    }
+
+  }
+
+  componentDidMount() {
+    apiClient.get('/user-profiling/')
+    .then((response) => {
+      let data = response.data
+      console.log(data)
+      this.setState({ 
+        initialValues: data,
+      })
+      console.log(this.state)
+    })
+  }
+
   render() {
     return (
       <div className="mt-3  width-600 mx-auto">
@@ -119,13 +146,7 @@ class Profiling extends React.Component {
 
         <DynamicForm
           schema={formSchema}
-          initialValues = {{
-            business_name: '',
-            gst_number: '',
-            entity_type: '',
-            pan_number: '',
-            tan_number: '',
-          }}
+          initialValues = {this.state.initialValues}
           onSubmit = {(data, setSubmitting) => {
             console.log("DATAAA", data)
             setSubmitting(true)

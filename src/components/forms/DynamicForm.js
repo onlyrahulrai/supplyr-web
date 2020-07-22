@@ -43,6 +43,7 @@ class DynamicForm extends React.Component {
                     onSubmit={(data, {setSubmitting}) => {
                         this.props.onSubmit(data, setSubmitting)
                     }}
+                    enableReinitialize={true}
 
                 >
                     { ({values, isSubmitting, setFieldValue}) => {
