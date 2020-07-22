@@ -120,6 +120,7 @@ class Profiling extends React.Component {
         business_name: '',
         gst_number: '',
         entity_type: '',
+        entity_category: '',
         pan_number: '',
         tan_number: '',
       }
@@ -130,12 +131,15 @@ class Profiling extends React.Component {
   componentDidMount() {
     apiClient.get('/user-profiling/')
     .then((response) => {
+      let initialValues = this.state.initialValues
       let data = response.data
-      console.log(data)
+      
+      data.entity_category = data.entity_category && data.entity_category.toString()
+      data.is_gst_enrolled = {true: 'yes', false: 'no'}[data.is_gst_enrolled]
+
       this.setState({ 
-        initialValues: data,
+        initialValues: {...initialValues, ...data},
       })
-      console.log(this.state)
     })
   }
 
