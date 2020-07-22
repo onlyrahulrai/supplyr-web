@@ -1,6 +1,6 @@
 import React from "react"
 import { Button } from "reactstrap"
-import DynamicForm from "components/forms/DynamicForm"
+import DynamicForm from "components/forms/dynamic-form/DynamicForm"
 import apiClient from "api/base"
 
 const formSchema = {
@@ -90,6 +90,14 @@ const formSchema = {
               label: "GSTIN",
               name: "gst_number",
               required: true,
+            },
+
+            {
+              type: "text",
+              label: "GSTIN 2",
+              name: "gst_number2",
+              required: true,
+              uncontrolled: true,
             },
           ],
         },
