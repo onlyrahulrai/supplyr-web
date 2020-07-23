@@ -20,6 +20,7 @@ class Profiling extends React.Component {
         name: "entity_category",
         label: "Entity Category",
         horizontal: true,
+        required: true,
         options: [
           {
             label: "Wholeseller",
@@ -102,14 +103,6 @@ class Profiling extends React.Component {
                 name: "gst_certificate",
                 uncontrolled: true,
                 onChange: e => {
-                  // this.setState({
-                  //   uncontrolledFieldsState: 
-                  //     {...this.state.uncontrolledFieldsState, 
-                  //       gst_certificate: {
-                  //         ...this.state.uncontrolledFieldsState.gst_certificate, is_submitting: true
-                  //       }
-                  //     }
-                  // })
                   this.setUncontrolledFieldProp('gst_certificate', {is_submitting: true})
                   const file  =  e.currentTarget.files[0];
                   let formData = new FormData();
@@ -173,7 +166,7 @@ class Profiling extends React.Component {
         business_name: '',
         gst_number: '',
         entity_type: '',
-        entity_category: '',
+        entity_category: null,
         pan_number: '',
         tan_number: '',
       },
@@ -232,13 +225,12 @@ class Profiling extends React.Component {
               setSubmitting(false)
             })
             .catch(error => {
-              console.log("error", error)
-              window.eeee = error
 
               if(error.response?.status === 400){
                 this.setState({
                   errors: {...this.state.errors,
                     fields  : error.response.data,
+                    global: error.response?.data?.non_field_errors?.join(', ')
                   }
                 })
               }
@@ -256,12 +248,6 @@ class Profiling extends React.Component {
         />
         <br />
         <br />
-        <Button.Ripple
-          className="mb-1 bg-gradient-primary mx-auto"
-          color="none"
-        >
-          Save
-        </Button.Ripple>
       </div>
     );
   }
