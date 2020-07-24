@@ -1,5 +1,5 @@
 import React from "react"
-import { Button } from "reactstrap"
+import { Button, CardBody, Card } from "reactstrap"
 import DynamicForm from "components/forms/dynamic-form/DynamicForm"
 import apiClient from "api/base"
 
@@ -208,44 +208,51 @@ class Profiling extends React.Component {
   render() {
     return (
       <div className="mt-3  width-600 mx-auto">
-        <h4 className="mb-3">Business Details</h4>
+        <h4 className="">Business Details</h4>
+        <hr />
+        <h6 className="text-bold-400 mb-2 text-gray">
+          <small>Please fill the details about your business.</small>
+        </h6>
+        <Card>
+          <CardBody>
+            <DynamicForm
+              schema={this.formSchema}
+              initialValues={this.state.initialValues}
+              errors={this.state.errors}
+              uncontrolledFieldsState={this.state.uncontrolledFieldsState}
+              onSubmit={(data, setSubmitting) => {
+                console.log("DATAAA", data);
+                setSubmitting(true);
+                apiClient
+                  .post("/user-profiling/", data)
+                  .then((response) => {
+                    console.log(response);
+                    alert("Entry Saved");
+                    setSubmitting(false);
+                  })
+                  .catch((error) => {
+                    if (error.response?.status === 400) {
+                      this.setState({
+                        errors: {
+                          ...this.state.errors,
+                          fields: error.response.data,
+                          global: error.response?.data?.non_field_errors?.join(
+                            ", "
+                          ),
+                        },
+                      });
+                    } else {
+                      this.setState({
+                        errors: { ...this.state.errors, global: error.message },
+                      });
+                    }
 
-        <DynamicForm
-          schema={this.formSchema}
-          initialValues = {this.state.initialValues}
-          errors={this.state.errors}
-          uncontrolledFieldsState={this.state.uncontrolledFieldsState}
-          onSubmit = {(data, setSubmitting) => {
-            console.log("DATAAA", data)
-            setSubmitting(true)
-            apiClient.post('/user-profiling/', data)
-            .then((response) => {
-              console.log(response)
-              alert("Entry Saved")
-              setSubmitting(false)
-            })
-            .catch(error => {
-
-              if(error.response?.status === 400){
-                this.setState({
-                  errors: {...this.state.errors,
-                    fields  : error.response.data,
-                    global: error.response?.data?.non_field_errors?.join(', ')
-                  }
-                })
-              }
-              else {
-                this.setState({
-                  errors: { ...this.state.errors,
-                    global: error.message
-                  }
-                })
-              }
-
-              setSubmitting(false)
-            })
-          }}
-        />
+                    setSubmitting(false);
+                  });
+              }}
+            />
+          </CardBody>
+        </Card>
         <br />
         <br />
       </div>

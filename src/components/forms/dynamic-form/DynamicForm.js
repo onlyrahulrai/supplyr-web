@@ -74,7 +74,7 @@ class DynamicForm extends React.Component {
                                 </Alert>
                                 {fields}
                                 {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
-                                <Button color="primary" disabled={isSubmitting} type="submit">Submit</Button>
+                                <Button color="primary" disabled={isSubmitting} className="float-right btn-lg" type="submit">Save Changes</Button>
 
                             </Form>
                         )

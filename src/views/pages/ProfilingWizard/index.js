@@ -1,7 +1,7 @@
 import React, { lazy } from "react"
 import { connect } from "react-redux"
 import Wizard from "components/@vuexy/wizard/FixedWizardComponent"
-import { UserCheck, FileText, CheckCircle, Image } from "react-feather"
+import { UserCheck, FileText, CheckCircle, Package } from "react-feather"
 import {
   Card,
   CardHeader,
@@ -19,6 +19,9 @@ const Verification = lazy(() =>
 const Profiling = lazy(() =>
   import("./_Profiling")
 )
+const Categories = lazy(() =>
+  import("./_Categories")
+)
 const Approval = lazy(() =>
   import("./_Approval")
 )
@@ -34,6 +37,10 @@ class ProfilingWizard extends React.Component{
       {
         title: <FileText />,
         content: <Profiling />,
+      },
+      {
+        title: <Package />,
+        content: <Categories />,
       },
       {
         title: <CheckCircle />,
@@ -56,13 +63,6 @@ class ProfilingWizard extends React.Component{
 
     return (
       <div>
-        <Card>
-          <CardBody>
-            <h3>Welcome to Supplyr</h3>
-            <p>
-              Please fill some quick details. It only takes around 2 minutes
-            </p>
-            <hr />
             <Wizard
               enableAllSteps
               pagination={false}
@@ -71,8 +71,6 @@ class ProfilingWizard extends React.Component{
               lockStepsAfter={this.state.activeStep}
               formless={true}
             />
-          </CardBody>
-        </Card>
       </div>
     );
   }

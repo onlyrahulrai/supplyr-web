@@ -8,7 +8,9 @@ import {
   TabContent,
   TabPane,
   Form,
-  Button
+  Button,
+  Card,
+  CardBody,
 } from "reactstrap"
 import { AvForm } from "availity-reactstrap-validation"
 
@@ -96,28 +98,38 @@ class VuexyWizard extends React.Component {
 
     return (
       <React.Fragment>
-        <Nav
-          className={`vx-wizard ${
-            this.props.className ? this.props.className : ""
-          }`}
-          tabs>
-          {this.props.steps.map((item, i) => {
-            return (
-              <NavItem
-                className="step-wrapper"
-                key={i}
-                onClick={() => this.handleEnableAllSteps(i)}>
-                <NavLink
-                  className={classnames(`step step-${i}`, {
-                    active: this.state.activeStep === i ? true : false,
-                    done: i < this.state.activeStep
-                  })}>
-                  <span className="step-text">{item.title}</span>
-                </NavLink>
-              </NavItem>
-            )
-          })}
-        </Nav>
+      
+        <Card>
+          <CardBody>
+            <h3>Welcome to Supplyr</h3>
+            <p>
+              Please fill some quick details. It only takes around 2 minutes
+            </p>
+            <hr />
+            <Nav
+              className={`vx-wizard ${
+                this.props.className ? this.props.className : ""
+              }`}
+              tabs>
+              {this.props.steps.map((item, i) => {
+                return (
+                  <NavItem
+                    className="step-wrapper"
+                    key={i}
+                    onClick={() => this.handleEnableAllSteps(i)}>
+                    <NavLink
+                      className={classnames(`step step-${i}`, {
+                        active: this.state.activeStep === i ? true : false,
+                        done: i < this.state.activeStep
+                      })}>
+                      <span className="step-text">{item.title}</span>
+                    </NavLink>
+                  </NavItem>
+                )
+              })}
+            </Nav>
+          </CardBody>
+        </Card>
         <TabContent
           className={`vx-wizard-content ${
             this.props.tabPaneClass ? this.props.tabPaneClass : ""
