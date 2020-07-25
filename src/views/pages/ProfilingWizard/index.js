@@ -54,6 +54,7 @@ class ProfilingWizard extends React.Component{
         case 'registered': return 0;
         case 'verified': return 1;
         case 'profiled': return 2;
+        case 'categories_selected': return 3;
       }
     })(),
   };

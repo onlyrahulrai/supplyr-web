@@ -1,6 +1,6 @@
 import React from 'react'
 import { Row, Col, Container, Card, CardHeader, CardBody, CardTitle, Button } from 'reactstrap'
-import { Plus, X, Check, ChevronLeft } from 'react-feather'
+import { Plus, X, Check, ChevronLeft, Square, CheckSquare } from 'react-feather'
 import Avatar from 'components/@vuexy/avatar/AvatarComponent'
 import Chip from 'components/profiling/Chip';
 import apiClient from 'api/base';
@@ -31,8 +31,8 @@ class CategoryListItem extends React.Component {
       <Card className="mb-1">
         <CardBody className="p-1">
           <Row className="align-items-center">
-            <Col md="auto mr-auto">{this.props.name}</Col>
-            <Col md="auto p-0 pr-1">
+            <Col md="9 pr-0">{this.props.name}</Col>
+            <Col md="3 ">
               {/* <Avatar color={this.props.isSelected ? '' : 'primary'} icon={add_category_btn} /> */}
               <Button.Ripple className="rounded-circle btn-icon" disabled={isSelected} color={isSelected ? "light" : "primary"} onClick={this.props.selectCategory}>
                 {add_category_btn}
@@ -53,6 +53,12 @@ class CategoryDetailed extends React.Component {
                 <CardHeader>
                 <CardTitle>{this.props.category.name}</CardTitle>
                 <div className="actions">
+                    <Button.Ripple className="rounded-circle btn-icon mr-1" size="sm" color="primary" onClick={this.props.addAllSubCategories}>
+                      <CheckSquare />
+                    </Button.Ripple>
+                    <Button.Ripple className="rounded-circle btn-icon mr-1" size="sm" color="secondary" onClick={this.props.removeAllSubCategories}>
+                      <Square />
+                    </Button.Ripple>
                     <Button.Ripple className="rounded-circle btn-icon" size="sm" color="danger" onClick={this.props.removeCategory}>
                       <X />
                     </Button.Ripple>
@@ -117,12 +123,26 @@ export default class Categories extends React.Component {
         let selectedSubcategories = data?.selected_sub_categories
         let categories = data?.categories
 
+        let selectedCategories = []
+        selectedSubcategories.forEach(
+          subcat_id => {
+            let category_id = categories.filter(
+              category => category.sub_categories.map(subcat => subcat.id).includes(subcat_id)
+            )[0]?.id
+
+            if (!selectedCategories.includes(category_id)){
+              selectedCategories.push(category_id)
+            }
+
+          }
+        )
+
         this.setState({ 
           selectedSubcategories: selectedSubcategories,
+          selectedCategories: selectedCategories,
           categories: categories
         })
 
-        selectedSubcategories.map()
 
       })
       .catch(error => {
@@ -150,7 +170,7 @@ export default class Categories extends React.Component {
         });
       }
 
-      let categoryAdded = this.categories.filter(cat => cat.id === categoryId)[0]
+      let categoryAdded = this.state.categories.filter(cat => cat.id === categoryId)[0]
       let subcategoriesToBeAdded = categoryAdded.sub_categories
         .filter((subcat) => !selectedSubcategories.includes(subcat.id))
         .map((subcat) => subcat.id);
@@ -168,7 +188,7 @@ export default class Categories extends React.Component {
         selectedCategories: selectedCategories.filter(id => id !== categoryId),
       });
 
-      let categoryRemoved = this.categories.filter(cat => cat.id === categoryId)[0]
+      let categoryRemoved = this.state.categories.filter(cat => cat.id === categoryId)[0]
       this.setState({
         selectedSubcategories: selectedSubcategories.filter(
           (subcat) =>
@@ -179,174 +199,34 @@ export default class Categories extends React.Component {
       });
     }
 
-
-
-    categories = [
-        {
-          "id": 4,
-          "name": "Computer & Accessories",
-          "sub_categories": [
-            {
-              "id": 1,
-              "name": "velit consequat"
-            },
-            {
-              "id": 2,
-              "name": "quis ad"
-            },
-            {
-              "id": 3,
-              "name": "duis quis"
-            },
-            {
-              "id": 4,
-              "name": "anim cupidatat"
-            },
-            {
-              "id": 5,
-              "name": "veniam nostrud"
-            },
-            {
-              "id": 6,
-              "name": "reprehenderit laborum"
-            },
-            {
-              "id": 7,
-              "name": "enim nostrud"
-            }
-          ]
-        },
-        {
-          "id": 0,
-          "name": "Mobile & Accessories",
-          "sub_categories": [
-            {
-              "id": 10,
-              "name": "aute sunt"
-            },
-            {
-              "id": 9,
-              "name": "id culpa"
-            },
-            {
-              "id": 8,
-              "name": "nostrud proident"
-            },
-            {
-              "id": 11,
-              "name": "sit velit"
-            },
-            {
-              "id": 12,
-              "name": "velit non"
-            }
-          ]
-        },
-        {
-          "id": 1,
-          "name": "Hardware",
-          "sub_categories": [
-            {
-              "id": 13,
-              "name": "id fugiat"
-            },
-            {
-              "id": 14,
-              "name": "ipsum incididunt"
-            },
-            {
-              "id": 15,
-              "name": "in aute"
-            },
-            {
-              "id": 16,
-              "name": "ipsum deserunt"
-            }
-          ]
-        },
-        {
-          "id": 7,
-          "name": "Sheri Le",
-          "sub_categories": [
-            {
-              "id": 17,
-              "name": "commodo Lorem"
-            },
-            {
-              "id": 18,
-              "name": "aliqua occaecat"
-            },
-            {
-              "id": 19,
-              "name": "voluptate enim"
-            },
-            {
-              "id": 20,
-              "name": "ullamco magna"
-            },
-            {
-              "id": 21,
-              "name": "consequat irure"
-            },
-            {
-              "id": 22,
-              "name": "officia officia"
-            }
-          ]
-        },
-        {
-          "id": 5,
-          "name": "Rutledge Mcdowell",
-          "sub_categories": [
-            {
-              "id": 23,
-              "name": "sit aute"
-            },
-            {
-              "id": 24,
-              "name": "laboris aute"
-            },
-            {
-              "id": 25,
-              "name": "veniam consequat"
-            },
-            {
-              "id": 26,
-              "name": "labore dolor"
-            },
-            {
-              "id": 27,
-              "name": "culpa nostrud"
-            }
-          ]
-        },
-        {
-          "id": 9,
-          "name": "Gilbert Bullock",
-          "sub_categories": [
-            {
-              "id": 28,
-              "name": "voluptate adipisicing"
-            },
-            {
-              "id": 29,
-              "name": "irure amet"
-            },
-            {
-              "id": 30,
-              "name": "ut est"
-            },
-            {
-              "id": 31,
-              "name": "laboris velit"
-            },
-            {
-              "id": 32,
-              "name": "et culpa"
-            }
-          ]
+    addAllSubCategories = category_id => {
+      let category = this.state.categories.filter(category => category.id == category_id)[0]
+      let subcategoriesToBeAdded = []
+      category.sub_categories.map(subcat => subcat.id).forEach(subcateg_id => {
+        if(!this.state.selectedSubcategories.includes(subcateg_id)){
+          subcategoriesToBeAdded.push(subcateg_id);
         }
-      ]
+      })
+      this.setState({
+        selectedSubcategories: [...this.state.selectedSubcategories, ...subcategoriesToBeAdded]
+      })
+    }
+
+    removeAllSubCategories = category_id => {
+      let category = this.state.categories.filter(category => category.id == category_id)[0]
+
+      this.setState({
+        selectedSubcategories: this.state.selectedSubcategories.filter(subcat => !category.sub_categories.map(sc => sc.id).includes(subcat))
+      })
+    }
+
+    saveSelection = e => {
+      apiClient.post('/categories/',
+      {
+        'sub_categories': this.state.selectedSubcategories
+      }
+      )
+    }
 
     render() {
         let selectedSubcategories = this.state.selectedSubcategories
@@ -354,7 +234,7 @@ export default class Categories extends React.Component {
         console.log(selectedSubcategories)
         console.log(selectedCategories)
         console.log('this.state.categories', this.state.categories)
-
+        let categories = this.state.categories
         return (
             <div>
                 <Container>
@@ -366,7 +246,7 @@ export default class Categories extends React.Component {
                     <Row>
                         <Col md={3}>
                         {
-                            this.categories.map(category => {
+                            categories.map(category => {
                                 return (
                                     <CategoryListItem name={category.name} key={category.id} isSelected={selectedCategories.includes(category.id)} selectCategory={() => this.addCategory(category.id)} />
                                 )
@@ -375,14 +255,30 @@ export default class Categories extends React.Component {
                         </Col>
                         <Col md={9}>
                             {selectedCategories.length > 0 && 
-                                
-                                selectedCategories.map(category_id => {
-                                    let category = this.categories.filter(cat => cat.id == category_id)?.[0]
+                                <>
+                                {
+                                  selectedCategories.map(category_id => {
+                                    let category = categories.filter(cat => cat.id == category_id)?.[0]
                                     {/* let sub_categories = category.sub_categories */}
                                     return (
-                                        <CategoryDetailed category={category} selectedSubcategories={selectedSubcategories} toggleSubcategory={this.toggleSubcategory} key={category_id} removeCategory={() => this.removeCategory(category.id)} />
-                                    )
-                                })
+                                      <CategoryDetailed
+                                        category={category}
+                                        selectedSubcategories={selectedSubcategories}
+                                        toggleSubcategory={this.toggleSubcategory}
+                                        key={category_id}
+                                        removeCategory={() =>
+                                          this.removeCategory(category.id)
+                                        }
+                                        addAllSubCategories={() => this.addAllSubCategories(category.id)}
+                                        removeAllSubCategories={() => this.removeAllSubCategories(category.id)}
+
+                                      />
+                                    );
+                                  })
+                                }
+
+                                <Button color="primary" size="lg" className="float-right" onClick={this.saveSelection} disabled={this.state.selectedSubcategories.length === 0}>Save</Button>
+                                </>
                             }
                             {selectedCategories.length === 0 &&
                               <CategoryEmptyPlaceholder />
