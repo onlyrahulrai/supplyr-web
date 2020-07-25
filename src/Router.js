@@ -138,7 +138,7 @@ const PublicOnlyRouteConfig = ({ ...rest }) => (
 const mapStateToProps = state => {
     return {
         // user: state.auth.userRole
-        user: state.auth.user,
+        user: state.auth.userInfo,
         authenticated: state.auth.authenticated,
     }
 }

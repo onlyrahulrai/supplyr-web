@@ -181,28 +181,18 @@ class Profiling extends React.Component {
       }
     }
 
-  }
-
-  componentDidMount() {
-    apiClient.get('/user-profiling/')
-    .then((response) => {
-      let initialValues = this.state.initialValues
-      let data = response.data
+    let existingData = this.props.entityDetails
+    if(existingData) {
+      existingData.entity_category = existingData.entity_category && existingData.entity_category.toString()
+      existingData.is_gst_enrolled = {true: 'yes', false: 'no'}[existingData.is_gst_enrolled]
       
-      data.entity_category = data.entity_category && data.entity_category.toString()
-      data.is_gst_enrolled = {true: 'yes', false: 'no'}[data.is_gst_enrolled]
+      this.state.initialValues = existingData
 
-      this.setState({ 
-        initialValues: {...initialValues, ...data},
-      })
-
-      if(data.gst_certificate) {
-        this.setUncontrolledFieldProp('gst_certificate', {is_submitted: true})
+      if(existingData.gst_certificate) {
+        this.state.uncontrolledFieldsState['gst_certificate'] = {is_submitted: true}
       }
-    })
-    .catch(error => {
-      console.log(error)
-    })
+    }
+
   }
 
   render() {
@@ -227,7 +217,6 @@ class Profiling extends React.Component {
                   .post("/user-profiling/", data)
                   .then((response) => {
                     console.log(response);
-                    alert("Entry Saved");
                     setSubmitting(false);
                   })
                   .catch((error) => {

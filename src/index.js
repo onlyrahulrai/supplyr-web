@@ -16,7 +16,7 @@ const LazyApp = lazy(() => import("./App"))
 if (localStorage.getItem('token')) {
   apiClient.get('user-details/')
   .then(response => {
-    store.dispatch({ type: 'LOGIN', user: response.data });
+    store.dispatch({ type: 'LOGIN' });
   })
 }
 

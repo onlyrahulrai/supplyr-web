@@ -7,12 +7,19 @@ const apiClient = axios.create({
 })
 
 
-apiClient.interceptors.response.use(response => response, error => {
-    if(error.response?.status === 401){
-        store.dispatch({ type: 'LOGOUT' });
+apiClient.interceptors.response.use(
+    response => {
+    if (response.data?.user_info) {
+        store.dispatch({ type: 'SET_USER_INFO', userInfo: response.data.user_info})
     }
-    return Promise.reject(error);
-})
+    return response
+    },
+    error => {
+        if(error.response?.status === 401){
+            store.dispatch({ type: 'LOGOUT' });
+        }
+        return Promise.reject(error);
+    })
 
 apiClient.authorize = token => {
     token = token || localStorage.getItem('token')

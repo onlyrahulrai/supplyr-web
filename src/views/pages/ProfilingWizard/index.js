@@ -2,15 +2,6 @@ import React, { lazy } from "react"
 import { connect } from "react-redux"
 import Wizard from "components/@vuexy/wizard/FixedWizardComponent"
 import { UserCheck, FileText, CheckCircle, Package } from "react-feather"
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  Row,
-  Col,
-  Button,
-  Progress
-} from "reactstrap"
 
 
 const Verification = lazy(() =>
@@ -36,11 +27,15 @@ class ProfilingWizard extends React.Component{
       },
       {
         title: <FileText />,
-        content: <Profiling />,
+        content: <Profiling 
+          entityDetails={this.props.profilingData?.entity_details}
+        />,
       },
       {
         title: <Package />,
-        content: <Categories />,
+        content: <Categories 
+          categoriesData={this.props.profilingData?.categories_data}
+        />,
       },
       {
         title: <CheckCircle />,
@@ -53,7 +48,7 @@ class ProfilingWizard extends React.Component{
       switch (current_user_state) {
         case 'registered': return 0;
         case 'verified': return 1;
-        case 'profiled': return 2;
+        case 'form_filled': return 2;
         case 'categories_selected': return 3;
       }
     })(),
@@ -79,7 +74,8 @@ class ProfilingWizard extends React.Component{
 
 const mapStateToProps = state => {
   return {
-    user: state.auth.user
+    user: state.auth.userInfo,
+    profilingData: state.auth.userInfo.profiling_data
   }
 }
 export default connect(mapStateToProps)(ProfilingWizard)

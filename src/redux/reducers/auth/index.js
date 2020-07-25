@@ -8,13 +8,17 @@ const login = (state = { userRole: "admin" }, action) => {
         localStorage.setItem('token', action.token)
         apiClient.authorize(action.token)
       }
-      return { ...state, user: action.user, authenticated: true }
+      return { ...state, authenticated: true }
     }
 
     case "LOGOUT": {
       localStorage.clear('token');
       apiClient.deauthorize()
-      return { ...state, user: undefined, authenticated: false }
+      return { ...state, userInfo: undefined, authenticated: false }
+    }
+
+    case "SET_USER_INFO": {
+      return { ...state, userInfo: action.userInfo}
     }
 
     case "CHANGE_ROLE": {

@@ -18,7 +18,7 @@ class Home extends React.Component{
 
 const mapStateToProps = state => {
   return {
-    user: state.auth.user
+    user: state.auth.userInfo
   }
 }
 export default connect(mapStateToProps)(Home)

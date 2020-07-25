@@ -115,13 +115,16 @@ export default class Categories extends React.Component {
         categories: [],
     }
 
-    componentDidMount() {
-      console.log("Mounter")
-      apiClient.get('/categories/')
-      .then((response) => {
-        let data = response.data
-        let selectedSubcategories = data?.selected_sub_categories
-        let categories = data?.categories
+    constructor(props) {
+      super(props)
+      let apiData = this.props.categoriesData
+
+      if(apiData){
+        let categories = apiData.categories
+        let selectedSubcategories = apiData.selected_sub_categories
+
+        this.state.categories = categories
+        this.state.selectedSubcategories = selectedSubcategories
 
         let selectedCategories = []
         selectedSubcategories.forEach(
@@ -136,20 +139,13 @@ export default class Categories extends React.Component {
 
           }
         )
+        this.state.selectedCategories = selectedCategories
+      }
 
-        this.setState({ 
-          selectedSubcategories: selectedSubcategories,
-          selectedCategories: selectedCategories,
-          categories: categories
-        })
-
-
-      })
-      .catch(error => {
-        console.log(error)
-      })
     }
-  
+
+    getCategoryFromId = category_id => this.state.categories.filter(category => category.id == category_id)[0]
+
 
     toggleSubcategory = subcategoryId => {
         let subcategories = this.state.selectedSubcategories
@@ -170,15 +166,7 @@ export default class Categories extends React.Component {
         });
       }
 
-      let categoryAdded = this.state.categories.filter(cat => cat.id === categoryId)[0]
-      let subcategoriesToBeAdded = categoryAdded.sub_categories
-        .filter((subcat) => !selectedSubcategories.includes(subcat.id))
-        .map((subcat) => subcat.id);
-
-      this.setState({
-        selectedSubcategories: [...selectedSubcategories, ...subcategoriesToBeAdded]
-      })
-      // categoryAdded.sub_categories.map
+      this.addAllSubCategories(categoryId)
     }
 
     removeCategory = categoryId => {
@@ -188,19 +176,11 @@ export default class Categories extends React.Component {
         selectedCategories: selectedCategories.filter(id => id !== categoryId),
       });
 
-      let categoryRemoved = this.state.categories.filter(cat => cat.id === categoryId)[0]
-      this.setState({
-        selectedSubcategories: selectedSubcategories.filter(
-          (subcat) =>
-            !categoryRemoved.sub_categories
-              .map((subcat) => subcat.id)
-              .includes(subcat)
-        ),
-      });
+      this.removeAllSubCategories(categoryId)
     }
 
     addAllSubCategories = category_id => {
-      let category = this.state.categories.filter(category => category.id == category_id)[0]
+      let category = this.getCategoryFromId(category_id);
       let subcategoriesToBeAdded = []
       category.sub_categories.map(subcat => subcat.id).forEach(subcateg_id => {
         if(!this.state.selectedSubcategories.includes(subcateg_id)){
@@ -213,7 +193,7 @@ export default class Categories extends React.Component {
     }
 
     removeAllSubCategories = category_id => {
-      let category = this.state.categories.filter(category => category.id == category_id)[0]
+      let category = this.getCategoryFromId(category_id);
 
       this.setState({
         selectedSubcategories: this.state.selectedSubcategories.filter(subcat => !category.sub_categories.map(sc => sc.id).includes(subcat))
@@ -222,9 +202,9 @@ export default class Categories extends React.Component {
 
     saveSelection = e => {
       apiClient.post('/categories/',
-      {
-        'sub_categories': this.state.selectedSubcategories
-      }
+        {
+          'sub_categories': this.state.selectedSubcategories
+        }
       )
     }
 

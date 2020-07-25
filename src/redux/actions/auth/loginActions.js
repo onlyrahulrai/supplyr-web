@@ -19,7 +19,6 @@ export const loginWithJWT = (user, onError) => {
           token = response.data.access_token
           dispatch({
             type: "LOGIN",
-            user: loggedInUser,
             token: token,
           })
 
