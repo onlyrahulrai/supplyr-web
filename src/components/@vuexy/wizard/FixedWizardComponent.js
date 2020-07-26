@@ -41,6 +41,12 @@ class VuexyWizard extends React.Component {
     values: []
   }
 
+  componentDidUpdate() {
+    if(this.props.activeStep != this.state.activeStep){
+      this.setState({ activeStep: this.props.activeStep})
+    }
+  }
+
   handleNextStep = (index, total, errors = []) => {
     let activeStep = this.state.activeStep
     let validation = this.props.validate
@@ -74,7 +80,7 @@ class VuexyWizard extends React.Component {
 
   handleEnableAllSteps = index => {
     if (this.props.enableAllSteps && !this.isStepLocked(index)) {
-      this.setState({ activeStep: index })
+      this.props.setActiveStep(index)
     }
   }
 

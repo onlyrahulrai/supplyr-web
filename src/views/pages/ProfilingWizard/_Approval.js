@@ -10,10 +10,8 @@ import { Clock } from "react-feather"
 class Page2 extends React.Component{
   render(){
     return (
-        <div className="mt-3">
-            <h4>Approval Pending</h4>
-    
-
+        <div className="mt-3 col-lg-6 mx-auto">
+         
             <Card>
                 <CardHeader className="mx-auto flex-column mt-5">
                     <Clock size="50" className="mb-3" />

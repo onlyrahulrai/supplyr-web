@@ -31,8 +31,8 @@ class CategoryListItem extends React.Component {
       <Card className="mb-1">
         <CardBody className="p-1">
           <Row className="align-items-center">
-            <Col md="9 pr-0">{this.props.name}</Col>
-            <Col md="3 ">
+            <Col xs="9" sm="10" md="9 pr-0">{this.props.name}</Col>
+            <Col xs="3" sm="2" md="3">
               {/* <Avatar color={this.props.isSelected ? '' : 'primary'} icon={add_category_btn} /> */}
               <Button.Ripple className="rounded-circle btn-icon" disabled={isSelected} color={isSelected ? "light" : "primary"} onClick={this.props.selectCategory}>
                 {add_category_btn}
@@ -118,7 +118,6 @@ export default class Categories extends React.Component {
     constructor(props) {
       super(props)
       let apiData = this.props.categoriesData
-
       if(apiData){
         let categories = apiData.categories
         let selectedSubcategories = apiData.selected_sub_categories
@@ -206,14 +205,14 @@ export default class Categories extends React.Component {
           'sub_categories': this.state.selectedSubcategories
         }
       )
+      .then(response => {
+        this.props.forceStepRefresh()
+      })
     }
 
     render() {
         let selectedSubcategories = this.state.selectedSubcategories
         let selectedCategories = this.state.selectedCategories
-        console.log(selectedSubcategories)
-        console.log(selectedCategories)
-        console.log('this.state.categories', this.state.categories)
         let categories = this.state.categories
         return (
             <div>
@@ -224,7 +223,7 @@ export default class Categories extends React.Component {
                 <small>Please select the categories your business deals in. You can also refine your selection with sub-categories.</small>
                 </h6>
                     <Row>
-                        <Col md={3}>
+                        <Col md={4} lg={3}>
                         {
                             categories.map(category => {
                                 return (
@@ -233,7 +232,7 @@ export default class Categories extends React.Component {
                             })
                         }
                         </Col>
-                        <Col md={9}>
+                        <Col md={8} lg={9}>
                             {selectedCategories.length > 0 && 
                                 <>
                                 {

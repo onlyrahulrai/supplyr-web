@@ -19,6 +19,23 @@ const Approval = lazy(() =>
 
 
 class ProfilingWizard extends React.Component{
+  getActiveStepFromProps = () => {
+    console.log('get as from prop', this.props.user.status)
+    let current_user_state = this.props.user.status
+      switch (current_user_state) {
+        case 'registered': return 0;
+        case 'verified': return 1;
+        case 'form_filled': return 2;
+        case 'categories_selected': return 3;
+      }
+  }
+
+  forceStepRefresh = () => {
+    let currentStep = this.getActiveStepFromProps()
+    this.setState({ activeStep: currentStep,
+                  lockStepsAfter: currentStep })
+  }
+  
   state = {
     steps: [
       {
@@ -29,12 +46,14 @@ class ProfilingWizard extends React.Component{
         title: <FileText />,
         content: <Profiling 
           entityDetails={this.props.profilingData?.entity_details}
+          forceStepRefresh={this.forceStepRefresh}
         />,
       },
       {
         title: <Package />,
         content: <Categories 
           categoriesData={this.props.profilingData?.categories_data}
+          forceStepRefresh={this.forceStepRefresh}
         />,
       },
       {
@@ -43,16 +62,19 @@ class ProfilingWizard extends React.Component{
       },      
     ],
 
-    activeStep: (() => {
-      let current_user_state = this.props.user.status
-      switch (current_user_state) {
-        case 'registered': return 0;
-        case 'verified': return 1;
-        case 'form_filled': return 2;
-        case 'categories_selected': return 3;
-      }
-    })(),
+    activeStep: this.getActiveStepFromProps(),
   };
+
+  componentDidMount() {
+    this.setState({lockStepsAfter: this.state.activeStep})
+  }
+
+
+  setActiveStep = index => {
+    this.setState({ activeStep: index })
+    console.log('aaya', this.state, index)
+  }
+
 
   render(){
     const { steps } = this.state
@@ -64,8 +86,9 @@ class ProfilingWizard extends React.Component{
               pagination={false}
               steps={steps}
               activeStep={this.state.activeStep}
-              lockStepsAfter={this.state.activeStep}
+              lockStepsAfter={this.state.lockStepsAfter}
               formless={true}
+              setActiveStep={this.setActiveStep}
             />
       </div>
     );
