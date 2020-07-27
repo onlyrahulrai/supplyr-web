@@ -1,9 +1,10 @@
 import React from 'react'
-import { Row, Col, Container, Card, CardHeader, CardBody, CardTitle, Button } from 'reactstrap'
-import { Plus, X, Check, ChevronLeft, Square, CheckSquare } from 'react-feather'
+import { Row, Col, Container, Card, CardHeader, CardBody, CardTitle, Button, UncontrolledTooltip } from 'reactstrap'
+import { Plus, X, Check, ChevronLeft } from 'react-feather'
 import Avatar from 'components/@vuexy/avatar/AvatarComponent'
 import Chip from 'components/profiling/Chip';
 import apiClient from 'api/base';
+import { RiCheckboxMultipleLine, RiCheckboxMultipleBlankLine } from 'react-icons/ri'
 
 function CategoryEmptyPlaceholder(props) {
     return (
@@ -33,7 +34,6 @@ class CategoryListItem extends React.Component {
           <Row className="align-items-center">
             <Col xs="9" sm="10" md="9 pr-0">{this.props.name}</Col>
             <Col xs="3" sm="2" md="3">
-              {/* <Avatar color={this.props.isSelected ? '' : 'primary'} icon={add_category_btn} /> */}
               <Button.Ripple className="rounded-circle btn-icon" disabled={isSelected} color={isSelected ? "light" : "primary"} onClick={this.props.selectCategory}>
                 {add_category_btn}
               </Button.Ripple>
@@ -53,15 +53,36 @@ class CategoryDetailed extends React.Component {
                 <CardHeader>
                 <CardTitle>{this.props.category.name}</CardTitle>
                 <div className="actions">
-                    <Button.Ripple className="rounded-circle btn-icon mr-1" size="sm" color="primary" onClick={this.props.addAllSubCategories}>
-                      <CheckSquare />
+                    <Button.Ripple className="rounded-circle btn-icon mr-1" id="addAllSubCategories" size="sm" color="primary" onClick={this.props.addAllSubCategories}>
+                      <RiCheckboxMultipleLine />
                     </Button.Ripple>
-                    <Button.Ripple className="rounded-circle btn-icon mr-1" size="sm" color="secondary" onClick={this.props.removeAllSubCategories}>
-                      <Square />
+                    <UncontrolledTooltip
+                      placement="top"
+                      target="addAllSubCategories"
+                    >
+                      Select All
+                    </UncontrolledTooltip>
+
+                    <Button.Ripple className="rounded-circle btn-icon mr-1" id="removeAllSubCategories" size="sm" color="secondary" onClick={this.props.removeAllSubCategories}>
+                      <RiCheckboxMultipleBlankLine />
                     </Button.Ripple>
-                    <Button.Ripple className="rounded-circle btn-icon" size="sm" color="danger" onClick={this.props.removeCategory}>
+                    <UncontrolledTooltip
+                      placement="top"
+                      target="removeAllSubCategories"
+                    >
+                      Unselect All
+                    </UncontrolledTooltip>
+
+                    <Button.Ripple className="rounded-circle btn-icon" id="removeCategory" size="sm" color="danger" onClick={this.props.removeCategory}>
                       <X />
                     </Button.Ripple>
+                    <UncontrolledTooltip
+                      placement="top"
+                      target="removeCategory"
+                    >
+                      Remove Category
+                    </UncontrolledTooltip>
+                    
                 </div>
                 </CardHeader>
 
