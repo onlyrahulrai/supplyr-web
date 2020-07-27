@@ -2,7 +2,7 @@ import React from 'react'
 import { Row, Col, Container, Card, CardHeader, CardBody, CardTitle, Button, UncontrolledTooltip } from 'reactstrap'
 import { Plus, X, Check, ChevronLeft } from 'react-feather'
 import Avatar from 'components/@vuexy/avatar/AvatarComponent'
-import Chip from 'components/profiling/Chip';
+import Chip from 'components/profiling/ChipSelectable';
 import apiClient from 'api/base';
 import { RiCheckboxMultipleLine, RiCheckboxMultipleBlankLine } from 'react-icons/ri'
 

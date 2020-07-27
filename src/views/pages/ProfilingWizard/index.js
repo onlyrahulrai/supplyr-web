@@ -1,6 +1,6 @@
 import React, { lazy } from "react"
 import { connect } from "react-redux"
-import Wizard from "components/@vuexy/wizard/FixedWizardComponent"
+import Wizard from "components/profiling/ProfilingWizardComponent"
 import { UserCheck, FileText, CheckCircle, Package } from "react-feather"
 
 
