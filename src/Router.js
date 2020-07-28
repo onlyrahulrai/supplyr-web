@@ -10,8 +10,11 @@ const Home = lazy(() =>
     import("./views/pages/Home")
 )
 
-const Page2 = lazy(() =>
-    import("./views/pages/Page2")
+const Products = lazy(() =>
+    import("./views/inventory/Products")
+)
+const AddProduct = lazy(() =>
+    import("./views/inventory/AddProduct")
 )
 
 const login = lazy(() =>
@@ -160,6 +163,7 @@ class AppRouter extends React.Component {
                         noLayout
                     />
                     <AppRoute
+                        exact
                         path="/profiling"
                         component={ProfilingWizard}
                     />
@@ -169,8 +173,13 @@ class AppRouter extends React.Component {
                         component={Home}
                     />
                     <AppRoute
-                        path="/page2"
-                        component={Page2}
+                        exact
+                        path="/inventory"
+                        component={Products}
+                    />
+                    <AppRoute
+                        path="/inventory/add"
+                        component={AddProduct}
                     />
                     <PublicOnlyAppRoute
                         path="/login"

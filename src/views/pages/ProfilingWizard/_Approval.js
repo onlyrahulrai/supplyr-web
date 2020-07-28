@@ -15,7 +15,7 @@ class Page2 extends React.Component{
             <Card>
                 <CardHeader className="mx-auto flex-column mt-5">
                     <Clock size="50" className="mb-3" />
-                    <h4>Your accound is pending approval</h4>
+                    <h4>Your account is pending approval</h4>
                     <br />
                     <h5 className="light">It usually takes 24-48 hours.</h5>
                 </CardHeader>

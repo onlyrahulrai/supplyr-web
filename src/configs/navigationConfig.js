@@ -1,21 +1,23 @@
 import React from "react"
-import * as Icon from "react-feather"
+import {Home, ShoppingCart} from "react-feather"
+import { RiStore2Line } from "react-icons/ri"
+
 const navigationConfig = [
   {
     id: "home",
     title: "Home",
     type: "item",
-    icon: <Icon.Home size={20} />,
+    icon: <Home size={20} />,
     permissions: ["admin", "editor"],
-    navLink: "/"
+    navLink: "/dashboard"
   },
   {
-    id: "page2",
-    title: "Page 2",
+    id: "inventory",
+    title: "Inventory",
     type: "item",
-    icon: <Icon.File size={20} />,
+    icon: <RiStore2Line size={20} />,
     permissions: ["admin", "editor"],
-    navLink: "/page2"
+    navLink: "/inventory"
   }
 ]
 
