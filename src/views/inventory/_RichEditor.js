@@ -23,6 +23,7 @@ export default class RichEditor extends React.Component {
           rawContentState
       );
       console.log(markup)
+      this.props.onChange(markup)
     };
   
     render() {
