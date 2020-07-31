@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Button, Input, Col, Row, FormGroup, Label, Card, CardTitle, CardBody, CardHeader, TabContent, TabPane, Nav, NavItem, NavLink, CardText } from 'reactstrap'
+import { Container, Button, Input, Col, Row, FormGroup, Label, Card, CardTitle, CardBody, CardHeader, TabContent, TabPane, Nav, NavItem, NavLink, CardText, FormFeedback } from 'reactstrap'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
 import Radio from "components/@vuexy/radio/RadioVuexy"
@@ -11,12 +11,15 @@ import Chip from 'components/@vuexy/chips/ChipComponent';
 import MultipleOptionsInput from 'components/inventory/MultipleOptionsInput'
 import CreatableOptionsSelect from 'components/inventory/CreatableOptionsSelect'
 
+
 function areArraysEqual(array1, array2) {
     if (array1.length !== array2.length) return false;
     return array1.every((item, index) => item === array2[index])
 }
 
 function SimpleInputField(props) {
+    let fieldError = props.error;
+    console.log("FE", fieldError, props.name);
     return (
       <FormGroup>
         <Label for={props.name}>
@@ -30,7 +33,11 @@ function SimpleInputField(props) {
                 placeholder={props.placeholder ?? props.label}
                 onChange={props.onChange}
                 value={props.value}
+                invalid={Boolean(fieldError)}
             />
+        }
+        {fieldError &&
+            <FormFeedback>{fieldError}</FormFeedback>
         }
       </FormGroup>
     );
@@ -222,15 +229,22 @@ function MultipleVariantForm(props) {
     function setVariantOptionTitle(optionIndex, title) {
         let optionsCopy = [...options]
         optionsCopy[optionIndex]['title'] = title
+        if (optionsCopy[optionIndex].errors?.title){
+            optionsCopy[optionIndex]['errors']['title'] = undefined
+        }
         setOptions(optionsCopy)
     }
     function setVariantOptionValues(optionIndex, values) {
         let optionsCopy = [...options]
-        optionsCopy[optionIndex]['values'] = values
+
+        let updated_values = values.map(value => value.trim())
+        optionsCopy[optionIndex]['values'] = updated_values
+        if (optionsCopy[optionIndex].errors?.values){
+                optionsCopy[optionIndex]['errors']['values'] = undefined
+        }
         setOptions(optionsCopy)
     }
-    function addToVariantOptionValues(optionIndex, value) {
-        console.log("OI", optionIndex, options, options[optionIndex], value)
+    function addToVariantOptionValues(optionIndex, value) { //Called when new option is created inside the variant edit form
         let current_values = options[optionIndex]['values']
         setVariantOptionValues(optionIndex, [...current_values, value])
     }
@@ -239,13 +253,36 @@ function MultipleVariantForm(props) {
         if(options.length < 3)
             setOptions([...options, {}])
     }
+    
     function removeVariantOption(optionIndex) {
         let optionsCopy = [...options]
         optionsCopy.splice(optionIndex, 1)
         setOptions(optionsCopy)
     }
+
     function freezeVariantOptions() {
-        setVariantOptionsEditable(false)
+        const optionsCopy = [...options]
+        let error_count = 0;
+        options.forEach((option, optionIndex) => {
+            let errors = {}
+            if(option.title === undefined || option.title.trim().length === 0) {
+                errors['title'] = "You must enter a title"
+            }
+            else if (options.filter((opt, ind) => opt.title.trim() === option.title.trim() && ind !== optionIndex).length > 0) {
+                errors['title'] = "This value is repeated. Please either change or remove one of the duplicates"
+            }
+            if(option.values === undefined || option.values.length === 0) {
+                errors['values'] = "You must enter at least one possible value"
+            }
+            if(Object.keys(errors).length > 0) {    //TODO: Remove this check?
+                error_count++;
+            }
+            optionsCopy[optionIndex].errors = errors
+        })
+        setOptions(optionsCopy)
+        if (error_count === 0) {
+            setVariantOptionsEditable(false)
+        }
     }
 
     const options_filtered = options.filter(p => {
@@ -358,6 +395,7 @@ function MultipleVariantForm(props) {
                                             label="Option Title"
                                             placeholder="Enter option title, like 'Color'"
                                             value={option.title ?? ''}
+                                            error={option.errors?.title}
                                             onChange={e => setVariantOptionTitle(index, e.target.value)}
                                         />
                                     </Col>
@@ -370,7 +408,11 @@ function MultipleVariantForm(props) {
                                                 }}
                                                 defaultValues = {option.values}
                                                 placeholder = "Enter possible values and press Enter, eg. 'Brown'"
+                                                className={classnames({
+                                                     'is-invalid': option.errors?.values
+                                                })}
                                              />}
+                                             error={option.errors?.values}
                                         />
                                     </Col>
                                 </Row>
