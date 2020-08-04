@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Button, Input, Col, Row, FormGroup, Label, Card, CardTitle, CardBody, CardHeader, TabContent, TabPane, Nav, NavItem, NavLink, CardText, FormFeedback } from 'reactstrap'
+import { Container, Button, Input, Col, Row, FormGroup, Label, Card, CardTitle, CardBody, CardHeader, TabContent, TabPane, Nav, NavItem, NavLink, CardText, FormFeedback, UncontrolledTooltip } from 'reactstrap'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
 import Radio from "components/@vuexy/radio/RadioVuexy"
 import RichEditor from './_RichEditor'
 import Dropzone from 'components/inventory/Dropzone';
 import classnames from "classnames"
-import { Plus, Edit, X, Trash2, XCircle } from 'react-feather';
+import { Plus, Edit, X, Trash2, XCircle, Info } from 'react-feather';
 import Chip from 'components/@vuexy/chips/ChipComponent';
 import MultipleOptionsInput from 'components/inventory/MultipleOptionsInput'
 import CreatableOptionsSelect from 'components/inventory/CreatableOptionsSelect'
 import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import "assets/scss/inventory/add-product.scss"
+import cloneGenerator from "rfdc"
+import swal from '@sweetalert/with-react';
+
+
+const clone = cloneGenerator()
 
 
 function areArraysEqual(array1, array2) {
@@ -22,7 +27,6 @@ function areArraysEqual(array1, array2) {
 
 function SimpleInputField(props) {
     let fieldError = props.error;
-    console.log("FE", fieldError, props.name);
     return (
       <FormGroup>
         <Label for={props.name}>
@@ -37,6 +41,7 @@ function SimpleInputField(props) {
                 onChange={props.onChange}
                 value={props.value}
                 invalid={Boolean(fieldError)}
+                required={props.required}
             />
         }
         {fieldError &&
@@ -76,12 +81,14 @@ function VariantFields(props) {
             name="sale_price"
             type="number"
             onChange={e => props.onChange("sale_price", e.target.value)}
+            required
         />
         <SimpleInputField
             label = "Quanitity Available"
             name="quantity"
             type="number"
             onChange={e => props.onChange("quantity", e.target.value)}
+            required
         />
 
         <Dropzone />
@@ -151,6 +158,17 @@ function VariantTabs(props) {
                         }}
                       >
                         <div className="flex-grow-1">
+                            {tab.errors?.duplicate_variant && 
+                            <>
+                                <Info color="tomato" size="16" id={`error-tab-${tabIndex}`} className="mr-1" />
+                                <UncontrolledTooltip
+                                    placement="left"
+                                    target={`error-tab-${tabIndex}`}
+                                    >
+                                    Duplicate Variant. Please either change or remove one of the copies.
+                                </UncontrolledTooltip>
+                            </>
+                            }
                             {tab_name || "New Variant"}
                         </div>
                         <div className="variantRemoveIcon"><XCircle size="15" color="lightcoral" className="invisible ml-1" onClick={e => props.removeVariant(tabIndex)} /></div>
@@ -276,6 +294,10 @@ function MultipleVariantForm(props) {
         setOptions(optionsCopy)
     }
 
+    useEffect(() => {
+        props.setOptions(options.map(o => o.title))
+    }, [options.map(o => o.title).join()])
+
     function freezeVariantOptions() {
         const optionsCopy = [...options]
         let error_count = 0;
@@ -311,13 +333,41 @@ function MultipleVariantForm(props) {
         
 
     const [variantsData, setVariantsData] = useState([])
+
+    useEffect(() => {
+        checkDuplicateVariants()
+    }, [variantsData.map(v => [v.option1, v.option2, v.option3].join('|')).join() ])
+    /*
+    The above effect will ensure that it only runs whenever any 'option' value changes
+    */
+
+    function checkDuplicateVariants() {
+        let variantsDataCopy = clone(variantsData);
+        variantsData.forEach((variant_data, index) => {
+            let option_values = getVariantOptionsData(variant_data)
+            let is_duplicate = variantsData.some((_variant_data, _index) => {
+                return index != _index && areArraysEqual(option_values, getVariantOptionsData(_variant_data))
+            })
+            if(is_duplicate) {
+                variantsDataCopy[index]['errors'] = {...variantsDataCopy[index]['errors'], 'duplicate_variant': true}
+            }
+            else {
+                delete variantsDataCopy[index].errors?.duplicate_variant
+            }
+
+        })
+
+        if(JSON.stringify(variantsData) !== JSON.stringify(variantsDataCopy)){
+            setVariantsData(variantsDataCopy)
+        }
+
+    }
     
     function setVariantFieldData(tabIndex, field, value) {
+
         let variantsDataCopy = [...variantsData]
         variantsDataCopy[tabIndex][field] = value
         setVariantsData(variantsDataCopy)
-
-        console.log("VD", getVariantOptionsData(tabIndex))
         
         let variantsDataFiltered = variantsDataCopy.filter(d => Object.keys(d).length !== 0) //Filter out empty tabs
         props.onChange(variantsDataFiltered)
@@ -427,6 +477,7 @@ function MultipleVariantForm(props) {
                                             value={option.title ?? ''}
                                             error={option.errors?.title}
                                             onChange={e => setVariantOptionTitle(index, e.target.value)}
+                                            
                                         />
                                     </Col>
                                     <Col md="9">
@@ -443,6 +494,7 @@ function MultipleVariantForm(props) {
                                                 })}
                                              />}
                                              error={option.errors?.values}
+                                             required
                                         />
                                     </Col>
                                 </Row>
@@ -497,7 +549,7 @@ function AddProduct(props) {
     const [isMultiVariant, setIsMultiVariant] = useState("yes")
 
     const [basicData, setBasicData] = useState({})
-    const [variantsData, setVariantsData] = useState({})
+    const [variantsDataContainer, setVariantsDataContainer] = useState({})
 
     function setBasicFieldData(field, value) {
         let basicDataCopy = {...basicData}
@@ -507,10 +559,57 @@ function AddProduct(props) {
 
     let formData = {
         ...basicData,
-        variants_data: variantsData
+        variants_data: variantsDataContainer
     }
     console.log('formData', formData)
     
+    function validateForm() {
+
+        let variantsData = variantsDataContainer
+        let errors = []
+
+        if(variantsData.multiple === undefined) {
+            errors.push('Add variant information')
+        }
+        if(variantsData.multiple === true) {
+            console.log("Multiple")
+            if (variantsData.options?.length === 0) {
+                errors.push("Add options to customize your variants")
+
+            }
+            else if (!variantsData.data || variantsData.data.length === 0) {
+                errors.push("Add information for at least one variant")
+            }
+            console.log("VD", variantsData.data.map(variant => variant.errors?.duplicate_variant))
+            let duplicates_exist = variantsData.data.map(variant => variant.errors?.duplicate_variant).some(x => x!==undefined)
+            if(duplicates_exist) {
+                errors.push("Please Remove Duplicates")
+            }
+        }
+
+        if (errors.length > 0) {
+            console.log("VALERR", errors)
+            swal(
+            <div>
+            <h1>Error !</h1>
+            <h4 className="mb-1">Please correct the following errors</h4>
+            {
+                errors.map(error => {
+                    return <h6 className="text-danger">{error} </h6>
+                })
+            }
+            </div>
+            )    
+
+
+            return false
+        }
+    }
+
+    function submitForm(e) {
+        e.preventDefault()
+        validateForm()
+    }
 
 
 
@@ -518,6 +617,7 @@ function AddProduct(props) {
         <>
         <h4>ADD A NEW PRODUCT</h4>
         <hr />
+        <form onSubmit={submitForm}>
         <Row>
             <Col lg={8}>
             <FormGroup>
@@ -526,7 +626,7 @@ function AddProduct(props) {
                         Product Name
                     </h5>
                 </Label>
-                <Input type="text" id="pname" placeholder="Enter Product Title" onChange={e => setBasicFieldData('product_title', e.target.value)}/>
+                <Input type="text" required id="pname" placeholder="Enter Product Title" onChange={e => setBasicFieldData('product_title', e.target.value)}/>
             </FormGroup>
             <FormGroup>
                 <Label for="pname">
@@ -536,6 +636,7 @@ function AddProduct(props) {
                 </Label>
                 <RichEditor 
                     onChange={data => setBasicFieldData('product_description', data)}
+                    required
                 />
             </FormGroup>
 
@@ -562,7 +663,7 @@ function AddProduct(props) {
 
             {isMultiVariant === 'no' &&
                 <SingleVariantForm 
-                    onChange={data => setVariantsData({
+                    onChange={data => setVariantsDataContainer({
                         multiple: false,
                         data: data
                     })}
@@ -570,16 +671,23 @@ function AddProduct(props) {
             }
             {isMultiVariant === 'yes' &&
                 <MultipleVariantForm
-                    onChange = {data => setVariantsData({
+                    onChange={data => setVariantsDataContainer({ ...variantsDataContainer,
                         multiple: true,
                         data: data
                     })}
+                    setOptions={options => setVariantsDataContainer({ ...variantsDataContainer,
+                        options: options
+                        })}
+
                  />
             }
-
-            
+            <hr />
+            <FormGroup>
+                <Button.Ripple type="submit" color="primary" size="lg">Submit</Button.Ripple>
+            </FormGroup>
             </Col>
         </Row>
+        </form>
         <ToastContainer />
         </>
     )
