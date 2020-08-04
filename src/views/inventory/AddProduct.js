@@ -6,10 +6,13 @@ import Radio from "components/@vuexy/radio/RadioVuexy"
 import RichEditor from './_RichEditor'
 import Dropzone from 'components/inventory/Dropzone';
 import classnames from "classnames"
-import { Plus, Edit, X } from 'react-feather';
+import { Plus, Edit, X, Trash2, XCircle } from 'react-feather';
 import Chip from 'components/@vuexy/chips/ChipComponent';
 import MultipleOptionsInput from 'components/inventory/MultipleOptionsInput'
 import CreatableOptionsSelect from 'components/inventory/CreatableOptionsSelect'
+import { ToastContainer, toast } from "react-toastify"
+import "react-toastify/dist/ReactToastify.css"
+import "assets/scss/inventory/add-product.scss"
 
 
 function areArraysEqual(array1, array2) {
@@ -142,13 +145,15 @@ function VariantTabs(props) {
                       <NavLink
                         className={classnames({
                           active: activeTab === tabIndex,
-                        })}
+                        }, 'd-flex align-items-center variantListItem')}
                         onClick={() => {
                           toggleTab(tabIndex);
                         }}
                       >
-                        {/* Variant {tabIndex+1} */}
-                        {tab_name || "New Variant"}
+                        <div className="flex-grow-1">
+                            {tab_name || "New Variant"}
+                        </div>
+                        <div className="variantRemoveIcon"><XCircle size="15" color="lightcoral" className="invisible ml-1" onClick={e => props.removeVariant(tabIndex)} /></div>
                       </NavLink>
                     </NavItem>
                   );
@@ -210,6 +215,17 @@ function VariantTabs(props) {
                           props.setVariantFieldData(tabIndex, field, value)
                         }
                       />
+                      <div className="container">
+                          <Row>
+                              <Col sm='auto mr-auto'>
+                                <Button.Ripple color="danger" onClick={e => props.removeVariant(tabIndex)}><Trash2 size="18"/> Remove Variant</Button.Ripple>
+                              </Col>
+                              <Col sm='auto'>
+                                <Button.Ripple color="info" onClick={props.addVariant}><Plus size="18" /> Add Another Variant</Button.Ripple>
+                              </Col>
+                          </Row>
+                      </div>
+
                     </TabPane>
                   );
                 })}
@@ -367,6 +383,20 @@ function MultipleVariantForm(props) {
         setVariantsData([...variantsData, {...optionsDict}])
     }
 
+    function removeVariant(index) {
+        if (variantsData.length <=1){
+            toast.error("You must have at least one variant.", {
+                position: "bottom-center",
+                toastId: "varaint_remove_error",
+            })
+            return;
+        }
+
+        let variantsDataCopy = [...variantsData]
+        variantsDataCopy.splice(index, 1)
+        setVariantsData(variantsDataCopy)
+    }
+
     return (
         <>
         <h2>Variants Information</h2>
@@ -453,6 +483,7 @@ function MultipleVariantForm(props) {
                     options={options_filtered}
                     setVariantFieldData = {setVariantFieldData}
                     addVariant = {addVariant}
+                    removeVariant = {removeVariant}
                     variantsData = {variantsData}
                     addToVariantOptionValues= {addToVariantOptionValues}
                 />
@@ -549,6 +580,7 @@ function AddProduct(props) {
             
             </Col>
         </Row>
+        <ToastContainer />
         </>
     )
 }

@@ -1,0 +1,7 @@
+.variantListItem:hover svg {
+    visibility: visible !important;
+}
+
+.variantRemoveIcon:hover>svg {
+    stroke: crimson;
+}
