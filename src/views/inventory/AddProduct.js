@@ -6,7 +6,7 @@ import Radio from "components/@vuexy/radio/RadioVuexy"
 import RichEditor from './_RichEditor'
 import Dropzone from 'components/inventory/Dropzone';
 import classnames from "classnames"
-import { Plus, Edit, X, Trash2, XCircle, Info } from 'react-feather';
+import { Plus, Edit, X, Trash2, XCircle, Info, Check, CheckCircle, Copy } from 'react-feather';
 import Chip from 'components/@vuexy/chips/ChipComponent';
 import MultipleOptionsInput from 'components/inventory/MultipleOptionsInput'
 import CreatableOptionsSelect from 'components/inventory/CreatableOptionsSelect'
@@ -18,6 +18,7 @@ import swal from '@sweetalert/with-react';
 
 
 const clone = cloneGenerator()
+const listFormatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
 
 
 function areArraysEqual(array1, array2) {
@@ -30,7 +31,9 @@ function SimpleInputField(props) {
     return (
       <FormGroup>
         <Label for={props.name}>
-          <h6>{props.label}</h6>
+          <h6>{props.label}
+          {props.requiredIndicator && <span className="text-danger"> *</span>}
+          </h6>
         </Label>
         {props.field ??
             <Input
@@ -75,20 +78,20 @@ function VariantFields(props) {
             name="price"
             type="number"
             onChange={e => props.onChange("price", e.target.value)}
+            requiredIndicator
         />
         <SimpleInputField
             label = "Sale Price"
             name="sale_price"
             type="number"
             onChange={e => props.onChange("sale_price", e.target.value)}
-            required
         />
         <SimpleInputField
             label = "Quanitity Available"
             name="quantity"
             type="number"
             onChange={e => props.onChange("quantity", e.target.value)}
-            required
+            requiredIndicator
         />
 
         <Dropzone />
@@ -147,6 +150,37 @@ function VariantTabs(props) {
                   let tab_name = [tab.option1, tab.option2, tab.option3]
                     .filter((o) => o !== undefined)
                     .join("/");
+
+
+                  let tabStatusIcon = undefined;
+                  let tabStatusIconTooltip = undefined;
+
+                  if(tab.errors?.duplicate_variant) {
+                      tabStatusIcon = <Copy color="tomato" size="16" />
+                      tabStatusIconTooltip = "Duplicate Variant. Please either change or remove one of the copies."
+                  }
+                  else if (tab.errors?.unfilled_required_fields){
+                    tabStatusIcon = <Info color="darkkhaki" size="16" />
+                    tabStatusIconTooltip = "Please fill all the required data (marked with *)"
+                  }
+                  else {
+                    tabStatusIcon = <CheckCircle color="green" size="16" />
+                  }
+
+                  let tabStatusIconWrap = (<>
+                        <div id={`error-tab-${tabIndex}`} className="mr-1 d-inline" >
+                        {tabStatusIcon}
+                        </div>
+                        {tabStatusIconTooltip && 
+                            <UncontrolledTooltip
+                                placement="left"
+                                target={`error-tab-${tabIndex}`}
+                                >
+                                {tabStatusIconTooltip}
+                            </UncontrolledTooltip>
+                        }
+                  </>)
+
                   return (
                     <NavItem key={tabIndex}>
                       <NavLink
@@ -158,17 +192,7 @@ function VariantTabs(props) {
                         }}
                       >
                         <div className="flex-grow-1">
-                            {tab.errors?.duplicate_variant && 
-                            <>
-                                <Info color="tomato" size="16" id={`error-tab-${tabIndex}`} className="mr-1" />
-                                <UncontrolledTooltip
-                                    placement="left"
-                                    target={`error-tab-${tabIndex}`}
-                                    >
-                                    Duplicate Variant. Please either change or remove one of the copies.
-                                </UncontrolledTooltip>
-                            </>
-                            }
+                            {tabStatusIconWrap}
                             {tab_name || "New Variant"}
                         </div>
                         <div className="variantRemoveIcon"><XCircle size="15" color="lightcoral" className="invisible ml-1" onClick={e => props.removeVariant(tabIndex)} /></div>
@@ -202,6 +226,7 @@ function VariantTabs(props) {
                             <Col key={optionIndex}>
                               <SimpleInputField
                                 label={option.title}
+                                requiredIndicator
                                 field={
                                   <CreatableOptionsSelect
                                     defaultOptions={option.values}
@@ -306,7 +331,7 @@ function MultipleVariantForm(props) {
             if(option.title === undefined || option.title.trim().length === 0) {
                 errors['title'] = "You must enter a title"
             }
-            else if (options.filter((opt, ind) => opt.title.trim() === option.title.trim() && ind !== optionIndex).length > 0) {
+            else if (options.filter((opt, ind) => opt.title?.trim() === option.title.trim() && ind !== optionIndex).length > 0) {
                 errors['title'] = "This value is repeated. Please either change or remove one of the duplicates"
             }
             if(option.values === undefined || option.values.length === 0) {
@@ -341,12 +366,20 @@ function MultipleVariantForm(props) {
     The above effect will ensure that it only runs whenever any 'option' value changes
     */
 
+    useEffect(() => {
+        validateAllVariantsRequiredFields()
+
+        let variantsDataFiltered = variantsData.filter(d => Object.keys(d).length !== 0) //Filter out empty tabs
+        props.onChange(variantsDataFiltered)
+
+    }, [variantsData])
+
     function checkDuplicateVariants() {
         let variantsDataCopy = clone(variantsData);
         variantsData.forEach((variant_data, index) => {
             let option_values = getVariantOptionsData(variant_data)
             let is_duplicate = variantsData.some((_variant_data, _index) => {
-                return index != _index && areArraysEqual(option_values, getVariantOptionsData(_variant_data))
+                return index != _index && areArraysEqual(option_values, getVariantOptionsData(_variant_data)) && !option_values.every(value => value === undefined)
             })
             if(is_duplicate) {
                 variantsDataCopy[index]['errors'] = {...variantsDataCopy[index]['errors'], 'duplicate_variant': true}
@@ -368,9 +401,6 @@ function MultipleVariantForm(props) {
         let variantsDataCopy = [...variantsData]
         variantsDataCopy[tabIndex][field] = value
         setVariantsData(variantsDataCopy)
-        
-        let variantsDataFiltered = variantsDataCopy.filter(d => Object.keys(d).length !== 0) //Filter out empty tabs
-        props.onChange(variantsDataFiltered)
     }
 
     function getVariantOptionsData(variant_data) {
@@ -445,6 +475,38 @@ function MultipleVariantForm(props) {
         let variantsDataCopy = [...variantsData]
         variantsDataCopy.splice(index, 1)
         setVariantsData(variantsDataCopy)
+    }
+
+    function validateVariantRequiredFields(variantData) {
+        const required_fixed_fields = ['price', 'quantity']
+        if (required_fixed_fields.some(field_name => !variantData[field_name])){
+            return false;
+        }
+
+        if(options.some((option, index) => !variantData['option'+(index+1)])) {
+            return false;
+        }
+
+
+        return true;
+    }
+
+    function validateAllVariantsRequiredFields() {
+        let variantsDataCopy = clone(variantsData);
+        variantsData.forEach((variant, index) => {
+            let validates = validateVariantRequiredFields(variant)
+            if (!validates) {
+                variantsDataCopy[index]['errors'] = {...variantsDataCopy[index]['errors'], 'unfilled_required_fields': true}
+            }
+            else {
+                delete variantsDataCopy[index].errors?.unfilled_required_fields
+            }
+            console.log('Var ', index, 'Validates: ', validates)
+        })
+
+        if(JSON.stringify(variantsData) !== JSON.stringify(variantsDataCopy)){
+            setVariantsData(variantsDataCopy)
+        }
     }
 
     return (
@@ -580,15 +642,18 @@ function AddProduct(props) {
             else if (!variantsData.data || variantsData.data.length === 0) {
                 errors.push("Add information for at least one variant")
             }
-            console.log("VD", variantsData.data.map(variant => variant.errors?.duplicate_variant))
-            let duplicates_exist = variantsData.data.map(variant => variant.errors?.duplicate_variant).some(x => x!==undefined)
-            if(duplicates_exist) {
-                errors.push("Please Remove Duplicates")
+            let duplicates = variantsData.data.filter(v => v.errors?.duplicate_variant).map(v => [v.option1, v.option2, v.option3].filter(x => x).join('/'))
+            if(duplicates.length) {
+                errors.push("Please Remove Duplicate Variants: " + listFormatter.format(new Set(duplicates)))
+            }
+
+            let unfilled_fields = variantsData.data.filter(v => v.errors?.unfilled_required_fields).map(v => [v.option1, v.option2, v.option3].filter(x => x).join('/') || 'New Variants')
+            if(unfilled_fields.length) {
+                errors.push("Please Fill all required data in the variants: " + listFormatter.format(new Set(unfilled_fields)))
             }
         }
 
         if (errors.length > 0) {
-            console.log("VALERR", errors)
             swal(
             <div>
             <h1>Error !</h1>
@@ -620,14 +685,15 @@ function AddProduct(props) {
         <form onSubmit={submitForm}>
         <Row>
             <Col lg={8}>
-            <FormGroup>
-                <Label for="pname">
-                    <h5>
-                        Product Name
-                    </h5>
-                </Label>
-                <Input type="text" required id="pname" placeholder="Enter Product Title" onChange={e => setBasicFieldData('product_title', e.target.value)}/>
-            </FormGroup>
+
+            <SimpleInputField
+                label="Product Title"
+                type="text"
+                name="title"
+                placeholder="Enter Product Title"
+                onChange={e => setBasicFieldData('product_title', e.target.value)}
+                requiredIndicator
+            />
             <FormGroup>
                 <Label for="pname">
                     <h5>
@@ -649,7 +715,7 @@ function AddProduct(props) {
                             </h5>
                         </Label>
                     </Col>
-                    <Col md="auto text-">
+                    <Col md="auto">
                         <div className="d-inline-block mr-1">
                             <Radio label="No" value="no" defaultChecked={isMultiVariant === 'no'} onChange={e=>setIsMultiVariant(e.currentTarget.value)} name="exampleRadio" />
                         </div>
