@@ -24,15 +24,15 @@ class Profiling extends React.Component {
         options: [
           {
             label: "Wholeseller",
-            value: "3"
+            value: "W"
           },
           {
             label: "Distributer",
-            value: "2",
+            value: "D",
           },
           {
             label: "Manufacturer",
-            value: "1"
+            value: "M"
           }
   
         ]
