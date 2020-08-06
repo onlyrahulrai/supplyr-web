@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css"
 import "assets/scss/inventory/add-product.scss"
 import cloneGenerator from "rfdc"
 import swal from '@sweetalert/with-react';
+import apiClient from 'api/base';
 
 
 const clone = cloneGenerator()
@@ -79,6 +80,7 @@ function VariantFields(props) {
             type="number"
             onChange={e => props.onChange("price", e.target.value)}
             requiredIndicator
+            required={props.singleVariant}
         />
         <SimpleInputField
             label = "Sale Price"
@@ -92,6 +94,7 @@ function VariantFields(props) {
             type="number"
             onChange={e => props.onChange("quantity", e.target.value)}
             requiredIndicator
+            required={props.singleVariant}
         />
 
         <Dropzone />
@@ -113,6 +116,7 @@ function SingleVariantForm(props) {
     return (
         <VariantFields 
             onChange={(field, value) => setVariantFieldData(field, value)}
+            singleVariant
         />
     )
 }
@@ -608,7 +612,7 @@ function MultipleVariantForm(props) {
 }
 
 function AddProduct(props) {
-    const [isMultiVariant, setIsMultiVariant] = useState("yes")
+    const [isMultiVariant, setIsMultiVariant] = useState("no")
 
     const [basicData, setBasicData] = useState({})
     const [variantsDataContainer, setVariantsDataContainer] = useState({})
@@ -669,11 +673,23 @@ function AddProduct(props) {
 
             return false
         }
+        else return true
     }
 
     function submitForm(e) {
         e.preventDefault()
-        validateForm()
+        let is_valid = validateForm()
+        if (is_valid) {
+            swal("Form Validation OK", "It will be saved", "success")
+            const url = 'inventory/add-product/';
+            apiClient.post(url, formData)
+                .then(response => {
+                    console.log("yeah", response)
+                })
+                .catch(error => {
+                    console.log("oops: ",error)
+                })
+        }
     }
 
 
@@ -693,6 +709,7 @@ function AddProduct(props) {
                 placeholder="Enter Product Title"
                 onChange={e => setBasicFieldData('product_title', e.target.value)}
                 requiredIndicator
+                required
             />
             <FormGroup>
                 <Label for="pname">
