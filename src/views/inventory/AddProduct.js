@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Container, Button, Input, Col, Row, FormGroup, Label, Card, CardTitle, CardBody, CardHeader, TabContent, TabPane, Nav, NavItem, NavLink, CardText, FormFeedback, UncontrolledTooltip } from 'reactstrap'
+import { Button, Input, Col, Row, FormGroup, Label, Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, FormFeedback, UncontrolledTooltip, Spinner } from 'reactstrap'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
 import Radio from "components/@vuexy/radio/RadioVuexy"
@@ -16,6 +16,7 @@ import "assets/scss/inventory/add-product.scss"
 import cloneGenerator from "rfdc"
 import swal from '@sweetalert/with-react';
 import apiClient from 'api/base';
+import {history} from '../../history';
 
 
 const clone = cloneGenerator()
@@ -680,11 +681,24 @@ function AddProduct(props) {
         e.preventDefault()
         let is_valid = validateForm()
         if (is_valid) {
-            swal("Form Validation OK", "It will be saved", "success")
+            swal(<div className="mt-3 mb-1">
+                    <h2 className='text-success'>All done !!</h2>
+                    <h3 class='text-secondary'>
+                        <Spinner color="secondary" className='mr-1' />
+                        Saving your product
+                    </h3>
+                </div>, {
+                    buttons: false,
+                    closeOnClickOutside: false,
+                    icon: 'success'
+                })
             const url = 'inventory/add-product/';
             apiClient.post(url, formData)
                 .then(response => {
+                    const productId = response.data.product.id
                     console.log("yeah", response)
+                    swal("Product Saved", null, "success")
+                    history.push('/product/'+productId)
                 })
                 .catch(error => {
                     console.log("oops: ",error)
@@ -707,7 +721,7 @@ function AddProduct(props) {
                 type="text"
                 name="title"
                 placeholder="Enter Product Title"
-                onChange={e => setBasicFieldData('product_title', e.target.value)}
+                onChange={e => setBasicFieldData('title', e.target.value)}
                 requiredIndicator
                 required
             />
@@ -718,7 +732,7 @@ function AddProduct(props) {
                     </h5>
                 </Label>
                 <RichEditor 
-                    onChange={data => setBasicFieldData('product_description', data)}
+                    onChange={data => setBasicFieldData('description', data)}
                     required
                 />
             </FormGroup>

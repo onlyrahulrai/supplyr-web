@@ -16,6 +16,9 @@ const Products = lazy(() =>
 const AddProduct = lazy(() =>
     import("./views/inventory/AddProduct")
 )
+const ProductDetails = lazy(() =>
+    import("./views/listing/ProductDetails")
+)
 
 const login = lazy(() =>
     import("./views/pages/authentication/Login")
@@ -176,6 +179,11 @@ class AppRouter extends React.Component {
                         exact
                         path="/inventory"
                         component={Products}
+                    />
+                    <AppRoute
+                        exact
+                        path="/product/:id"
+                        component={ProductDetails}
                     />
                     <AppRoute
                         path="/inventory/add"
