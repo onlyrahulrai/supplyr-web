@@ -10,7 +10,7 @@ function BasicDropzone(props) {
     onDrop: acceptedFiles => {
       setFiles(
         acceptedFiles.map(file => {
-            console.log(file)
+            console.log(files)
             return Object.assign(file, {
             preview: URL.createObjectURL(file)
           })

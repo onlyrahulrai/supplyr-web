@@ -74,6 +74,7 @@
     "react-toastify": "^5.5.0",
     "react-toggle": "~4.1.1",
     "react-treebeard": "~3.2.3",
+    "react-upload-gallery": "^0.1.0",
     "reactstrap": "^8.4.1",
     "recharts": "~1.8.5",
     "redux": "^4.0.5",

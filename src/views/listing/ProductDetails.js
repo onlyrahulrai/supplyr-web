@@ -1,13 +1,14 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { Card, CardBody, Row, Col, Button } from "reactstrap";
-import { Truck, ShoppingCart } from "react-feather";
+import { Card, CardBody, Row, Col, Button, Breadcrumb, BreadcrumbItem } from "reactstrap";
+import { Truck, ShoppingCart, Edit3, PlusCircle } from "react-feather";
 import Breacrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import macbook from "assets/img/elements/macbook-pro.png";
 import "swiper/css/swiper.css";
 import "assets/scss/pages/app-ecommerce-shop.scss";
 import apiClient from "api/base";
 import Select from "react-select";
+import { history } from "../../history";
 
 function getVariantShortDescription(variant) {
     
@@ -72,12 +73,36 @@ const customStyles = {
   return (
     Object.keys(currentVariant).length !==0 &&
     <React.Fragment>
-      <Breacrumbs
-        breadCrumbTitle="Product Detail"
-        breadCrumbParent={productData.owner?.business_name}
-        breadCrumbActive={productData.title}
-      />
-      <Card className="overflow-hidden app-ecommerce-details">
+      <Row>
+        <Col md="8">
+          <h2 className="content-header-title float-left mb-0">
+            Product Details
+          </h2>
+          <div className="breadcrumb-wrapper vx-breadcrumbs d-sm-block d-none col-12">
+            <Breadcrumb tag="ol">
+              <BreadcrumbItem tag="li" className="text-primary">
+                {productData.owner?.business_name}
+              </BreadcrumbItem>
+
+              <BreadcrumbItem tag="li" active>
+                {productData.title}
+              </BreadcrumbItem>
+            </Breadcrumb>
+          </div>
+        </Col>
+        <Col md="4 text-right">
+            <Button.Ripple className="mr-1 mb-1" color="warning">
+              <Edit3 size={15} />
+              <span className="align-middle ml-50">Edit</span>
+            </Button.Ripple>
+
+            <Button.Ripple className="mr-1 mb-1" color="success">
+              <PlusCircle size={15} />
+              <span className="align-middle ml-50" onClick={e => history.push('/inventory/add')}>Add New Product</span>
+            </Button.Ripple>
+        </Col>
+      </Row>
+      <Card className="app-ecommerce-details">
         <CardBody className="pb-0">
           <Row className="mb-5 mt-2">
             <Col
@@ -116,7 +141,7 @@ const customStyles = {
                         <div>
                           <img src="https://picsum.photos/50" className="float-left mr-1" />
                           <div>{getVariantShortDescription(variant)}</div>
-                          <div className="text-gray">&#8377; {variant.price}</div>
+                          <div className="text-lightgray">&#8377; {variant.price}</div>
                         </div>
                       )
                       return {
@@ -143,20 +168,15 @@ const customStyles = {
               }
 
               <p className="my-50">
-                <span>Availablity</span>
+                <span>Quanitities</span>
                 <span className="mx-50">-</span>
                 {isProductInStock
-                ? (<span className="text-success">In Stock</span>)
+                ? (<strong className="text-success">{currentVariant.quantity} Units</strong>)
                 : (<span className="text-danger">Out Of Stock</span>)
                   
                 }
               </p>
-              <div className="action-btns">
-                <Button.Ripple className="mr-1 mb-1" color="primary">
-                  <ShoppingCart size={15} />
-                  <span className="align-middle ml-50">ADD TO CART</span>
-                </Button.Ripple>
-              </div>
+
             </Col>
           </Row>
         </CardBody>

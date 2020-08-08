@@ -4,7 +4,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
 import Radio from "components/@vuexy/radio/RadioVuexy"
 import RichEditor from './_RichEditor'
-import Dropzone from 'components/inventory/Dropzone';
+import Dropzone from 'components/inventory/UploadGallery';
 import classnames from "classnames"
 import { Plus, Edit, X, Trash2, XCircle, Info, Check, CheckCircle, Copy } from 'react-feather';
 import Chip from 'components/@vuexy/chips/ChipComponent';
