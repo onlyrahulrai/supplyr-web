@@ -9,6 +9,7 @@ import "assets/scss/pages/app-ecommerce-shop.scss";
 import apiClient from "api/base";
 import Select from "react-select";
 import { history } from "../../history";
+import { getApiURL } from "api/utils"
 
 function getVariantShortDescription(variant) {
     
@@ -110,7 +111,13 @@ const customStyles = {
               sm="12"
               md="5"
             >
-              <img src={macbook} alt="Google Home" height="250" width="250" />
+              <Row>
+              {productData.images.map(image => {
+                return (<Col md="4">
+                  <img className="w-100" src={getApiURL(image.image)} />
+                </Col>)
+              })}
+              </Row>
             </Col>
             <Col md="7" sm="12">
               <h3>{productData.title}</h3>

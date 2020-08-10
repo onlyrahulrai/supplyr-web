@@ -1,37 +1,59 @@
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect, useReducer } from "react";
 import RUG from 'react-upload-gallery'
 import 'react-upload-gallery/dist/style.css' // or scss
 import apiClient from "api/base";
 import { getApiURL } from "api/utils"
+import _Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import cloneGenerator from "rfdc"
 
-function App() {
-    console.log('apiClient.defaults.headers.common', apiClient.defaults.headers.common)
+const Swal = withReactContent(_Swal)
+const clone = cloneGenerator()
+
+
+function imageUIDMappingReducer (state, action){
+  return { ...state,
+    [action.uid]: action.db_id
+  }
+}
+
+
+function App(props) {
     const [sortedRawImages, setSortedRawImages] = useState([])
-    const [sortedImages, setSortedImages] = useState([])
-    const [imageUIDMapping, setImageUIDMapping] = useState({})
-    console.log('imageUIDMapping', imageUIDMapping)
-    console.log('sortedRawImages', sortedRawImages)
-
+    const [imageUIDMappingState, imageUIDMappingDispatch] = useReducer(imageUIDMappingReducer, {})
     useEffect(() => {
       let _sortedImages = sortedRawImages.map(image => {
-        return imageUIDMapping[image.uid]
+        return imageUIDMappingState[image.uid]
       })
       console.log('SIIII', _sortedImages)
-    }, [imageUIDMapping, sortedRawImages])
+      props.onChange(_sortedImages)
+    }, [imageUIDMappingState, sortedRawImages])
     return (
       <Fragment>
         <RUG
         //  initialState={initialState}
         // action="http://127.0.0.1:8000/inventory/add-product-image/" 
-        // headers={apiClient.defaults.headers.common}
         accept = {['jpg', 'jpeg', 'png']}
         source={response => getApiURL(response.image)}
         onConfirmDelete={(currentImage, images) => {
-            return window.confirm('Are you sure you want to delete?')
+            return Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                  }).then(result => {
+                    if (result.value){
+                      return true;
+                    }
+                    return false;
+                  })
         }}
         onSuccess = {im => console.log("SC", im)}
         sorting = {{
-            pressDelay: 50,
+            pressDelay: 0,
+            distance: 10,
         }}
 
         customRequest={async ({
@@ -48,6 +70,7 @@ function App() {
             const url = "http://127.0.0.1:8000/inventory/add-product-image/"
             let formData = new FormData();
             formData.append('image', file);
+            try {
             const response = await apiClient.post(url, formData, {
                 headers: { 'Content-Type': 'multipart/form-data'},
                 onUploadProgress: function(progressEvent) {
@@ -56,15 +79,16 @@ function App() {
                 }
             })
             onSuccess(uid, response.data)
-            setImageUIDMapping({...imageUIDMapping, [uid]: response.data.id}) //TODO ---------- Batched updates not working
+            imageUIDMappingDispatch({uid: uid, db_id: response.data.id})
+            }
+            catch (err) {
+              Swal.fire("Error uploading image", err.message.toString(), "error")
+            }
         }
         }
 
-        // customRequest = {data => {
-        //     console.log(data)
-        // }}
         onChange={(images) => {
-            setSortedRawImages(images)
+            setSortedRawImages(clone(images))
             console.log("IM", images)
             console.log("SI", sortedRawImages)
         }}

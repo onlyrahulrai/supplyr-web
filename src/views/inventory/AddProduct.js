@@ -4,7 +4,7 @@ import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
 import Radio from "components/@vuexy/radio/RadioVuexy"
 import RichEditor from './_RichEditor'
-import Dropzone from 'components/inventory/UploadGallery';
+import UploadGallery from 'components/inventory/UploadGallery';
 import classnames from "classnames"
 import { Plus, Edit, X, Trash2, XCircle, Info, Check, CheckCircle, Copy } from 'react-feather';
 import Chip from 'components/@vuexy/chips/ChipComponent';
@@ -14,9 +14,12 @@ import { ToastContainer, toast } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import "assets/scss/inventory/add-product.scss"
 import cloneGenerator from "rfdc"
-import swal from '@sweetalert/with-react';
+import _Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import apiClient from 'api/base';
 import {history} from '../../history';
+
+const Swal = withReactContent(_Swal)
 
 
 const clone = cloneGenerator()
@@ -97,8 +100,6 @@ function VariantFields(props) {
             requiredIndicator
             required={props.singleVariant}
         />
-
-        <Dropzone />
         </>
     )
 }
@@ -109,7 +110,10 @@ function SingleVariantForm(props) {
 
     function setVariantFieldData(field, value) {
         let variantsDataCopy = {...variantsData}
-        variantsDataCopy[field] = value
+        if (value) {
+            variantsDataCopy[field] = value
+        }
+        else delete variantsDataCopy[field]
         setVariantsData(variantsDataCopy)
         props.onChange(variantsDataCopy)
     }
@@ -404,7 +408,11 @@ function MultipleVariantForm(props) {
     function setVariantFieldData(tabIndex, field, value) {
 
         let variantsDataCopy = [...variantsData]
-        variantsDataCopy[tabIndex][field] = value
+        if(value){
+            variantsDataCopy[tabIndex][field] = value
+        }
+        else delete variantsDataCopy[tabIndex][field]
+            
         setVariantsData(variantsDataCopy)
     }
 
@@ -617,6 +625,7 @@ function AddProduct(props) {
 
     const [basicData, setBasicData] = useState({})
     const [variantsDataContainer, setVariantsDataContainer] = useState({})
+    const [productImages, setProductImages] = useState([])
 
     function setBasicFieldData(field, value) {
         let basicDataCopy = {...basicData}
@@ -626,6 +635,7 @@ function AddProduct(props) {
 
     let formData = {
         ...basicData,
+        images: productImages.map(image => image),
         variants_data: variantsDataContainer
     }
     console.log('formData', formData)
@@ -659,7 +669,7 @@ function AddProduct(props) {
         }
 
         if (errors.length > 0) {
-            swal(
+            Swal.fire(
             <div>
             <h1>Error !</h1>
             <h4 className="mb-1">Please correct the following errors</h4>
@@ -681,9 +691,9 @@ function AddProduct(props) {
         e.preventDefault()
         let is_valid = validateForm()
         if (is_valid) {
-            swal(<div className="mt-3 mb-1">
+            Swal.fire(<div className="mt-3 mb-1">
                     <h2 className='text-success'>All done !!</h2>
-                    <h3 class='text-secondary'>
+                    <h3 className='text-secondary'>
                         <Spinner color="secondary" className='mr-1' />
                         Saving your product
                     </h3>
@@ -697,11 +707,11 @@ function AddProduct(props) {
                 .then(response => {
                     const productId = response.data.product.id
                     console.log("yeah", response)
-                    swal("Product Saved", null, "success")
+                    Swal.fire("Product Saved", '', "success")
                     history.push('/product/'+productId)
                 })
                 .catch(error => {
-                    console.log("oops: ",error)
+                    Swal.fire("Error", JSON.stringify(error.response?.data), "error")
                 })
         }
     }
@@ -757,6 +767,15 @@ function AddProduct(props) {
                     </Col>
                 </Row>
             </FormGroup>
+
+            <UploadGallery 
+                onChange = {
+                    images => {
+                        setProductImages(images)
+                        console.log("In Fom", images)
+                    }
+                }
+            />
 
             {isMultiVariant === 'no' &&
                 <SingleVariantForm 
