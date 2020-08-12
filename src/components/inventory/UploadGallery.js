@@ -83,6 +83,11 @@ function App(props) {
             }
             catch (err) {
               Swal.fire("Error uploading image", err.message.toString(), "error")
+              onError(uid, {
+                action,
+                
+                response: err.response
+              })
             }
         }
         }

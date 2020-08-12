@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { Card, CardBody, Row, Col, Button, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { Truck, ShoppingCart, Edit3, PlusCircle } from "react-feather";
 import Breacrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
-import macbook from "assets/img/elements/macbook-pro.png";
 import "swiper/css/swiper.css";
 import "assets/scss/pages/app-ecommerce-shop.scss";
 import apiClient from "api/base";

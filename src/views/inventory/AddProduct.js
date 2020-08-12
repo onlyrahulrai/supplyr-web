@@ -691,13 +691,14 @@ function AddProduct(props) {
         e.preventDefault()
         let is_valid = validateForm()
         if (is_valid) {
-            Swal.fire(<div className="mt-3 mb-1">
-                    <h2 className='text-success'>All done !!</h2>
-                    <h3 className='text-secondary'>
-                        <Spinner color="secondary" className='mr-1' />
-                        Saving your product
-                    </h3>
-                </div>, {
+            Swal.fire({
+                    title: (<div className="mt-3 mb-1">
+                                <h2 className='text-success'>All done !!</h2>
+                                <h3 className='text-secondary'>
+                                    <Spinner color="secondary" className='mr-1' />
+                                    Saving your product
+                                </h3>
+                            </div>),
                     buttons: false,
                     closeOnClickOutside: false,
                     icon: 'success'
