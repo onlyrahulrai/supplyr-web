@@ -1,27 +1,42 @@
 import React from "react"
-import { Row, Col, Card, CardBody, Badge} from "reactstrap"
+import { Row, Col, Card, CardBody, Badge, Button} from "reactstrap"
 import {history} from "../../history"
 import Breacrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import apiClient from "api/base";
 import { Link } from "react-router-dom";
-import { Star, ShoppingCart, Heart } from "react-feather";
+import { Star, ShoppingCart, Heart, Box, BookOpen, Edit } from "react-feather";
 import "assets/scss/pages/app-ecommerce-shop.scss"
+import { getApiURL } from "api/utils";
 
 
 
 class ProductListItem extends React.Component {
+
   render() {
     const product = this.props.data
+    const productPriceDisplay = (product.sale_price && product.sale_price < product.price)
+    ? (<>
+      <del className="text-lightgray font-small-2">&#8377;{product.price}</del>
+      <span className="ml-1">&#8377;{product.sale_price}</span>
+      </>
+    )
+    : (
+      <span>&#8377;{product.price}</span>
+    )
     return (
       <Card className="ecommerce-card">
           <div className="card-content">
             <div className="item-img text-center">
-              <Link to="/ecommerce/product-detail">
+              <Link to={`/product/${ product.id }`}>
+              { product.featured_image 
+              ?
                 <img
                   className="img-fluid"
-                  src={product.img}
-                  alt={product.name}
+                  src={getApiURL(product.featured_image)}
+                  alt={product.title}
                 />
+              : <ShoppingCart size="150" color="#4442" className="mt-1" />
+              }
               </Link>
             </div>
             <CardBody>
@@ -33,13 +48,13 @@ class ProductListItem extends React.Component {
                   </Badge>
                 </div>
                 <div className="product-price">
-                  <h6 className="item-price">{product.price}</h6>
+                  <h6 className="item-price">{productPriceDisplay}</h6>
                 </div>
               </div>
               <div className="item-name">
                 <Link to="/ecommerce/product-detail">
                   {" "}
-                  <span>{product.name}</span>
+                  <span>{product.title}</span>
                 </Link>
                 <p className="item-company">
                   By <span className="company-name">{product.by}</span>
@@ -61,16 +76,14 @@ class ProductListItem extends React.Component {
                   <h6 className="item-price">{product.price}</h6>
                 </div>
               </div>
-              <div className="wishlist">
-                <Heart
-
-                />
-                <span className="align-middle ml-50">Wishlist</span>
-              </div>
+              <Link to={`/product/${ product.id }`} className="wishlist">
+                <BookOpen />
+                <span className="align-middle ml-50">View</span>
+              </Link>
               <div className="cart">
-                <ShoppingCart size={15} />
+                <Edit size={15} />
                 <span className="align-middle ml-50">
-                    Add to cart
+                    Edit Details
                 </span>
               </div>
             </div>
@@ -83,6 +96,7 @@ class ProductListItem extends React.Component {
 class ProductsList extends React.Component{
   state = {
     products: [],
+    view: "grid-view",
   }
 
   componentDidMount() {
@@ -100,9 +114,12 @@ class ProductsList extends React.Component{
           breadCrumbTitle="All Products"
           breadCrumbParent="Profile Name"
           breadCrumbActive="Products"
+          rightSection={
+            <Button color="primary" onClick={e => {e.preventDefault(); history.push("/inventory/add")}}>+ Add</Button>
+          }
         />
         <div className="ecommerce-application">
-          <div className="shop-content">
+          <div className="shop-content-RMV">
             <Row>
               <Col sm="12">
                 <div id="ecommerce-products" className={this.state.view}>

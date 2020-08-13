@@ -110,6 +110,8 @@ const customStyles = {
               sm="12"
               md="5"
             >
+              {productData.images.length > 0 &&
+
               <Row>
               {productData.images.map(image => {
                 return (<Col md="4">
@@ -117,6 +119,10 @@ const customStyles = {
                 </Col>)
               })}
               </Row>
+              }
+              {productData.images.length === 0 && 
+              <ShoppingCart size="300" color="#4442" />
+              }
             </Col>
             <Col md="7" sm="12">
               <h3>{productData.title}</h3>
