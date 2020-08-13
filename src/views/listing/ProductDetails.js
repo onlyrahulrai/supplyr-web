@@ -64,7 +64,6 @@ const customStyles = {
     ...base,
     height: 60,
     minHeight: 60,
-    'z-index': 1111111,
     div: {
       overflow: 'initial'
     }
