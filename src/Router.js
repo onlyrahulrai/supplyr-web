@@ -189,6 +189,10 @@ class AppRouter extends React.Component {
                         path="/inventory/add"
                         component={AddProduct}
                     />
+                    <AppRoute
+                        path="/inventory/edit/:productId"
+                        component={AddProduct}
+                    />
                     <PublicOnlyAppRoute
                         path="/login"
                         component={login}

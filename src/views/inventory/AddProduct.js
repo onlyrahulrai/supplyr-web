@@ -76,6 +76,8 @@ function FloatingInputField(props) {
 }
 
 function VariantFields(props) {
+    console.log("prop1s", props);
+    const variantData = props.variantData
     return (
         <>
         <SimpleInputField
@@ -85,12 +87,14 @@ function VariantFields(props) {
             onChange={e => props.onChange("price", e.target.value)}
             requiredIndicator
             required={props.singleVariant}
+            value={variantData.price ?? ''}
         />
         <SimpleInputField
             label = "Sale Price"
             name="sale_price"
             type="number"
             onChange={e => props.onChange("sale_price", e.target.value)}
+            value={variantData.sale_price ?? ''}
         />
         <SimpleInputField
             label = "Quanitity Available"
@@ -99,6 +103,7 @@ function VariantFields(props) {
             onChange={e => props.onChange("quantity", e.target.value)}
             requiredIndicator
             required={props.singleVariant}
+            value={variantData.quantity ?? ''}
         />
         </>
     )
@@ -106,22 +111,37 @@ function VariantFields(props) {
 
 function SingleVariantForm(props) {
 
-    const [variantsData, setVariantsData] = useState({})
+    const [variantData, setVariantData] = useState({})
 
     function setVariantFieldData(field, value) {
-        let variantsDataCopy = {...variantsData}
+        let variantsDataCopy = {...variantData}
         if (value) {
             variantsDataCopy[field] = value
         }
-        else delete variantsDataCopy[field]
-        setVariantsData(variantsDataCopy)
+        else delete variantsDataCopy[field] // Otherwise backend is throwing error
+        setVariantData(variantsDataCopy)
         props.onChange(variantsDataCopy)
     }
+
+    useEffect(() => {
+        if(props.initialVariantData) {
+            // setVariantData({...variantData, ...props.initialVariantData})
+            const initialVariantData = props.initialVariantData;
+            let _variantData = {}
+            Object.keys(initialVariantData).forEach(key => {
+                if(initialVariantData[key]) {
+                    _variantData[key] = initialVariantData[key];
+                }
+            })
+            setVariantData(_variantData)
+        }
+    }, [props.initialVariantData])
 
     return (
         <VariantFields 
             onChange={(field, value) => setVariantFieldData(field, value)}
             singleVariant
+            variantData = {variantData}
         />
     )
 }
@@ -156,7 +176,7 @@ function VariantTabs(props) {
             <div className="nav-vertical">
               <Nav tabs className="nav-left">
                 {props.variantsData.map((tab, tabIndex) => {
-                  let tab_name = [tab.option1, tab.option2, tab.option3]
+                  let tab_name = [tab.option1_value, tab.option2_value, tab.option3_value]
                     .filter((o) => o !== undefined)
                     .join("/");
 
@@ -239,11 +259,11 @@ function VariantTabs(props) {
                                 field={
                                   <CreatableOptionsSelect
                                     defaultOptions={option.values}
-                                    defaultValue={variant["option" + (optionIndex + 1)]}
+                                    defaultValue={variant[`option${optionIndex + 1}_value`]}
                                     onChange={(value) =>
                                       props.setVariantFieldData(
                                         tabIndex,
-                                        "option" + (optionIndex + 1),
+                                        `option${optionIndex + 1}_value`,
                                         value
                                       )
                                     }
@@ -266,6 +286,7 @@ function VariantTabs(props) {
                         onChange={(field, value) =>
                           props.setVariantFieldData(tabIndex, field, value)
                         }
+                        variantData = {props.variantsData[tabIndex]}
                       />
                       <div className="container">
                           <Row>
@@ -293,6 +314,53 @@ function MultipleVariantForm(props) {
 
     const [options, setOptions] = useState([{}])
     const [variantOptionsEditable, setVariantOptionsEditable] = useState(true)
+
+    useEffect(() => {
+        // To populate the variants data in case user is editing an existing product
+        if(props.initialVariantsData) {
+            console.log("IVD", props.initialVariantsData)
+            //Populate variant fields
+            const initialVariantsData = props.initialVariantsData.map(initialVariantData => {
+                let _variantData = {}
+                Object.keys(initialVariantData).forEach(key => {
+                    if(initialVariantData[key]) {
+                        _variantData[key] = initialVariantData[key];
+                    }
+                })
+                return _variantData
+
+            })
+            console.log("MVF-IVD", initialVariantsData)
+            setVariantsData(initialVariantsData)
+
+            //Populate option fields
+            let _options = []
+            const first_variant = props.initialVariantsData[0]
+            for (let i = 1; i<=3; i++) {
+                const ith_option_name = first_variant['option'+i+'_name']
+                if(ith_option_name){
+                    let _option = {
+                        title: ith_option_name,
+                    }
+                    _options.push(_option)
+                }
+            }
+
+            _options = _options.map((_option, optionIndex) => {
+                const _optionValues = new Set()
+                initialVariantsData.forEach(variant => {
+                    _optionValues.add(variant['option'+(optionIndex+1)+'_value'])
+                })
+                _option['values'] = [..._optionValues]
+                return _option
+            })
+            setOptions(_options)
+
+            if(initialVariantsData) {
+                setVariantOptionsEditable(false)
+            }
+        }
+    }, [props.initialVariantsData])
 
     function setVariantOptionTitle(optionIndex, title) {
         let optionsCopy = [...options]
@@ -370,7 +438,7 @@ function MultipleVariantForm(props) {
 
     useEffect(() => {
         checkDuplicateVariants()
-    }, [variantsData.map(v => [v.option1, v.option2, v.option3].join('|')).join() ])
+    }, [variantsData.map(v => [v.option1_value, v.option2_value, v.option3_value].join('|')).join() ])
     /*
     The above effect will ensure that it only runs whenever any 'option' value changes
     */
@@ -385,6 +453,7 @@ function MultipleVariantForm(props) {
 
     function checkDuplicateVariants() {
         let variantsDataCopy = clone(variantsData);
+        console.log("vdatacopy", variantsDataCopy)
         variantsData.forEach((variant_data, index) => {
             let option_values = getVariantOptionsData(variant_data)
             let is_duplicate = variantsData.some((_variant_data, _index) => {
@@ -421,7 +490,7 @@ function MultipleVariantForm(props) {
         
         let variant_options_data = []
         options.forEach((option, index) => {    //So that only countd number of options get pushed each variant
-            variant_options_data.push(variant_data['option' + (index+1)])
+            variant_options_data.push(variant_data['option' + (index+1) + '_value'])
         })
         return variant_options_data //TODO: filter undefined
 
@@ -471,8 +540,9 @@ function MultipleVariantForm(props) {
         const nextSuggestedOptions = getNextPossibleVairantOptions()
         const optionsDict = {}
         nextSuggestedOptions.forEach((value, index) => {
-            optionsDict['option'+(index+1)] = value
+            optionsDict['option'+(index+1)+'_value'] = value
         })
+        console.log("nxtd", nextSuggestedOptions, optionsDict,[...variantsData, {...optionsDict}])
         setVariantsData([...variantsData, {...optionsDict}])
     }
 
@@ -496,7 +566,7 @@ function MultipleVariantForm(props) {
             return false;
         }
 
-        if(options.some((option, index) => !variantData['option'+(index+1)])) {
+        if(options.some((option, index) => !variantData['option'+(index+1)+'_value'])) {
             return false;
         }
 
@@ -562,7 +632,7 @@ function MultipleVariantForm(props) {
                                                 onChange={values => {
                                                     setVariantOptionValues(index, values)
                                                 }}
-                                                defaultValues = {option.values}
+                                                values = {option.values}
                                                 placeholder = "Enter possible values and press Enter, eg. 'Brown'"
                                                 className={classnames({
                                                      'is-invalid': option.errors?.values
@@ -621,11 +691,43 @@ function MultipleVariantForm(props) {
 }
 
 function AddProduct(props) {
+    
     const [isMultiVariant, setIsMultiVariant] = useState("no")
 
-    const [basicData, setBasicData] = useState({})
+    const [basicData, setBasicData] = useState({title: ''}) //This title has been given to eleminate 'Uncontrolled to controlled' error in console
     const [variantsDataContainer, setVariantsDataContainer] = useState({})
     const [productImages, setProductImages] = useState([])
+    const [initialData, setInitialData] = useState({})
+
+    const productId = props.match.params.productId;
+    const isEditingExistingProduct = Boolean(props.match.params.productId)
+    const [isProductDataLoaded, setIsProductDataLoaded] = useState(false) // For editing existing product
+
+    useEffect(() => {   //In case of Edit an existing product, initialize the fields
+        if(productId) {
+            const url = 'inventory/product/' + productId
+            apiClient.get(url)
+              .then(response => {
+                // setProductData(response.data)
+                // const multiVariant = response.data.variants_data.multiple
+                // setIsMultiVariant(multiVariant)
+                // setCurrentVariant(
+                //   multiVariant ? response.data.variants_data.data[0] : response.data.variants_data.data
+                // )
+                setInitialData(response.data)
+                // setBasicData({
+                //     title: response.data.title,
+                //     description: response.data.description,
+                // })
+                console.log("RD", response.data.variants_data.multiple)
+                setBasicFieldData('description', response.data.description)
+                setBasicFieldData('title', response.data.title)
+                setIsMultiVariant(response.data.variants_data.multiple ? 'yes' : 'no')
+                console.log("INIT", response.data)
+                setIsProductDataLoaded(true)
+              })
+          }
+    }, [])
 
     function setBasicFieldData(field, value) {
         let basicDataCopy = {...basicData}
@@ -657,12 +759,12 @@ function AddProduct(props) {
             else if (!variantsData.data || variantsData.data.length === 0) {
                 errors.push("Add information for at least one variant")
             }
-            let duplicates = variantsData.data.filter(v => v.errors?.duplicate_variant).map(v => [v.option1, v.option2, v.option3].filter(x => x).join('/'))
+            let duplicates = variantsData.data.filter(v => v.errors?.duplicate_variant).map(v => [v.option1_value, v.option2_value, v.option3_value].filter(Boolean).join('/'))
             if(duplicates.length) {
                 errors.push("Please Remove Duplicate Variants: " + listFormatter.format(new Set(duplicates)))
             }
 
-            let unfilled_fields = variantsData.data.filter(v => v.errors?.unfilled_required_fields).map(v => [v.option1, v.option2, v.option3].filter(x => x).join('/') || 'New Variants')
+            let unfilled_fields = variantsData.data.filter(v => v.errors?.unfilled_required_fields).map(v => [v.option1_value, v.option2_value, v.option3_value].filter(Boolean).join('/') || 'New Variants')
             if(unfilled_fields.length) {
                 errors.push("Please Fill all required data in the variants: " + listFormatter.format(new Set(unfilled_fields)))
             }
@@ -735,6 +837,8 @@ function AddProduct(props) {
                 onChange={e => setBasicFieldData('title', e.target.value)}
                 requiredIndicator
                 required
+                value={basicData.title}
+                
             />
             <FormGroup>
                 <Label for="pname">
@@ -744,9 +848,20 @@ function AddProduct(props) {
                 </Label>
                 <RichEditor 
                     onChange={data => setBasicFieldData('description', data)}
-                    required
+                    defaultValue={basicData.description}
                 />
             </FormGroup>
+
+            <UploadGallery 
+                onChange = {
+                    images => {
+                        setProductImages(images)
+                        console.log("In Fom", images)
+                    }
+                }
+                initialImages={initialData.images}
+                isRenderable = {!isEditingExistingProduct || isProductDataLoaded }
+            />
 
             <FormGroup>
                 <Row>
@@ -759,24 +874,15 @@ function AddProduct(props) {
                     </Col>
                     <Col md="auto">
                         <div className="d-inline-block mr-1">
-                            <Radio label="No" value="no" defaultChecked={isMultiVariant === 'no'} onChange={e=>setIsMultiVariant(e.currentTarget.value)} name="exampleRadio" />
+                            <Radio label="No" value="no" checked={isMultiVariant === 'no'} onChange={e=>setIsMultiVariant(e.currentTarget.value)} name="exampleRadio" />
                         </div>
                         <div className="d-inline-block mr-1">
-                            <Radio label="Yes" value="yes" defaultChecked={isMultiVariant === 'yes'} onChange={e=>setIsMultiVariant(e.currentTarget.value)} name="exampleRadio" />
+                            <Radio label="Yes" value="yes" checked={isMultiVariant === 'yes'} onChange={e=>setIsMultiVariant(e.currentTarget.value)} name="exampleRadio" />
                         </div>
                         
                     </Col>
                 </Row>
             </FormGroup>
-
-            <UploadGallery 
-                onChange = {
-                    images => {
-                        setProductImages(images)
-                        console.log("In Fom", images)
-                    }
-                }
-            />
 
             {isMultiVariant === 'no' &&
                 <SingleVariantForm 
@@ -784,6 +890,7 @@ function AddProduct(props) {
                         multiple: false,
                         data: data
                     })}
+                    initialVariantData = {!initialData.variants_data?.multiple && initialData.variants_data?.data}
                 />
             }
             {isMultiVariant === 'yes' &&
@@ -795,6 +902,7 @@ function AddProduct(props) {
                     setOptions={options => setVariantsDataContainer({ ...variantsDataContainer,
                         options: options
                         })}
+                    initialVariantsData = {initialData.variants_data?.multiple && initialData.variants_data?.data}
 
                  />
             }

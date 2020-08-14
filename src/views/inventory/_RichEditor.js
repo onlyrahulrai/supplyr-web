@@ -1,6 +1,6 @@
 import React from 'react'
 import { Container, Button, Input, Col, Row, FormGroup, Label, Card, CardTitle, CardBody, CardHeader } from 'reactstrap'
-import { EditorState, convertToRaw } from 'draft-js';
+import { EditorState, convertToRaw, ContentState, convertFromHTML } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
@@ -9,9 +9,35 @@ import draftToHtml from 'draftjs-to-html';
 export default class RichEditor extends React.Component {
     constructor(props) {
       super(props);
-      this.state = {
-        editorState: EditorState.createEmpty(),
-      };
+      console.log('RichEditor', props)
+      console.log("DV", props.defaultValue)
+      if(!props.defaultValue) {
+        this.state = {
+          editorState: EditorState.createEmpty(),
+        }
+      }
+      else {
+        
+        this.state = {
+          // editorState: EditorState.createEmpty(),
+
+
+          editorState: EditorState.createWithContent(),
+        };
+      }
+    }
+
+    componentDidUpdate(prevProps) {
+      if(prevProps.defaultValue !== this.props.defaultValue && this.props.defaultValue) {
+        const blocksFromHTML = convertFromHTML(this.props.defaultValue);
+        const contentState = ContentState.createFromBlockArray(
+          blocksFromHTML.contentBlocks,
+          blocksFromHTML.entityMap,
+        )
+        this.setState({
+          editorState: EditorState.createWithContent(contentState),
+        })
+      }
     }
   
     onEditorStateChange: Function = (editorState) => {

@@ -80,7 +80,7 @@ export default class CreatableInputOnly extends Component<*, State> {
         onInputChange={this.handleInputChange}
         onKeyDown={this.handleKeyDown}
         placeholder={this.props.placeholder ?? "Type something and press enter..."}
-        value={value}
+        value={this.props.values?.map(v => createOption(v)) ?? value}
         className={this.props.className}
       />
     );

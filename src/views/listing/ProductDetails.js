@@ -90,14 +90,14 @@ const customStyles = {
           </div>
         </Col>
         <Col md="4 text-right">
-            <Button.Ripple className="mr-1 mb-1" color="warning">
+            <Button.Ripple className="mr-1 mb-1" color="warning" onClick={e => history.push('/inventory/edit/'+productData.id)}>
               <Edit3 size={15} />
               <span className="align-middle ml-50">Edit</span>
             </Button.Ripple>
 
-            <Button.Ripple className="mr-1 mb-1" color="success">
+            <Button.Ripple className="mr-1 mb-1" color="success" onClick={e => history.push('/inventory/add')}>
               <PlusCircle size={15} />
-              <span className="align-middle ml-50" onClick={e => history.push('/inventory/add')}>Add New Product</span>
+              <span className="align-middle ml-50">Add New Product</span>
             </Button.Ripple>
         </Col>
       </Row>

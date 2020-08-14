@@ -88,12 +88,12 @@ class ProductListItem extends React.Component {
                 <RiFileList3Line size="16" />
                 <span className="align-middle ml-50">View</span>
               </Link>
-              <div className="cart">
+              <Link to={`/inventory/edit/${ product.id }`} className="cart">
                 <Edit size={15} />
                 <span className="align-middle ml-50">
                     Edit Details
                 </span>
-              </div>
+              </Link>
             </div>
           </div>
         </Card>
@@ -150,7 +150,6 @@ class ProductsList extends React.Component{
   }
 
   render() {
-    console.log('products ', this.state.products, this.state.currentPage)
     const currentPage = this.state.currentPage
     const products = this.state.products
     const currentProductsList = products[currentPage]

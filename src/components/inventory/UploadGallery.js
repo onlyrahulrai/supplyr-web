@@ -28,10 +28,15 @@ function App(props) {
       console.log('SIIII', _sortedImages)
       props.onChange(_sortedImages)
     }, [imageUIDMappingState, sortedRawImages])
-    return (
+    console.log('Imitia;', props.initialImages)
+    let initialState = props.initialImages?.map(image => ({source: getApiURL(image.image)}))
+    
+    console.log("initialImages", initialState, props.isRenderable)
+    const isRenderable = props.isRenderable ?? true;
+    return isRenderable && (
       <Fragment>
         <RUG
-        //  initialState={initialState}
+         initialState={initialState}
         // action="http://127.0.0.1:8000/inventory/add-product-image/" 
         accept = {['jpg', 'jpeg', 'png']}
         source={response => getApiURL(response.image)}
