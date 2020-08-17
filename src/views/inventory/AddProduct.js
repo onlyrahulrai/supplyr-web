@@ -703,25 +703,18 @@ function AddProduct(props) {
     const isEditingExistingProduct = Boolean(props.match.params.productId)
     const [isProductDataLoaded, setIsProductDataLoaded] = useState(false) // For editing existing product
 
-    useEffect(() => {   //In case of Edit an existing product, initialize the fields
+    useEffect(() => {   //In case of Edit an existing product, initialize the fields on the first time component render
         if(productId) {
             const url = 'inventory/product/' + productId
             apiClient.get(url)
               .then(response => {
-                // setProductData(response.data)
-                // const multiVariant = response.data.variants_data.multiple
-                // setIsMultiVariant(multiVariant)
-                // setCurrentVariant(
-                //   multiVariant ? response.data.variants_data.data[0] : response.data.variants_data.data
-                // )
                 setInitialData(response.data)
-                // setBasicData({
-                //     title: response.data.title,
-                //     description: response.data.description,
-                // })
-                console.log("RD", response.data.variants_data.multiple)
-                setBasicFieldData('description', response.data.description)
-                setBasicFieldData('title', response.data.title)
+                const initialBasicFieldsData = {
+                    title: response.data.title,
+                    description: response.data.description,
+                    id: response.data.id
+                }
+                setBasicData(initialBasicFieldsData)
                 setIsMultiVariant(response.data.variants_data.multiple ? 'yes' : 'no')
                 console.log("INIT", response.data)
                 setIsProductDataLoaded(true)
