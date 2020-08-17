@@ -76,7 +76,6 @@ function FloatingInputField(props) {
 }
 
 function VariantFields(props) {
-    console.log("prop1s", props);
     const variantData = props.variantData
     return (
         <>

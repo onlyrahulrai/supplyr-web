@@ -9,8 +9,6 @@ import draftToHtml from 'draftjs-to-html';
 export default class RichEditor extends React.Component {
     constructor(props) {
       super(props);
-      console.log('RichEditor', props)
-      console.log("DV", props.defaultValue)
       if(!props.defaultValue) {
         this.state = {
           editorState: EditorState.createEmpty(),

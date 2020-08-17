@@ -21,6 +21,21 @@ function imageUIDMappingReducer (state, action){
 function App(props) {
     const [sortedRawImages, setSortedRawImages] = useState([])
     const [imageUIDMappingState, imageUIDMappingDispatch] = useReducer(imageUIDMappingReducer, {})
+    console.log("imageUIDMapping", imageUIDMappingState)
+    
+
+    // initialState and effect below are used to initialize the images in case user is editing an existing product
+    let initialState = props.initialImages?.map(image => ({source: getApiURL(image.image), uid: 'existing-image-'+image.id}))
+    useEffect(() => {
+      if (props.initialImages){
+        props.initialImages.forEach(image => imageUIDMappingDispatch({
+          uid: 'existing-image-'+image.id,
+          db_id: image.id,
+        }))
+      }
+    }, [props.initialImages])
+
+
     useEffect(() => {
       let _sortedImages = sortedRawImages.map(image => {
         return imageUIDMappingState[image.uid]
@@ -28,11 +43,10 @@ function App(props) {
       console.log('SIIII', _sortedImages)
       props.onChange(_sortedImages)
     }, [imageUIDMappingState, sortedRawImages])
-    console.log('Imitia;', props.initialImages)
-    let initialState = props.initialImages?.map(image => ({source: getApiURL(image.image)}))
+
     
-    console.log("initialImages", initialState, props.isRenderable)
     const isRenderable = props.isRenderable ?? true;
+    
     return isRenderable && (
       <Fragment>
         <RUG
