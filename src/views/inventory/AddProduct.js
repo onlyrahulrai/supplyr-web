@@ -353,7 +353,8 @@ function MultipleVariantForm(props) {
                 _option['values'] = [..._optionValues]
                 return _option
             })
-            setOptions(_options)
+            setTimeout(() => setOptions(_options), 0) // To defer the execution to next event loop, in order to avoid conflict setting state.
+            //What happened was, Options was not getting set due to other call (props.onChange?) overwriting the change in the parent component
 
             if(initialVariantsData) {
                 setVariantOptionsEditable(false)
