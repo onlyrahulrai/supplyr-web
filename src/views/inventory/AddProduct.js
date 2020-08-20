@@ -133,6 +133,7 @@ function SingleVariantForm(props) {
                 }
             })
             setVariantData(_variantData)
+            props.onChange(_variantData)
         }
     }, [props.initialVariantData])
 

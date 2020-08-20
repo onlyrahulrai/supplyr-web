@@ -25,20 +25,13 @@ function App(props) {
     
 
     // initialState and effect below are used to initialize the images in case user is editing an existing product
-    let initialState = props.initialImages?.map(image => ({source: getApiURL(image.image), uid: 'existing-image-'+image.id}))
-    useEffect(() => {
-      if (props.initialImages){
-        props.initialImages.forEach(image => imageUIDMappingDispatch({
-          uid: 'existing-image-'+image.id,
-          db_id: image.id,
-        }))
-      }
-    }, [props.initialImages])
+    let initialState = props.initialImages?.map(image => ({source: getApiURL(image.image), existingImageDbID: image.id}))
+
 
 
     useEffect(() => {
       let _sortedImages = sortedRawImages.map(image => {
-        return imageUIDMappingState[image.uid]
+        return image.existingImageDbID || imageUIDMappingState[image.uid]
       })
       console.log('SIIII', _sortedImages)
       props.onChange(_sortedImages)
