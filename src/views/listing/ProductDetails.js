@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Card, CardBody, Row, Col, Button, Breadcrumb, BreadcrumbItem } from "reactstrap";
-import { Truck, ShoppingCart, Edit3, PlusCircle } from "react-feather";
+import { ShoppingCart, Edit3, PlusCircle, Trash } from "react-feather";
 import Breacrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import "swiper/css/swiper.css";
 import "assets/scss/pages/app-ecommerce-shop.scss";
@@ -9,6 +9,9 @@ import apiClient from "api/base";
 import Select from "react-select";
 import { history } from "../../history";
 import { getApiURL } from "api/utils"
+import _Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const Swal = withReactContent(_Swal)
 
 function getVariantShortDescription(variant) {
     
@@ -73,7 +76,7 @@ const customStyles = {
     Object.keys(currentVariant).length !==0 &&
     <React.Fragment>
       <Row>
-        <Col md="8">
+        <Col md="6">
           <h2 className="content-header-title float-left mb-0">
             Product Details
           </h2>
@@ -89,10 +92,37 @@ const customStyles = {
             </Breadcrumb>
           </div>
         </Col>
-        <Col md="4 text-right">
+        <Col md="6 text-right">
             <Button.Ripple className="mr-1 mb-1" color="warning" onClick={e => history.push('/inventory/edit/'+productData.id)}>
               <Edit3 size={15} />
               <span className="align-middle ml-50">Edit</span>
+            </Button.Ripple>
+
+            <Button.Ripple className="mr-1 mb-1" color="danger" onClick={(e) => {
+            return Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete product!'
+                  }).then(result => {
+                    if (result.value){
+                      apiClient.post('/inventory/delete/', {
+                        id: productData.id
+                      })
+                      .then(result => {
+                        if (result.data.success){
+                          history.push('/inventory')
+                          Swal.fire("Product Deleted !")
+                        }
+                      })
+                    }
+                    return false;
+                  })
+        }}>
+              <Trash size={15} />
+              <span className="align-middle ml-50">Delete Product</span>
             </Button.Ripple>
 
             <Button.Ripple className="mr-1 mb-1" color="success" onClick={e => history.push('/inventory/add')}>
@@ -150,7 +180,7 @@ const customStyles = {
                     productData.variants_data.data.map(variant => {
                       const label = (
                         <div>
-                          <img src="https://picsum.photos/50" className="float-left mr-1" />
+                          <img src={variant.featured_image ? getApiURL(productData.images?.find(image => image.id === variant.featured_image)?.image ) : ''} className="float-left mr-1 img-40" />
                           <div>{getVariantShortDescription(variant)}</div>
                           <div className="text-lightgray">&#8377; {variant.price}</div>
                         </div>

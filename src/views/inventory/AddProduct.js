@@ -18,6 +18,7 @@ import _Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import apiClient from 'api/base';
 import {history} from '../../history';
+import ImagePicker from 'components/inventory/react-image-picker'
 
 const Swal = withReactContent(_Swal)
 
@@ -149,7 +150,6 @@ function SingleVariantForm(props) {
 function VariantTabs(props) {
     const [activeTab, setActiveTab] = useState(0);
 
-
     const toggleTab = tab => {
       if(activeTab !== tab) setActiveTab(tab);
     }
@@ -247,6 +247,7 @@ function VariantTabs(props) {
               </Nav>
               <TabContent activeTab={activeTab}>
                 {props.variantsData.map((variant, tabIndex) => {
+                  let featuredImage = variant.featured_image && props.productImages.find(image => image.db_id === variant.featured_image)?.source 
                   return (
                     <TabPane tabId={tabIndex} key={tabIndex}>
                       <Row className="">
@@ -288,13 +289,35 @@ function VariantTabs(props) {
                         }
                         variantData = {props.variantsData[tabIndex]}
                       />
+                      {props.productImages && Boolean(props.productImages.length) &&
+                      <div className="mb-1">
+                        <h6>
+                          Select a featured image for variant
+                        </h6>
+                        <ImagePicker 
+                            images={props.productImages.map(image => ({src: image.source, index: image.db_id}))}
+                            onPick={(images, last_image, is_removed) => {
+                              let picked_image = images[0]
+                              console.log(images, last_image, is_removed)
+                              if((!picked_image) && is_removed){
+                                props.setVariantFieldData(tabIndex, "featured_image", undefined)
+                              }
+                              else {
+                                props.setVariantFieldData(tabIndex, "featured_image", picked_image.index)
+                              }
+                            }}
+                            multiple={false}
+                            picked={featuredImage ? [featuredImage] :  []}
+                        />
+                      </div>
+                      }
                       <div className="container">
                           <Row>
                               <Col sm='auto mr-auto'>
-                                <Button.Ripple color="danger" onClick={e => props.removeVariant(tabIndex)}><Trash2 size="18"/> Remove Variant</Button.Ripple>
+                                <Button.Ripple color="info" onClick={props.addVariant}><Plus size="18" /> Add Another Variant</Button.Ripple>
                               </Col>
                               <Col sm='auto'>
-                                <Button.Ripple color="info" onClick={props.addVariant}><Plus size="18" /> Add Another Variant</Button.Ripple>
+                                <Button.Ripple color="danger" onClick={e => props.removeVariant(tabIndex)}><Trash2 size="18"/> Remove Variant</Button.Ripple>
                               </Col>
                           </Row>
                       </div>
@@ -684,6 +707,7 @@ function MultipleVariantForm(props) {
                     removeVariant = {removeVariant}
                     variantsData = {variantsData}
                     addToVariantOptionValues= {addToVariantOptionValues}
+                    productImages = {props.productImages}
                 />
             </>
         }
@@ -728,10 +752,10 @@ function AddProduct(props) {
         basicDataCopy[field] = value
         setBasicData(basicDataCopy)
     }
-
+    
     let formData = {
         ...basicData,
-        images: productImages.map(image => image),
+        images: productImages.map(image => image.db_id),
         variants_data: variantsDataContainer
     }
     console.log('formData', formData)
@@ -897,6 +921,7 @@ function AddProduct(props) {
                         options: options
                         })}
                     initialVariantsData = {initialData.variants_data?.multiple && initialData.variants_data?.data}
+                    productImages = {productImages}
 
                  />
             }

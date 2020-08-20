@@ -31,9 +31,10 @@ function App(props) {
 
     useEffect(() => {
       let _sortedImages = sortedRawImages.map(image => {
-        return image.existingImageDbID || imageUIDMappingState[image.uid]
+        const db_id = image.existingImageDbID || imageUIDMappingState[image.uid]
+        const source = image.source
+        return {db_id, source}
       })
-      console.log('SIIII', _sortedImages)
       props.onChange(_sortedImages)
     }, [imageUIDMappingState, sortedRawImages])
 
