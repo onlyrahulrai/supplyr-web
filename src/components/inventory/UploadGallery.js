@@ -21,7 +21,6 @@ function imageUIDMappingReducer (state, action){
 function App(props) {
     const [sortedRawImages, setSortedRawImages] = useState([])
     const [imageUIDMappingState, imageUIDMappingDispatch] = useReducer(imageUIDMappingReducer, {})
-    console.log("imageUIDMapping", imageUIDMappingState)
     
 
     // initialState and effect below are used to initialize the images in case user is editing an existing product
@@ -107,8 +106,6 @@ function App(props) {
 
         onChange={(images) => {
             setSortedRawImages(clone(images))
-            console.log("IM", images)
-            console.log("SI", sortedRawImages)
         }}
 
          />

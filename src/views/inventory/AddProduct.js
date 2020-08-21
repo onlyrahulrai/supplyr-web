@@ -19,6 +19,8 @@ import withReactContent from 'sweetalert2-react-content'
 import apiClient from 'api/base';
 import {history} from '../../history';
 import ImagePicker from 'components/inventory/react-image-picker'
+import Select from 'react-select';
+import { connect } from 'react-redux';
 
 const Swal = withReactContent(_Swal)
 
@@ -52,7 +54,7 @@ function SimpleInputField(props) {
                 invalid={Boolean(fieldError)}
                 required={props.required}
                 min={props.min}
-                maxlength={props.maxlength}
+                maxLength={props.maxLength}
             />
         }
         {fieldError &&
@@ -303,7 +305,6 @@ function VariantTabs(props) {
                             images={props.productImages.map(image => ({src: image.source, index: image.db_id}))}
                             onPick={(images, last_image, is_removed) => {
                               let picked_image = images[0]
-                              console.log(images, last_image, is_removed)
                               if((!picked_image) && is_removed){
                                 props.setVariantFieldData(tabIndex, "featured_image", undefined)
                               }
@@ -346,7 +347,6 @@ function MultipleVariantForm(props) {
     useEffect(() => {
         // To populate the variants data in case user is editing an existing product
         if(props.initialVariantsData) {
-            console.log("IVD", props.initialVariantsData)
             //Populate variant fields
             const initialVariantsData = props.initialVariantsData.map(initialVariantData => {
                 let _variantData = {}
@@ -358,7 +358,6 @@ function MultipleVariantForm(props) {
                 return _variantData
 
             })
-            console.log("MVF-IVD", initialVariantsData)
             setVariantsData(initialVariantsData)
 
             //Populate option fields
@@ -467,7 +466,7 @@ function MultipleVariantForm(props) {
 
     useEffect(() => {
         checkDuplicateVariants()
-    }, [variantsData.map(v => [v.option1_value, v.option2_value, v.option3_value].join('|')).join() ])
+    }, [variantsData.map(v => [v.option1_value, v.option2_value, v.option3_value].join('|')).join(), options]) //Options is added here because options are getting set at a later stage (next event loop iteration), hence, the duplicate check initially was faulty
     /*
     The above effect will ensure that it only runs whenever any 'option' value changes
     */
@@ -482,7 +481,6 @@ function MultipleVariantForm(props) {
 
     function checkDuplicateVariants() {
         let variantsDataCopy = clone(variantsData);
-        console.log("vdatacopy", variantsDataCopy)
         variantsData.forEach((variant_data, index) => {
             let option_values = getVariantOptionsData(variant_data)
             let is_duplicate = variantsData.some((_variant_data, _index) => {
@@ -571,7 +569,6 @@ function MultipleVariantForm(props) {
         nextSuggestedOptions.forEach((value, index) => {
             optionsDict['option'+(index+1)+'_value'] = value
         })
-        console.log("nxtd", nextSuggestedOptions, optionsDict,[...variantsData, {...optionsDict}])
         setVariantsData([...variantsData, {...optionsDict}])
     }
 
@@ -613,7 +610,6 @@ function MultipleVariantForm(props) {
             else {
                 delete variantsDataCopy[index].errors?.unfilled_required_fields
             }
-            console.log('Var ', index, 'Validates: ', validates)
         })
 
         if(JSON.stringify(variantsData) !== JSON.stringify(variantsDataCopy)){
@@ -651,7 +647,7 @@ function MultipleVariantForm(props) {
                                             value={option.title ?? ''}
                                             error={option.errors?.title}
                                             onChange={e => setVariantOptionTitle(index, e.target.value)}
-                                            maxlength="50"
+                                            maxLength="50"
                                             
                                         />
                                     </Col>
@@ -743,11 +739,11 @@ function AddProduct(props) {
                 const initialBasicFieldsData = {
                     title: response.data.title,
                     description: response.data.description,
-                    id: response.data.id
+                    id: response.data.id,
+                    sub_categories: response.data.sub_categories.map(sc => sc.id)
                 }
                 setBasicData(initialBasicFieldsData)
                 setIsMultiVariant(response.data.variants_data.multiple ? 'yes' : 'no')
-                console.log("INIT", response.data)
                 setIsProductDataLoaded(true)
               })
           }
@@ -764,18 +760,18 @@ function AddProduct(props) {
         images: productImages.map(image => image.db_id),
         variants_data: variantsDataContainer
     }
-    console.log('formData', formData)
-    
+    // console.log(formData)
     function validateForm() {
 
         let variantsData = variantsDataContainer
         let errors = []
-
+        if(!basicData.sub_categories?.length) {
+            errors.push("Please add at least one category")
+        }
         if(variantsData.multiple === undefined) {
             errors.push('Add variant information')
         }
         if(variantsData.multiple === true) {
-            console.log("Multiple")
             if (variantsData.options?.length === 0) {
                 errors.push("Add options to customize your variants")
 
@@ -833,7 +829,6 @@ function AddProduct(props) {
             apiClient.post(url, formData)
                 .then(response => {
                     const productId = response.data.product.id
-                    console.log("yeah", response)
                     Swal.fire("Product Saved", '', "success")
                     history.push('/product/'+productId)
                 })
@@ -843,104 +838,169 @@ function AddProduct(props) {
         }
     }
 
+    function getRenderedSubcategory(subCategory) {
+        const label = (
+            <div>
+                <div>{subCategory.name}</div>
+                <div className="text-lightgray">{subCategory.category}</div>
+            </div>
+        )
+        return {
+            label: label,
+            value: subCategory.id
+        }
+    }
+
 
 
     return (
-        <>
+      <>
         <h4>ADD A NEW PRODUCT</h4>
         <hr />
         <form onSubmit={submitForm}>
-        <Row>
+          <Row>
             <Col lg={8}>
-
-            <SimpleInputField
+              <SimpleInputField
                 label="Product Title"
                 type="text"
                 name="title"
                 placeholder="Enter Product Title"
-                onChange={e => setBasicFieldData('title', e.target.value)}
+                onChange={(e) => setBasicFieldData("title", e.target.value)}
                 requiredIndicator
                 required
                 value={basicData.title}
-                
-            />
-            <FormGroup>
-                <Label for="pname">
-                    <h5>
-                        Product Description
-                    </h5>
-                </Label>
-                <RichEditor 
-                    onChange={data => setBasicFieldData('description', data)}
-                    defaultValue={basicData.description}
-                />
-            </FormGroup>
-
-            <UploadGallery 
-                onChange = {
-                    images => {
-                        setProductImages(images)
-                        console.log("In Fom", images)
-                    }
+              />
+              <SimpleInputField
+                label="Select Product Category(s)"
+                requiredIndicator
+                field={
+                  <Select
+                    // closeMenuOnSelect={false}
+                    value={basicData.sub_categories
+                      ?.map((sc_id) =>
+                        props.profile.sub_categories.find(
+                          (sc) => sc.id === sc_id
+                        )
+                      )
+                      .filter(Boolean)
+                      .map(getRenderedSubcategory)}
+                    isMulti
+                    options={props.profile.sub_categories.map(
+                      getRenderedSubcategory
+                    )}
+                    onChange={(data) => {
+                      const sub_categories = data.map((item) => item.value);
+                      setBasicFieldData("sub_categories", sub_categories);
+                    }}
+                  />
                 }
-                initialImages={initialData.images}
-                isRenderable = {!isEditingExistingProduct || isProductDataLoaded }
-            />
-
-            <FormGroup>
-                <Row>
-                    <Col md="auto mr-auto">
-                        <Label for="pname">
-                            <h5>
-                                Does the product have multiple variants?
-                            </h5>
-                        </Label>
-                    </Col>
-                    <Col md="auto">
-                        <div className="d-inline-block mr-1">
-                            <Radio label="No" value="no" checked={isMultiVariant === 'no'} onChange={e=>setIsMultiVariant(e.currentTarget.value)} name="exampleRadio" />
-                        </div>
-                        <div className="d-inline-block mr-1">
-                            <Radio label="Yes" value="yes" checked={isMultiVariant === 'yes'} onChange={e=>setIsMultiVariant(e.currentTarget.value)} name="exampleRadio" />
-                        </div>
-                        
-                    </Col>
-                </Row>
-            </FormGroup>
-
-            {isMultiVariant === 'no' &&
-                <SingleVariantForm 
-                    onChange={data => setVariantsDataContainer({
-                        multiple: false,
-                        data: data
-                    })}
-                    initialVariantData = {!initialData.variants_data?.multiple && initialData.variants_data?.data}
+              />
+              <FormGroup>
+                <Label for="pname">
+                  <h5>Product Description</h5>
+                </Label>
+                <RichEditor
+                  onChange={(data) => setBasicFieldData("description", data)}
+                  defaultValue={basicData.description}
                 />
-            }
-            {isMultiVariant === 'yes' &&
-                <MultipleVariantForm
-                    onChange={data => setVariantsDataContainer({ ...variantsDataContainer,
-                        multiple: true,
-                        data: data
-                    })}
-                    setOptions={options => setVariantsDataContainer({ ...variantsDataContainer,
-                        options: options
-                        })}
-                    initialVariantsData = {initialData.variants_data?.multiple && initialData.variants_data?.data}
-                    productImages = {productImages}
+              </FormGroup>
 
-                 />
-            }
-            <hr />
-            <FormGroup>
-                <Button.Ripple type="submit" color="primary" size="lg">Submit</Button.Ripple>
-            </FormGroup>
+              <UploadGallery
+                onChange={(images) => {
+                  setProductImages(images);
+                }}
+                initialImages={initialData.images}
+                isRenderable={!isEditingExistingProduct || isProductDataLoaded}
+              />
+
+              <FormGroup>
+                <Row>
+                  <Col md="auto mr-auto">
+                    <Label for="pname">
+                      <h5>Does the product have multiple variants?</h5>
+                    </Label>
+                  </Col>
+                  <Col md="auto">
+                    <div className="d-inline-block mr-1">
+                      <Radio
+                        label="No"
+                        value="no"
+                        checked={isMultiVariant === "no"}
+                        onChange={(e) =>
+                          setIsMultiVariant(e.currentTarget.value)
+                        }
+                        name="exampleRadio"
+                      />
+                    </div>
+                    <div className="d-inline-block mr-1">
+                      <Radio
+                        label="Yes"
+                        value="yes"
+                        checked={isMultiVariant === "yes"}
+                        onChange={(e) =>
+                          setIsMultiVariant(e.currentTarget.value)
+                        }
+                        name="exampleRadio"
+                      />
+                    </div>
+                  </Col>
+                </Row>
+              </FormGroup>
+
+              {isMultiVariant === "no" && (
+                <SingleVariantForm
+                  onChange={(data) =>
+                    setVariantsDataContainer({
+                      multiple: false,
+                      data: data,
+                    })
+                  }
+                  initialVariantData={
+                    !initialData.variants_data?.multiple &&
+                    initialData.variants_data?.data
+                  }
+                />
+              )}
+              {isMultiVariant === "yes" && (
+                <MultipleVariantForm
+                  onChange={(data) =>
+                    setVariantsDataContainer({
+                      ...variantsDataContainer,
+                      multiple: true,
+                      data: data,
+                    })
+                  }
+                  setOptions={(options) =>
+                    setVariantsDataContainer({
+                      ...variantsDataContainer,
+                      options: options,
+                    })
+                  }
+                  initialVariantsData={
+                    initialData.variants_data?.multiple &&
+                    initialData.variants_data?.data
+                  }
+                  productImages={productImages}
+                />
+              )}
+              <hr />
+              <FormGroup>
+                <Button.Ripple type="submit" color="primary" size="lg">
+                  Submit
+                </Button.Ripple>
+              </FormGroup>
             </Col>
-        </Row>
+          </Row>
         </form>
         <ToastContainer />
-        </>
-    )
+      </>
+    );
 }
 
-export default AddProduct
+const mapStateToProps = state => {
+    return {
+        profile: state.auth.userInfo.profile
+    }
+}
+  
+export default connect(mapStateToProps)(AddProduct)
