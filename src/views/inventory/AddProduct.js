@@ -51,6 +51,8 @@ function SimpleInputField(props) {
                 value={props.value}
                 invalid={Boolean(fieldError)}
                 required={props.required}
+                min={props.min}
+                maxlength={props.maxlength}
             />
         }
         {fieldError &&
@@ -84,6 +86,7 @@ function VariantFields(props) {
             label = "Product Actual Price"
             name="price"
             type="number"
+            min="0"
             onChange={e => props.onChange("price", e.target.value)}
             requiredIndicator
             required={props.singleVariant}
@@ -95,6 +98,7 @@ function VariantFields(props) {
             type="number"
             onChange={e => props.onChange("sale_price", e.target.value)}
             value={variantData.sale_price ?? ''}
+            min="0"
         />
         <SimpleInputField
             label = "Quanitity Available"
@@ -104,6 +108,7 @@ function VariantFields(props) {
             requiredIndicator
             required={props.singleVariant}
             value={variantData.quantity ?? ''}
+            min="0"
         />
         </>
     )
@@ -646,6 +651,7 @@ function MultipleVariantForm(props) {
                                             value={option.title ?? ''}
                                             error={option.errors?.title}
                                             onChange={e => setVariantOptionTitle(index, e.target.value)}
+                                            maxlength="50"
                                             
                                         />
                                     </Col>
