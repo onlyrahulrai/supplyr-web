@@ -20,6 +20,14 @@ const ProductDetails = lazy(() =>
     import("./views/listing/ProductDetails")
 )
 
+const CategoryList = lazy(() =>
+    import("./views/inventory/CategoryList")
+)
+
+const CategoryAdd = lazy(() =>
+    import("./views/inventory/CategoryAdd")
+)
+
 const login = lazy(() =>
     import("./views/pages/authentication/Login")
 )
@@ -37,6 +45,8 @@ const Logout = lazy(() =>
 )
 
 const Landing = lazy(() => import("./views/pages/Landing"))
+
+const error404 = lazy(() => import("./views/pages/404"))
 
 // Set Layout and Component Using App Route
 const RouteConfig = ({
@@ -193,6 +203,18 @@ class AppRouter extends React.Component {
                         path="/inventory/edit/:productId"
                         component={AddProduct}
                     />
+                    <AppRoute
+                        path="/inventory/categories/list"
+                        component={CategoryList}
+                    />
+                    <AppRoute
+                        path="/inventory/categories/add"
+                        component={CategoryAdd}
+                    />
+                    <AppRoute
+                        path="/inventory/categories/edit/:categoryId"
+                        component={CategoryAdd}
+                    />
                     <PublicOnlyAppRoute
                         path="/login"
                         component={login}
@@ -210,6 +232,8 @@ class AppRouter extends React.Component {
                         component={Logout}
                         fullLayout
                     />
+
+                    <AppRoute component={error404} fullLayout />
                 </Switch>
             </Router>
         )

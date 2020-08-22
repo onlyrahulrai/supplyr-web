@@ -21,6 +21,7 @@ import {history} from '../../history';
 import ImagePicker from 'components/inventory/react-image-picker'
 import Select from 'react-select';
 import { connect } from 'react-redux';
+import { SimpleInputField } from 'components/forms/fields'
 
 const Swal = withReactContent(_Swal)
 
@@ -34,51 +35,6 @@ function areArraysEqual(array1, array2) {
     return array1.every((item, index) => item === array2[index])
 }
 
-function SimpleInputField(props) {
-    let fieldError = props.error;
-    return (
-      <FormGroup>
-        <Label for={props.name}>
-          <h6>{props.label}
-          {props.requiredIndicator && <span className="text-danger"> *</span>}
-          </h6>
-        </Label>
-        {props.field ??
-            <Input
-                type={props.type ?? "text"}
-                id={props.id ?? props.name}
-                name={props.name}
-                placeholder={props.placeholder ?? props.label}
-                onChange={props.onChange}
-                value={props.value}
-                invalid={Boolean(fieldError)}
-                required={props.required}
-                min={props.min}
-                maxLength={props.maxLength}
-            />
-        }
-        {fieldError &&
-            <FormFeedback>{fieldError}</FormFeedback>
-        }
-      </FormGroup>
-    );
-}
-
-function FloatingInputField(props) {
-    return (
-      <FormGroup className="form-label-group">
-        <Input
-          type={props.type ?? "text"}
-          id={props.id ?? props.name}
-          name={props.name}
-          placeholder={props.placeholder ?? props.label}
-          onChange={props.onChange}
-          value={props.value}
-        />
-        <Label for={props.name}>{props.label}</Label>
-      </FormGroup>
-    );
-}
 
 function VariantFields(props) {
     const variantData = props.variantData
