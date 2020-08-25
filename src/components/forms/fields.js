@@ -5,7 +5,7 @@ import { FormGroup, Label, Input, FormFeedback } from "reactstrap";
 export function SimpleInputField(props) {
     let fieldError = props.error;
     return (
-      <FormGroup className={props.formGroupClassed}>
+      <FormGroup className={props.formGroupClasses}>
         {props.label &&
             <Label for={props.name}>
                 <h6>{props.label}
@@ -25,7 +25,12 @@ export function SimpleInputField(props) {
                 required={props.required}
                 min={props.min}
                 maxLength={props.maxLength}
-                size={props.size}
+                bsSize={props.size}
+                onBlur={props.onBlur}
+                onFocus={props.onFocus}
+                innerRef = {props.innerRef}
+                onKeyPress={props.onKeyPress}
+                accept={props.accept}
             />
         }
         {fieldError &&
