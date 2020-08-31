@@ -30,6 +30,14 @@ const navigationConfig = [
         navLink: "/inventory"
       },
       {
+        id: "products-list",
+        title: "Products List",
+        type: "item",
+        icon: <MdPlaylistAddCheck size={20} />,
+        permissions: ["admin", "editor"],
+        navLink: "/inventory/list"
+      },
+      {
         id: "add-product",
         title: "Add New Product",
         type: "item",

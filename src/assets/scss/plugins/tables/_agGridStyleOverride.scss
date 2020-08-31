@@ -22,7 +22,7 @@ $secondary-font-weight: 600;
 @import "~ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material.scss";
 
 .ag-grid-table {
-  height: calc(100vh - 30rem);
+  height: calc(100vh - 22rem);
   @media screen and (max-height: 800px) {
     height: 620px;
   }
@@ -162,6 +162,9 @@ $secondary-font-weight: 600;
       color: $body-color !important;
     }
   }
+  .ag-hidden {
+    display: none !important;
+  }
 
   ::-webkit-scrollbar {
     width: 10px;
@@ -212,4 +215,8 @@ $secondary-font-weight: 600;
   .export-btn {
     margin-top: 0.5rem;
   }
+}
+
+.height-adjuster {
+  height: calc(100% - 50px)
 }

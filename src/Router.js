@@ -13,6 +13,9 @@ const Home = lazy(() =>
 const Products = lazy(() =>
     import("./views/inventory/Products")
 )
+const ProductsList = lazy(() =>
+    import("./views/inventory/ProductsList")
+)
 const AddProduct = lazy(() =>
     import("./views/inventory/AddProduct")
 )
@@ -189,6 +192,11 @@ class AppRouter extends React.Component {
                         exact
                         path="/inventory"
                         component={Products}
+                    />
+                    <AppRoute
+                        exact
+                        path="/inventory/list"
+                        component={ProductsList}
                     />
                     <AppRoute
                         exact

@@ -4,8 +4,8 @@
   "private": true,
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.6.3",
-    "ag-grid-community": "^22.1.1",
-    "ag-grid-react": "^22.1.1",
+    "ag-grid-community": "^23.2.1",
+    "ag-grid-react": "^23.2.1",
     "apexcharts": "^3.20.0",
     "auth0-js": "^9.12.2",
     "availity-reactstrap-validation": "^2.6.1",

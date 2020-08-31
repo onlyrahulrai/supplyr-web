@@ -153,7 +153,7 @@ export default class Categories extends React.Component {
               category => category.sub_categories.map(subcat => subcat.id).includes(subcat_id)
             )[0]?.id
 
-            if (!selectedCategories.includes(category_id)){
+            if (category_id && !selectedCategories.includes(category_id)){
               selectedCategories.push(category_id)
             }
 
