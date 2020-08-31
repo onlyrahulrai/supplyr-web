@@ -685,6 +685,7 @@ function AddProduct(props) {
     const productId = props.match.params.productId;
     const isEditingExistingProduct = Boolean(props.match.params.productId)
     const [isProductDataLoaded, setIsProductDataLoaded] = useState(false) // For editing existing product
+    const isPageRenderReady = !isEditingExistingProduct || isProductDataLoaded
 
     useEffect(() => {   //In case of Edit an existing product, initialize the fields on the first time component render
         if(productId) {
@@ -855,10 +856,12 @@ function AddProduct(props) {
                 <Label for="pname">
                   <h5>Product Description</h5>
                 </Label>
-                <RichEditor
-                  onChange={(data) => setBasicFieldData("description", data)}
-                  defaultValue={basicData.description}
-                />
+                {isPageRenderReady &&
+                  <RichEditor
+                    onChange={(data) => setBasicFieldData("description", data)}
+                    defaultValue={basicData.description}
+                  />
+                }
               </FormGroup>
 
               <UploadGallery
@@ -866,7 +869,7 @@ function AddProduct(props) {
                   setProductImages(images);
                 }}
                 initialImages={initialData.images}
-                isRenderable={!isEditingExistingProduct || isProductDataLoaded}
+                isRenderable={isPageRenderReady}
               />
 
               <FormGroup>
@@ -942,7 +945,7 @@ function AddProduct(props) {
               <hr />
               <FormGroup>
                 <Button.Ripple type="submit" color="primary" size="lg">
-                  Submit
+                  Save
                 </Button.Ripple>
               </FormGroup>
             </Col>

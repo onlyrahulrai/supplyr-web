@@ -15,28 +15,17 @@ export default class RichEditor extends React.Component {
         }
       }
       else {
-        
-        this.state = {
-          // editorState: EditorState.createEmpty(),
-
-
-          editorState: EditorState.createWithContent(),
-        };
-      }
-    }
-
-    componentDidUpdate(prevProps) {
-      if(prevProps.defaultValue !== this.props.defaultValue && this.props.defaultValue) {
         const blocksFromHTML = convertFromHTML(this.props.defaultValue);
         const contentState = ContentState.createFromBlockArray(
           blocksFromHTML.contentBlocks,
           blocksFromHTML.entityMap,
         )
-        this.setState({
+        this.state = {
           editorState: EditorState.createWithContent(contentState),
-        })
+        };
       }
     }
+
   
     onEditorStateChange: Function = (editorState) => {
       this.setState({

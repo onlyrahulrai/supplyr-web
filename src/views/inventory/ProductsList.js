@@ -411,6 +411,7 @@ class UsersList extends React.Component {
                             placeholder="Search query..."
                             onChange={e => this.setState({filters: {...filters, search: e.target.value}})}
                             value={filters.search ?? ''}
+                            onKeyPress={e => e.charCode === 13 && this.onFilter()}
                           />
                     </Col>
                     <Col sm="8" md="auto">
