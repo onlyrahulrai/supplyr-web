@@ -845,8 +845,9 @@ function AddProduct(props) {
                     options={props.profile.sub_categories.map(
                       getRenderedSubcategory
                     )}
+                    styles = {{ menu: styles => ({ ...styles, zIndex: 2 }) }}
                     onChange={(data) => {
-                      const sub_categories = data.map((item) => item.value);
+                      const sub_categories = data?.map((item) => item.value);
                       setBasicFieldData("sub_categories", sub_categories);
                     }}
                   />

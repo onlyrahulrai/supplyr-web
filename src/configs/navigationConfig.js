@@ -21,14 +21,14 @@ const navigationConfig = [
     icon: <FaBoxes size={20} />,
     permissions: ["admin", "editor"],
     children: [
-      {
-        id: "products",
-        title: "Products",
-        type: "item",
-        icon: <MdPlaylistAddCheck size={20} />,
-        permissions: ["admin", "editor"],
-        navLink: "/inventory"
-      },
+      // {
+      //   id: "products",
+      //   title: "Products",
+      //   type: "item",
+      //   icon: <MdPlaylistAddCheck size={20} />,
+      //   permissions: ["admin", "editor"],
+      //   navLink: "/inventory"
+      // },
       {
         id: "products-list",
         title: "Products List",

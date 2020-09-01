@@ -24,7 +24,8 @@ import {
   FolderPlus,
   FolderMinus,
   Filter,
-  Edit3
+  Edit3,
+  PlusCircle
 } from "react-feather"
 import classnames from "classnames"
 import { history } from "../../history"
@@ -474,7 +475,7 @@ class UsersList extends React.Component {
           <Card>
             <CardBody>
               <div className="ag-theme-material ag-grid-table">
-                <div className="ag-grid-actions d-flex justify-content-between flex-wrap mb-1 border-bottom-secondary- pb-1">
+                <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1">
                   <Row className="align-items-center">
                     <Col lg="auto">
                       <CardTitle className="pr-2 mr-1 border-right">Actions</CardTitle>
@@ -509,6 +510,9 @@ class UsersList extends React.Component {
                         return this.bulkUpdate('remove-subcategories', subCategories)
                       }}
                     />
+                  </Col>
+                  <Col lg="auto">
+                    <Button color="primary" onClick={e => {e.preventDefault(); history.push("/inventory/add")}}><PlusCircle size="20" className="mr-1"/> Add New Product</Button>
                   </Col>
                   </Row>
 
