@@ -13,15 +13,6 @@ import "utility/base-utils"
 
 const LazyApp = lazy(() => import("./App"))
 
-
-if (localStorage.getItem('token')) {
-  apiClient.get('user-details/')
-  .then(response => {
-    store.dispatch({ type: 'LOGIN' });
-  })
-}
-
-
 // configureDatabase()
 ReactDOM.render(
     <Provider store={store}>

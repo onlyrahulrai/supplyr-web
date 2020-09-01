@@ -94,7 +94,7 @@ const RouteConfig = ({
 
                 let authenticatedUserRedirect = (
                     <Redirect to={{
-                        pathname: '/dashboard',
+                        pathname: '/inventory/list',
                         state: { from: props.location }
                     }} />
                 )

@@ -175,7 +175,7 @@ class SubcategorySelector extends React.Component {
 
 class UsersList extends React.Component {
   multiple_sign = (<>
-    <RiCheckboxMultipleBlankLine className="ml-1" id="multiple-warning" color="#777" title="This product has multiple variants"/>
+    <RiCheckboxMultipleBlankLine className="ml-1" id="multiple-warning" color="#777"/>
     <UncontrolledTooltip
       placement="top"
       target="multiple-warning"

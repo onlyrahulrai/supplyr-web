@@ -13,9 +13,8 @@ export const loginWithJWT = (user, onError) => {
         password: user.password,
       })
       .then(response => {
-        var loggedInUser, token
+        var token
         if (response.data) {
-          loggedInUser = response.data.user
           token = response.data.access_token
           dispatch({
             type: "LOGIN",
@@ -23,11 +22,26 @@ export const loginWithJWT = (user, onError) => {
           })
 
           // localStorage.setItem('token', response.data.access_token)
-          history.push("/")
+          // history.push("/inventory/list")
         }
       })
       .catch(err => {
         onError(err)
       })
   }
-}      
+}    
+
+export const refreshLogin = token => {
+  console.log("rreftresh login")
+  return dispatch => {
+    return apiClient.get('user-details/')
+    .then(response => {
+        dispatch({ type: 'LOGIN' });
+    })
+    .catch(error => {
+      if(error.response?.status === 401){
+        dispatch({ type: 'LOGOUT' });
+      }
+    })
+  }
+}

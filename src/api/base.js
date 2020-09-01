@@ -15,9 +15,9 @@ apiClient.interceptors.response.use(
     return response
     },
     error => {
-        if(error.response?.status === 401){
-            store.dispatch({ type: 'LOGOUT' });
-        }
+        // if(error.response?.status === 401){
+        //     store.dispatch({ type: 'LOGOUT' });
+        // }
         return Promise.reject(error);
     })
 
