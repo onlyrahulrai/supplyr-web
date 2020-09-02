@@ -35,6 +35,7 @@ function App(props) {
         return {db_id, source}
       })
       props.onChange(_sortedImages)
+      // eslint-disable-next-line
     }, [imageUIDMappingState, sortedRawImages])
 
     

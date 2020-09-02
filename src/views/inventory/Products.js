@@ -4,7 +4,7 @@ import {history} from "../../history"
 import Breacrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import apiClient from "api/base";
 import { Link } from "react-router-dom";
-import { Star, ShoppingCart, BookOpen, Edit, PlusCircle, ChevronLeft, ChevronRight } from "react-feather";
+import { Star, ShoppingCart, Edit, PlusCircle, ChevronLeft, ChevronRight } from "react-feather";
 import "assets/scss/pages/app-ecommerce-shop.scss"
 import { getApiURL } from "api/utils";
 import { RiCheckboxMultipleBlankLine, RiFileList3Line } from 'react-icons/ri'
@@ -161,7 +161,7 @@ class ProductsList extends React.Component{
             <FaShoppingCart size="200" color="#dadfe4" />
             
             <h1 className="mt-2 secondary display-4 display-flex">
-            <Spinner color="primary" size="lg" type="grow" color="#4443" className="mr-1 " />
+            <Spinner size="lg" type="grow" color="#4443" className="mr-1 " />
             <span>Loading</span>
             </h1>
           </div>

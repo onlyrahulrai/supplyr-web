@@ -42,7 +42,7 @@ class VuexyWizard extends React.Component {
   }
 
   componentDidUpdate() {
-    if(this.props.activeStep != this.state.activeStep){
+    if(this.props.activeStep !== this.state.activeStep){
       this.setState({ activeStep: this.props.activeStep})
     }
   }

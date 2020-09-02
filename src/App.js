@@ -18,6 +18,7 @@ const App = props => {
         })
     }
     else setReady(true)
+    // eslint-disable-next-line
   }, [])
   return (ready ? <Router /> : <Spinner />)
 }

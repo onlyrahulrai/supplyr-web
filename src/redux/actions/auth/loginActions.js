@@ -1,5 +1,3 @@
-import axios from "axios"
-import { history } from "../../../history"    
 import apiClient from "api/base"
 
 // export const changeRole = role => {

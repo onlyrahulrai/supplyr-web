@@ -27,7 +27,6 @@ import {
   Edit3,
   PlusCircle
 } from "react-feather"
-import classnames from "classnames"
 import { history } from "../../history"
 import "assets/scss/plugins/tables/_agGridStyleOverride.scss"
 import "assets/scss/pages/users.scss"
@@ -390,7 +389,7 @@ class UsersList extends React.Component {
 
 
   render() {
-    const { rowData, columnDefs, defaultColDef, pageSize } = this.state
+    const { rowData, columnDefs, defaultColDef } = this.state
     const {filters, filtersApplied} = this.state
     return (
       <Row className="">

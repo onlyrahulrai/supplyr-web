@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Input, Col, Row, FormGroup, Label, Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, FormFeedback, UncontrolledTooltip, Spinner } from 'reactstrap'
+import { Button, Col, Row, FormGroup, Label, Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, UncontrolledTooltip, Spinner } from 'reactstrap'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
 import Radio from "components/@vuexy/radio/RadioVuexy"
 import RichEditor from './_RichEditor'
 import UploadGallery from 'components/inventory/UploadGallery';
 import classnames from "classnames"
-import { Plus, Edit, X, Trash2, XCircle, Info, Check, CheckCircle, Copy } from 'react-feather';
+import { Plus, Edit, X, Trash2, XCircle, Info, CheckCircle, Copy } from 'react-feather';
 import Chip from 'components/@vuexy/chips/ChipComponent';
 import MultipleOptionsInput from 'components/inventory/MultipleOptionsInput'
 import CreatableOptionsSelect from 'components/inventory/CreatableOptionsSelect'
@@ -99,6 +99,7 @@ function SingleVariantForm(props) {
             setVariantData(_variantData)
             props.onChange(_variantData)
         }
+        // eslint-disable-next-line
     }, [props.initialVariantData])
 
     return (
@@ -121,12 +122,14 @@ function VariantTabs(props) {
         //On adding a new variant, switch tab to this new variant
         const addedTabIndex = props.variantsData.length - 1;
         toggleTab(addedTabIndex)
+        // eslint-disable-next-line
     }, [props.variantsData.length])
 
     useEffect(() => {
         if(props.variantsData.length === 0) {
             props.addVariant();
         }
+        // eslint-disable-next-line
     }, [])
 
     // function setTabOptionFieldData()
@@ -432,7 +435,7 @@ function MultipleVariantForm(props) {
 
         let variantsDataFiltered = variantsData.filter(d => Object.keys(d).length !== 0) //Filter out empty tabs
         props.onChange(variantsDataFiltered)
-
+      // eslint-disable-next-line
     }, [variantsData])
 
     function checkDuplicateVariants() {
@@ -440,7 +443,7 @@ function MultipleVariantForm(props) {
         variantsData.forEach((variant_data, index) => {
             let option_values = getVariantOptionsData(variant_data)
             let is_duplicate = variantsData.some((_variant_data, _index) => {
-                return index != _index && areArraysEqual(option_values, getVariantOptionsData(_variant_data)) && !option_values.every(value => value === undefined)
+                return index !== _index && areArraysEqual(option_values, getVariantOptionsData(_variant_data)) && !option_values.every(value => value === undefined)
             })
             if(is_duplicate) {
                 variantsDataCopy[index]['errors'] = {...variantsDataCopy[index]['errors'], 'duplicate_variant': true}
@@ -483,7 +486,7 @@ function MultipleVariantForm(props) {
         const existing_variants_options_data = variantsData.map(variant => getVariantOptionsData(variant))
         const options_count = options.length
 
-        if(options_count == 1){
+        if(options_count === 1){
             let leaf_value = options[0].values.find(value => {
                 let is_unused = !existing_variants_options_data.some(values => areArraysEqual(values, [value]))
                 return is_unused

@@ -1,9 +1,6 @@
 import React from "react";
-import { Input, FormGroup, Label, Col, Row, Button, Alert } from "reactstrap";
-import { Form, Formik, Field } from "formik";
-import Radio from "components/@vuexy/radio/RadioVuexyEnhanced"
-import Select from 'react-select';
-import classnames from "classnames"
+import { Button, Alert } from "reactstrap";
+import { Form, Formik } from "formik";
 import DynamicField from "./DynamicField"
 import DynamicUncontrolledField from "./DynamicUncontrolledField";
 import { AlertCircle } from "react-feather"
@@ -35,7 +32,7 @@ class DynamicForm extends React.Component {
         if (fieldSchema.dependentFieldsSet) {
             let renderedDependentFields = []
             fieldSchema.dependentFieldsSet.map(dependentFields => {
-                if(dependentFields.displayOnValue!=undefined && values[fieldSchema.name] == dependentFields.displayOnValue){
+                if(dependentFields.displayOnValue!==undefined && values[fieldSchema.name] == dependentFields.displayOnValue){
                     renderedDependentFields = dependentFields.fields.map(dependentFieldSchema => {
                         return (
                             this.getDynamicField(dependentFieldSchema, values, errors)

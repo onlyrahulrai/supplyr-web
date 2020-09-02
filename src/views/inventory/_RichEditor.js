@@ -1,10 +1,11 @@
 import React from 'react'
-import { Container, Button, Input, Col, Row, FormGroup, Label, Card, CardTitle, CardBody, CardHeader } from 'reactstrap'
+import { Card, CardBody } from 'reactstrap'
 import { EditorState, convertToRaw, ContentState, convertFromHTML } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
 import draftToHtml from 'draftjs-to-html';
+import htmlToDraft from 'html-to-draftjs';
 
 export default class RichEditor extends React.Component {
     constructor(props) {
@@ -15,7 +16,7 @@ export default class RichEditor extends React.Component {
         }
       }
       else {
-        const blocksFromHTML = convertFromHTML(this.props.defaultValue);
+        const blocksFromHTML = htmlToDraft(this.props.defaultValue); //convertFromHTML(this.props.defaultValue);
         const contentState = ContentState.createFromBlockArray(
           blocksFromHTML.contentBlocks,
           blocksFromHTML.entityMap,
@@ -50,8 +51,8 @@ export default class RichEditor extends React.Component {
               editorClassName="demo-editor"
               onEditorStateChange={this.onEditorStateChange}
               toolbar={{
-                  options: ['inline', 'blockType', 'list' ],
-                  inline: { options: ['bold', 'italic', 'underline', 'superscript', 'subscript'] },
+                  options: ['inline', 'blockType', 'fontSize', 'list', 'textAlign', 'colorPicker', 'link', 'emoji', 'remove', 'history' ],
+                  inline: { options: ['bold', 'italic', 'underline', 'strikethrough', 'superscript', 'subscript'] },
                   blockType: {
                       inDropdown: true,
                       options: ['Normal', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'],
@@ -60,7 +61,7 @@ export default class RichEditor extends React.Component {
                       dropdownClassName: undefined,
                   },
                   list: {
-                      options: ['unordered', 'ordered'],
+                      options: ['unordered', 'ordered', 'indent', 'outdent'],
                   },
               }}
             />

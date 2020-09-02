@@ -2,7 +2,6 @@ import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Card, CardBody, Row, Col, Button, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { ShoppingCart, Edit3, PlusCircle, Trash } from "react-feather";
-import Breacrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import "swiper/css/swiper.css";
 import "assets/scss/pages/app-ecommerce-shop.scss";
 import apiClient from "api/base";
@@ -20,7 +19,7 @@ function getVariantShortDescription(variant) {
       const value = variant['option'+(index+1)+'_value']
       return (
         <span key={index}>
-          {index == 0 || ', '}<b> <i>{label}: </i></b>
+          {index === 0 || ', '}<b> <i>{label}: </i></b>
           {value}
         </span>
       )
@@ -144,7 +143,7 @@ const customStyles = {
               <Row>
               {productData.images.map(image => {
                 return (<Col md="4">
-                  <img className="w-100" src={getApiURL(image.image)} />
+                  <img className="w-100" alt='' src={getApiURL(image.image)} />
                 </Col>)
               })}
               </Row>
@@ -180,7 +179,7 @@ const customStyles = {
                     productData.variants_data.data.map(variant => {
                       const label = (
                         <div>
-                          <img src={variant.featured_image ? getApiURL(productData.images?.find(image => image.id === variant.featured_image)?.image ) : ''} className="float-left mr-1 img-40" />
+                          <img src={variant.featured_image ? getApiURL(productData.images?.find(image => image.id === variant.featured_image)?.image ) : ''} alt='featured' className="float-left mr-1 img-40" />
                           <div>{getVariantShortDescription(variant)}</div>
                           <div className="text-lightgray">&#8377; {variant.price}</div>
                         </div>

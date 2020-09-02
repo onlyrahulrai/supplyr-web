@@ -7,7 +7,6 @@ import {
   Row,
   Col,
 } from "reactstrap"
-import classnames from "classnames"
 import RegisterJWT from "./_RegistrationForm"
 import registerImg from "assets/img/pages/register.jpg"
 import "assets/scss/pages/authentication.scss"

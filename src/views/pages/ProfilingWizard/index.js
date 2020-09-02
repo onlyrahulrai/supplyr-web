@@ -27,6 +27,7 @@ class ProfilingWizard extends React.Component{
         case 'verified': return 1;
         case 'form_filled': return 2;
         case 'categories_selected': return 3;
+        default: return -1;
       }
   }
 

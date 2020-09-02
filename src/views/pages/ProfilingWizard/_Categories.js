@@ -1,7 +1,6 @@
 import React from 'react'
 import { Row, Col, Container, Card, CardHeader, CardBody, CardTitle, Button, UncontrolledTooltip } from 'reactstrap'
 import { Plus, X, Check, ChevronLeft } from 'react-feather'
-import Avatar from 'components/@vuexy/avatar/AvatarComponent'
 import Chip from 'components/profiling/ChipSelectable';
 import apiClient from 'api/base';
 import { RiCheckboxMultipleLine, RiCheckboxMultipleBlankLine } from 'react-icons/ri'
@@ -164,7 +163,7 @@ export default class Categories extends React.Component {
 
     }
 
-    getCategoryFromId = category_id => this.state.categories.filter(category => category.id == category_id)[0]
+    getCategoryFromId = category_id => this.state.categories.filter(category => category.id === category_id)[0]
 
 
     toggleSubcategory = subcategoryId => {
@@ -179,7 +178,6 @@ export default class Categories extends React.Component {
 
     addCategory = categoryId => {
       let selectedCategories = this.state.selectedCategories
-      let selectedSubcategories = this.state.selectedSubcategories
       if (!selectedCategories.includes(categoryId)) {
         this.setState({
           selectedCategories: [...selectedCategories, categoryId],
@@ -191,7 +189,6 @@ export default class Categories extends React.Component {
 
     removeCategory = categoryId => {
       let selectedCategories = this.state.selectedCategories
-      let selectedSubcategories = this.state.selectedSubcategories
       this.setState({
         selectedCategories: selectedCategories.filter(id => id !== categoryId),
       });
@@ -258,8 +255,7 @@ export default class Categories extends React.Component {
                                 <>
                                 {
                                   selectedCategories.map(category_id => {
-                                    let category = categories.filter(cat => cat.id == category_id)?.[0]
-                                    {/* let sub_categories = category.sub_categories */}
+                                    let category = categories.filter(cat => cat.id === category_id)?.[0]
                                     return (
                                       <CategoryDetailed
                                         category={category}

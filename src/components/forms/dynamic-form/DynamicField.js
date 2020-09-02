@@ -10,7 +10,7 @@ export default class DynamicField extends React.Component {
         let schema = this.props.schema;
         let fieldError = this.props.error;
         let field = "";
-
+        // eslint-disable-next-line
         switch (schema.type) {
           case "number":
           case "text": {

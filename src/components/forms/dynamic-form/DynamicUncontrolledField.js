@@ -1,6 +1,6 @@
 import React from "react";
-import { Input, Button, FormGroup, Label, Col, Row, FormFeedback, Spinner, Badge } from "reactstrap";
-import { Check, CheckCircle } from "react-feather"
+import { Input, Button, FormGroup, Label, Col,  FormFeedback, Spinner, Badge } from "reactstrap";
+import { CheckCircle } from "react-feather"
 import classnames from "classnames"
 
 
@@ -10,6 +10,7 @@ export default class DynamicUncontrolledField extends React.Component {
         let fieldError = this.props.error;
         let field = "";
 
+        // eslint-disable-next-line
         switch (schema.type) {
             case "number":
             case "text": {

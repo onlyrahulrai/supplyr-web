@@ -1,6 +1,5 @@
 import React from "react"
-import {Home, ShoppingCart} from "react-feather"
-import { RiStore2Line } from "react-icons/ri"
+import {Home} from "react-feather"
 import { FaBoxes } from "react-icons/fa"
 import {HiOutlineFolderAdd, HiOutlineFolder} from "react-icons/hi"
 import {MdPlaylistAdd, MdPlaylistAddCheck} from "react-icons/md"

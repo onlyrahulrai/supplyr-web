@@ -1,5 +1,4 @@
 import { history } from "../../../history"
-import axios from "axios"
 import apiClient from "api/base"
 
 export const signupWithJWT = (form_data, onError) => {

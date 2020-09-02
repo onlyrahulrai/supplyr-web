@@ -1,8 +1,8 @@
 import React, { useState, useReducer, useEffect } from 'react'
 import { SimpleInputField } from 'components/forms/fields'
-import { Button, Row, Col, ListGroup, ListGroupItem, Badge, FormGroup, Label, Spinner, Input } from 'reactstrap'
+import { Button, Row, Col, ListGroup, ListGroupItem,  FormGroup, Label, Input } from 'reactstrap'
 import apiClient from 'api/base';
-import { Plus, Edit2, X, CheckCircle } from 'react-feather';
+import { Plus, Edit2, X } from 'react-feather';
 import Swal from 'utility/sweetalert'
 import { history } from '../../history';
 import { useRef } from 'react';
@@ -17,6 +17,7 @@ function SubCategory(props) {
         setTimeout(() => {
             if (props.setFocus) {
             setIsEditable(true)
+              // eslint-disable-next-line
              let _ = fieldRef.current?.focus()
             }
         }, 0)
@@ -128,7 +129,7 @@ function CategoryAdd(props) {
                     response.data.image && setDisplayImage(getApiURL(response.data.image))
                 })
         }
-    }, [])
+    }, [props.match.params.categoryId]) //This will probably never change, however, in page lifecycle
 
     function focusNextField(index){
         // On enter key press,  focus on next field or add a new field if it's the last one
@@ -206,7 +207,7 @@ function CategoryAdd(props) {
                 <FormGroup row>
                     <Col md="auto mr-auto">
                         <Label>
-                            {displayImage ? (<img src={displayImage} className="img-100" />) : 'No Image Selected'}
+                            {displayImage ? (<img src={displayImage} className="img-100" alt='selected'/>) : 'No Image Selected'}
 
                         </Label>
                     </Col>
