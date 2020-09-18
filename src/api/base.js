@@ -1,8 +1,10 @@
 import axios from "axios"
 import { store } from "redux/storeConfig/store"
 
+const baseURL = process.env.REACT_APP_API_URL + "/seller"
+
 const apiClient = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
+    baseURL: baseURL,
     // headers: {'X-Custom-Header-ATD': 'foobar'}
 })
 

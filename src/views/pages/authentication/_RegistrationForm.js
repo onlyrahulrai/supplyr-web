@@ -1,5 +1,5 @@
 import React from "react"
-import { Form, FormGroup, Input, Label, Button, FormFeedback, Alert } from "reactstrap"
+import { Form, FormGroup, Input, Label, Button, FormFeedback, Alert, Col, Row } from "reactstrap"
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy"
 import { Check, AlertCircle } from "react-feather"
 import { connect } from "react-redux"
@@ -18,7 +18,8 @@ class RegisterJWT extends React.Component {
   state = {
     email: "",
     password1: "",
-    name: "",
+    firstName: "",
+    lastName: "",
     password2: "",
     errors: {},
 
@@ -57,16 +58,34 @@ class RegisterJWT extends React.Component {
           {this.state.errors.non_field_errors}
         </Alert>
         <br />
-        <FormGroup className="form-label-group">
-          <Input
-            type="text"
-            placeholder="Name"
-            required
-            value={this.state.name}
-            onChange={e => this.setState({ name: e.target.value })}
-          />
-          <Label>Name</Label>
-        </FormGroup>
+        
+        <Row>
+          <Col>
+            <FormGroup className="form-label-group">
+              <Input
+                type="text"
+                placeholder="First Name"
+                required
+                value={this.state.firstName}
+                onChange={e => this.setState({ firstName: e.target.value })}
+              />
+              <Label>Name</Label>
+            </FormGroup>
+          </Col>
+          <Col>
+            <FormGroup className="form-label-group">
+              <Input
+                type="text"
+                placeholder="Last Name"
+                required
+                value={this.state.lastName}
+                onChange={e => this.setState({ lastName: e.target.value })}
+              />
+              <Label>Name</Label>
+            </FormGroup>
+          </Col>
+        </Row>
+
         <FormGroup className="form-label-group">
           <Input
             invalid={this.state?.errors?.email}

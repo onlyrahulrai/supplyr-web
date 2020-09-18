@@ -8,7 +8,8 @@ export const signupWithJWT = (form_data, onError) => {
         email: form_data.email,
         password1: form_data.password1,
         password2: form_data.password2,
-        name: form_data.name
+        first_name: form_data.firstName,
+        last_name: form_data.lastName,
       })
       .then(response => {
         var loggedInUser, token
