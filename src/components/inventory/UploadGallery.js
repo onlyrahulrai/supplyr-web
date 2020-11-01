@@ -80,7 +80,7 @@ function App(props) {
             onSuccess,
             onError
         }) => {
-            const url = "http://127.0.0.1:8000/inventory/add-product-image/"
+            const url = "/inventory/add-product-image/"
             let formData = new FormData();
             formData.append('image', file);
             try {

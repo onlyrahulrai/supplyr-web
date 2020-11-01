@@ -38,6 +38,22 @@ function areArraysEqual(array1, array2) {
 
 function VariantFields(props) {
     const variantData = props.variantData
+
+    const applyMinumumQuantityToAllVariants = () => {
+      Swal.fire({
+        // title: 'Are you sure?',
+        text: "Apply this minimum quantity to all variants?",
+        icon: 'warning',
+        showCancelButton: true,
+        // confirmButtonColor: '#83d',
+        confirmButtonText: 'Confirm'
+      }).then(result => {
+        if (result.value){
+          props.onChangeAll("minimum_order_quantity", variantData.minimum_order_quantity)
+        }
+      })
+    }
+
     return (
         <>
         <SimpleInputField
@@ -58,8 +74,33 @@ function VariantFields(props) {
             value={variantData.sale_price ?? ''}
             min="0"
         />
+        <Row>
+          <Col>
+            <SimpleInputField
+                label = "Minimum Order Quantity"
+                name="minumum_order_quantity"
+                type="number"
+                onChange={e => props.onChange("minimum_order_quantity", e.target.value)}
+                value={variantData.minimum_order_quantity ?? ''}
+                min="1"
+            />
+          </Col>
+          {!props.singleVariant &&
+          <Col md={3} xs={4} className="align-self-center">
+            <Button
+              outline
+              color="dark"
+              className="btn-block"
+              onClick={applyMinumumQuantityToAllVariants}
+            >
+                Apply to all
+            </Button>
+          </Col>
+          }
+        </Row>
         <SimpleInputField
-            label = "Quanitity Available"
+            label = "Quantity Available"
+            placeholder="Quantity Available in Inventory"
             name="quantity"
             type="number"
             onChange={e => props.onChange("quantity", e.target.value)}
@@ -253,6 +294,7 @@ function VariantTabs(props) {
                         onChange={(field, value) =>
                           props.setVariantFieldData(tabIndex, field, value)
                         }
+                        onChangeAll={props.setAllVariantsFieldData}
                         variantData = {props.variantsData[tabIndex]}
                       />
                       {props.productImages && Boolean(props.productImages.length) &&
@@ -471,6 +513,10 @@ function MultipleVariantForm(props) {
         setVariantsData(variantsDataCopy)
     }
 
+    function setAllVariantsFieldData(field, value) {
+      setVariantsData(variantsData.map(vd => ({...vd, [field]: value})))
+    }
+
     function getVariantOptionsData(variant_data) {
         // let variant_data = variantsData[tabIndex]
         
@@ -664,6 +710,7 @@ function MultipleVariantForm(props) {
                 <VariantTabs
                     options={options_filtered}
                     setVariantFieldData = {setVariantFieldData}
+                    setAllVariantsFieldData={setAllVariantsFieldData}
                     addVariant = {addVariant}
                     removeVariant = {removeVariant}
                     variantsData = {variantsData}
