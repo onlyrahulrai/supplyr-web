@@ -18,8 +18,8 @@ export default class CreatableInputOnly extends Component<*, State> {
   };
 
   componentDidMount() {
-    if (this.props.defaultValues) {
-      let _value = this.props.defaultValues.map(v => createOption(v) )
+    if (this.props.values) {
+      let _value = this.props.values.map(v => createOption(v) )
       this.setState({value: _value})
     }
   }

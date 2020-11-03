@@ -21,6 +21,7 @@ class RegisterJWT extends React.Component {
     firstName: "",
     lastName: "",
     password2: "",
+    mobile_number: "",
     errors: {},
 
     isSubmitting: false,
@@ -98,6 +99,20 @@ class RegisterJWT extends React.Component {
           <Label>Email</Label>
           <CustomFormFeedback text={this.state?.errors?.email} />
         </FormGroup>
+
+        <FormGroup className="form-label-group">
+          <Input
+            invalid={this.state?.errors?.email}
+            pattern="[6789][0-9]{9}"
+            placeholder="10 Digit Mobile Number"
+            required
+            value={this.state.mobile_number}
+            onChange={e => this.setState({ mobile_number: e.target.value })}
+          />
+          <Label>Phone/Mobile Number</Label>
+          <CustomFormFeedback text={this.state?.errors?.mobile_number} />
+        </FormGroup>
+
         <FormGroup className="form-label-group">
           <Input
             invalid={this.state?.errors?.password1}

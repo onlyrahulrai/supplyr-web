@@ -10,6 +10,7 @@ export const signupWithJWT = (form_data, onError) => {
         password2: form_data.password2,
         first_name: form_data.firstName,
         last_name: form_data.lastName,
+        mobile_number: form_data.mobile_number,
       })
       .then(response => {
         var loggedInUser, token
