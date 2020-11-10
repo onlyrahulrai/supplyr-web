@@ -10,7 +10,6 @@ import Swal from 'utility/sweetalert'
 function CategoryListItem(props) {
     const {name, id:categoryId, image, sub_categories} = props.category
     return (
-        <div>
             <Card
               className="card-reload card-action"
             >
@@ -30,7 +29,6 @@ function CategoryListItem(props) {
                 ))}
               </CardBody>
             </Card>
-        </div>
     )
 }
 

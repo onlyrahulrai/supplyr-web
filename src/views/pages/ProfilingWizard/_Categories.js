@@ -218,7 +218,7 @@ export default class Categories extends React.Component {
     }
 
     saveSelection = e => {
-      apiClient.post('/categories/',
+      apiClient.post('/profile/categories/',
         {
           'sub_categories': this.state.selectedSubcategories
         }

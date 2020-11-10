@@ -107,7 +107,7 @@ class Profiling extends React.Component {
                   const file  =  e.currentTarget.files[0];
                   let formData = new FormData();
                   formData.append('gst_certificate', file);
-                  apiClient.post('/user-profiling-documents/',
+                  apiClient.post('/profile/user-profiling-documents/',
                     formData,
                     {
                       headers: {
@@ -213,7 +213,7 @@ class Profiling extends React.Component {
               onSubmit={(data, setSubmitting) => {
                 setSubmitting(true);
                 apiClient
-                  .post("/user-profiling/", data)
+                  .post("/profile/user-profiling/", data)
                   .then((response) => {
                     setSubmitting(false);
                     this.props.forceStepRefresh()

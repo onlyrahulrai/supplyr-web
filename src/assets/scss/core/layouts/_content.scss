@@ -22,7 +22,7 @@ html {
       padding: 0;
       position: relative;
       transition: 300ms ease all;
-      backface-visibility: hidden;
+      // backface-visibility: hidden;
       min-height: calc(100% - 4rem);
       margin-left: $menu-expanded-width;
       &.app-content {

@@ -72,7 +72,7 @@ function subCategoryReducer(state, action) {
             _state.splice(action.index, 1)
             return _state
         case 'change':
-            _state[action.index]['name'] = action.value.trim()
+            _state[action.index]['name'] = action.value
             return _state
         case 'initialize':
             return action.data
@@ -106,7 +106,7 @@ function CategoryAdd(props) {
 
     const formData = {
         name: categoryName,
-        sub_categories: subCategoriesState.filter(sc => sc.name),
+        sub_categories: subCategoriesState.filter(sc => sc.name).map(sc => ({...sc, name: sc.name.trim()})),
         uploadedImage: uploadedImage
     }
     categoryId && (formData.id = categoryId)

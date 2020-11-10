@@ -65,7 +65,7 @@ const ThemeNavbar = props => {
                 handleAppOverlay={props.handleAppOverlay}
                 changeCurrentLang={props.changeCurrentLang}
                 userName={props.user.name}
-                connectionCode={props.user.profile.connection_code}
+                connectionCode={props.user.profile?.connection_code}
                 userImg={ userImg }
               />
             </div>
