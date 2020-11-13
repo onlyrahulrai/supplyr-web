@@ -2,7 +2,7 @@ import React from "react"
 import {Home} from "react-feather"
 import { FaBoxes } from "react-icons/fa"
 import {HiOutlineFolderAdd, HiOutlineFolder} from "react-icons/hi"
-import {MdPlaylistAdd, MdPlaylistAddCheck} from "react-icons/md"
+import {MdPlaylistAdd, MdPlaylistAddCheck, MdInput} from "react-icons/md"
 
 const navigationConfig = [
   {
@@ -12,6 +12,14 @@ const navigationConfig = [
     icon: <Home size={20} />,
     permissions: ["admin", "editor"],
     navLink: "/dashboard"
+  },
+  {
+    id: "orders",
+    title: "Orders",
+    type: "item",
+    icon: <MdInput size={20} />,
+    permissions: ["admin", "editor"],
+    navLink: "/orders"
   },
   {
     id: "inventory",

@@ -43,6 +43,14 @@ const ProfilingWizard = lazy(() =>
     import("views/pages/ProfilingWizard")
 )
 
+const OrdersList = lazy(() =>
+    import("views/orders/OrdersList")
+)
+
+const OrderDetails = lazy(() =>
+    import("views/orders/OrderDetails")
+)
+
 const Logout = lazy(() =>
     import("./views/pages/authentication/Logout")
 )
@@ -223,6 +231,16 @@ class AppRouter extends React.Component {
                         path="/inventory/categories/edit/:categoryId"
                         component={CategoryAdd}
                     />
+                    
+                    <AppRoute
+                        path="/orders/:orderId"
+                        component={OrderDetails}
+                    />                    
+                    <AppRoute
+                        path="/orders"
+                        component={OrdersList}
+                    />
+
                     <PublicOnlyAppRoute
                         path="/login"
                         component={login}
