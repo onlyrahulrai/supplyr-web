@@ -5,4 +5,8 @@ function getApiURL(relativeURL) {
     return url.href
 }
 
+export function getMediaURL(relativeURL) {
+    return getApiURL(relativeURL)
+}
+
 export {getApiURL}

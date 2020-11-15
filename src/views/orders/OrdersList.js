@@ -18,7 +18,7 @@ import {
 import { history } from "../../history"
 import "assets/scss/plugins/tables/_agGridStyleOverride.scss"
 import "assets/scss/pages/users.scss"
-import { RiCheckboxMultipleBlankLine, RiCheckLine, RiCheckDoubleLine, RiTruckLine } from "react-icons/ri"
+import { RiCheckLine, RiCheckDoubleLine, RiTruckLine } from "react-icons/ri"
 import { connect } from "react-redux"
 import Swal from "utility/sweetalert"
 import CustomPagination from "components/common/CustomPagination"
@@ -75,7 +75,7 @@ class OrdersList extends React.Component {
           return (
             <div
               className="d-flex align-items-center cursor-pointer"
-              onClick={() => history.push(`/product/${params.data.id}`)}
+              onClick={() => history.push(`/orders/${params.data.id}`)}
             >
               <span>{params.value}</span>
             </div>

@@ -32,7 +32,7 @@ import "assets/scss/plugins/tables/_agGridStyleOverride.scss"
 import "assets/scss/pages/users.scss"
 import apiClient from "api/base"
 import { getApiURL } from "api/utils"
-import DummyImage from "assets/img/svg/cart.svg"
+import ProductDummyImage from "assets/img/svg/cart.svg"
 import { RiCheckboxMultipleBlankLine } from "react-icons/ri"
 import { connect } from "react-redux"
 import Checkbox from "components/@vuexy/checkbox/CheckboxesVuexy"
@@ -230,7 +230,7 @@ class UsersList extends React.Component {
             >
               <img
                 className="rounded mr-50"
-                src={params.data.featured_image ? getApiURL(params.data.featured_image) : DummyImage}
+                src={params.data.featured_image ? getApiURL(params.data.featured_image) : ProductDummyImage}
                 alt="user avatar"
                 height="30"
                 width="30"
