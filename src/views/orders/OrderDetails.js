@@ -19,44 +19,56 @@ import {getMediaURL} from "api/utils"
 import VariantLabel from "components/inventory/VariantLabel"
 import Address from "components/inventory/Address"
 import ProductDummyImage from "assets/img/svg/cart.svg"
-import {BsClockHistory, BsCheckAll, BsCheck, BsTrash} from "react-icons/bs"
+import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsFillCaretDownFill} from "react-icons/bs"
 import {RiTruckLine} from "react-icons/ri"
+import Swal from "utility/sweetalert"
 // import { productsList } from "./cartData";
 
-function OrderStatus({status_code, size=16}) {
-  const statusDisplayDict = {
-    awaiting_approval: {
-      name: "Awaiting Approval",
-      icon: <BsClockHistory size={size} color="orange"/>,
-      color: 'orange'
-    },
-    approved: {
-      name: "Approved",
-      icon: <BsCheck size={size} color="blue"/>,
-      color: 'blue'
-    },
-    dispatched: {
-      name: "Dispatched",
-      icon: <RiTruckLine size={size} color="blue"/>,
-      color: 'blue'
-    },
-    delivered: {
-      name: "Delivered",
-      icon: <BsCheckAll size={size} color="darkseagreen"/>,
-      color: 'darkseagreen'
-    },
-    cancelled: {
-      name: "Cancelled",
-      icon: <BsTrash size={size} color="#000"/>,
-      color: 'tomato'
-    }
+const statusDisplayDict = {
+  awaiting_approval: {
+    name: "Awaiting Approval",
+    getIcon: (size, color) => (<BsClockHistory size={size} color={color ?? "orange"} />),
+    color: 'orange',
+    buttonClass: 'light',
+    buttonLabel: 'Mark Unapproved'
+  },
+  approved: {
+    name: "Approved",
+    getIcon: (size, color) => (<BsCheck size={size} color={color ?? "blue"} />),
+    color: 'blue',
+    buttonClass: 'primary',
+    buttonLabel: 'Mark Approved'
+  },
+  dispatched: {
+    name: "Dispatched",
+    getIcon: (size, color) => (<RiTruckLine size={size} color={color ?? "blue"} />),
+    color: 'blue',
+    buttonClass: 'primary',
+    buttonLabel: 'Mark Dispatched'
+  },
+  delivered: {
+    name: "Delivered",
+    getIcon: (size, color) => (<BsCheckAll size={size} color={color ?? "darkseagreen"} />),
+    color: 'darkseagreen',
+    buttonClass: 'success',
+    buttonLabel: 'Mark Delivered'
+  },
+  cancelled: {
+    name: "Cancelled",
+    getIcon: (size, color) => (<BsTrash size={size ?? 16} color={color ?? "tomato"} />),
+    color: 'tomato',
+    buttonClass: 'danger',
+    buttonLabel: 'Cancel Order'
   }
+}
+
+function OrderStatus({status_code, size=16}) {
 
   const statusDisplayData = statusDisplayDict[status_code]
   return (
     <Row>
          <Col sm="auto">
-          <span>{statusDisplayData.icon} &nbsp;</span>
+          <span>{statusDisplayData.getIcon(size)} &nbsp;</span>
           <span style={{fontSize: size, color: statusDisplayData.color}}>{statusDisplayData.name}</span>
          </Col>
     </Row>
@@ -71,12 +83,16 @@ export default function OrderDetails() {
 
   const [orderData, setOrderData] = useState(null)
 
-  useEffect(() => {
+  const fetchOrderData = () => {
     OrdersApi.retrieve(orderId)
-      .then(response => {
-        setOrderData(response.data)
-        console.log("sds ", response.data)
-      })
+    .then(response => {
+      setOrderData(response.data)
+      console.log("sds ", response.data)
+    })
+  }
+
+  useEffect(() => {
+    fetchOrderData()
   }, [])
 
   let totals = orderData?.items.reduce((sum, item) => {
@@ -93,6 +109,35 @@ export default function OrderDetails() {
       salePrice: 0
     }
   );
+
+
+  const orderStatuses = ['awaiting_approval', 'approved', 'dispatched', 'delivered', 'cancelled']
+  const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
+  const nextStatusDisplayData = statusDisplayDict[nextStatus]
+  const [isHiddenControlsVisible, setIsHiddenControlsVisible] = useState(null)
+
+
+  const onAction = (operation, data) => {
+
+    const order_ids = [orderId]
+    return OrdersApi.bulkUpdate({
+      order_ids,
+      operation,
+      data,
+    }).then((response) => {
+      if(response.data?.success){
+        Swal.fire("Order Updated", '', 'success')
+        fetchOrderData()
+      }
+      
+    })
+    .catch(err => {
+      Swal.fire("Error !", err.message, 'error')
+      throw err
+    })
+
+  }
+
 
 
   return orderData && (
@@ -192,15 +237,56 @@ export default function OrderDetails() {
             <div className="detail-title detail-total">Final Price</div>
             <div className="detail-amt total-amt">{priceFormatter(totals.salePrice)}</div>
           </div>
+
+          <hr />
+          
+          {nextStatus && nextStatus !== 'cancelled' &&
+            <Button.Ripple
+              color={nextStatusDisplayData.buttonClass}
+              block
+              className="btn-block"
+              onClick={e => onAction('change_status', nextStatus)}
+            >
+              {nextStatusDisplayData.getIcon(18, 'white')}
+              {" "}{nextStatusDisplayData.buttonLabel}
+            </Button.Ripple>
+          }
+          <br />
+
+          {!isHiddenControlsVisible &&
           <Button.Ripple
             type="submit"
             block
-            color="primary"
+            color="dark"
+            outline
             className="btn-block"
-            onClick={() => this.handleActiveStep(1)}>
-            Place Order
+            onClick={() => setIsHiddenControlsVisible(true)}>
+            More <BsFillCaretDownFill />
           </Button.Ripple>
-        </CardBody>
+          }
+
+          {isHiddenControlsVisible && 
+            <Row>
+            {orderStatuses.filter(status => status!==nextStatus && status !=orderData?.order_status).map(status => {
+              const _displayData = statusDisplayDict[status]  
+              return (
+              <Col>
+              <Button.Ripple
+                color={_displayData.buttonClass}
+                block
+                className="btn-block"
+                onClick={e => onAction('change_status', status)}
+              >
+                {_displayData.getIcon(18, 'white')}
+                {" "}{_displayData.buttonLabel}
+              </Button.Ripple>
+              </Col>
+            )}
+            )}
+            </Row>
+          }
+
+          </CardBody>
       </Card>
     </div>
   </div>
