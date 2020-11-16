@@ -19,8 +19,49 @@ import {getMediaURL} from "api/utils"
 import VariantLabel from "components/inventory/VariantLabel"
 import Address from "components/inventory/Address"
 import ProductDummyImage from "assets/img/svg/cart.svg"
+import {BsClockHistory, BsCheckAll, BsCheck, BsTrash} from "react-icons/bs"
+import {RiTruckLine} from "react-icons/ri"
 // import { productsList } from "./cartData";
 
+function OrderStatus({status_code, size=16}) {
+  const statusDisplayDict = {
+    awaiting_approval: {
+      name: "Awaiting Approval",
+      icon: <BsClockHistory size={size} color="orange"/>,
+      color: 'orange'
+    },
+    approved: {
+      name: "Approved",
+      icon: <BsCheck size={size} color="blue"/>,
+      color: 'blue'
+    },
+    dispatched: {
+      name: "Dispatched",
+      icon: <RiTruckLine size={size} color="blue"/>,
+      color: 'blue'
+    },
+    delivered: {
+      name: "Delivered",
+      icon: <BsCheckAll size={size} color="darkseagreen"/>,
+      color: 'darkseagreen'
+    },
+    cancelled: {
+      name: "Cancelled",
+      icon: <BsTrash size={size} color="#000"/>,
+      color: 'tomato'
+    }
+  }
+
+  const statusDisplayData = statusDisplayDict[status_code]
+  return (
+    <Row>
+         <Col sm="auto">
+          <span>{statusDisplayData.icon} &nbsp;</span>
+          <span style={{fontSize: size, color: statusDisplayData.color}}>{statusDisplayData.name}</span>
+         </Col>
+    </Row>
+  )
+}
 
 
 export default function OrderDetails() {
@@ -116,12 +157,17 @@ export default function OrderDetails() {
           <Col>
             <h6 className="text-secondary">Order ID</h6>
             <h3>#{orderId}</h3>
+            <h6>{orderData.order_date}</h6>
           </Col>
           <Col sm="auto" className="ml-auto text-right">
             <h6 className='text-secondary'>From</h6>
             <h3>{orderData.buyer_name}</h3>
           </Col>
         </Row>
+
+        <hr/>
+        <h6 className="text-secondary">STATUS</h6>
+        <h3><OrderStatus status_code={orderData.order_status} /></h3>
 
           <hr />
           <h6 className="text-secondary">SHIPPING ADDRESS</h6>

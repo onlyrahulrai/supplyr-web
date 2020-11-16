@@ -195,7 +195,7 @@ class UsersList extends React.Component {
     gridReady: false,
 
     rowData: null,
-    pageSize: 20,
+    // pageSize: 20,
     defaultColDef: {
       sortable: true
     },

@@ -30,7 +30,7 @@ export const loginWithJWT = (user, onError) => {
 }    
 
 export const refreshLogin = token => {
-  console.log("rreftresh login")
+  // console.log("rreftresh login")
   return dispatch => {
     return apiClient.get('user-details/')
     .then(response => {
