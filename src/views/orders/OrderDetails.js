@@ -111,7 +111,7 @@ export default function OrderDetails() {
   );
 
 
-  const orderStatuses = ['awaiting_approval', 'approved', 'dispatched', 'delivered', 'cancelled']
+  const orderStatuses = ['awaiting_approval', 'approved', 'dispatched', 'delivered'] // Skipped 'cancelled' here as it has separate control
   const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
   const nextStatusDisplayData = statusDisplayDict[nextStatus]
   const [isHiddenControlsVisible, setIsHiddenControlsVisible] = useState(null)
@@ -136,6 +136,25 @@ export default function OrderDetails() {
       throw err
     })
 
+  }
+
+  const onCancel = () => {
+    Swal.fire({
+      title: 'Are you sure you want to cancel this order?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      confirmButtonText: 'Yes, Cancel Order!'
+    }).then(result => {
+      if (result.value){
+        OrdersApi.cancel(orderId)
+          .then(r => {
+            fetchOrderData()
+          })
+      }
+      return false;
+    })
   }
 
 
@@ -239,7 +258,8 @@ export default function OrderDetails() {
           </div>
 
           <hr />
-          
+          {!['cancelled', 'delivered'].includes(orderData?.order_status) &&
+          <>
           {nextStatus && nextStatus !== 'cancelled' &&
             <Button.Ripple
               color={nextStatusDisplayData.buttonClass}
@@ -283,7 +303,21 @@ export default function OrderDetails() {
               </Col>
             )}
             )}
+            <Col>
+              <Button.Ripple
+                color='danger'
+                block
+                className="btn-block"
+                onClick={onCancel}
+              >
+                {statusDisplayDict['cancelled'].getIcon(18, 'white')}
+                {" "}{statusDisplayDict['cancelled'].buttonLabel}
+              </Button.Ripple>
+            </Col>
             </Row>
+          }
+
+          </>
           }
 
           </CardBody>
