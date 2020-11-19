@@ -1,6 +1,6 @@
 import apiClient from 'api/base'
 
-const login = (state = { userRole: "admin" }, action) => {
+const login = (state = { userRole: "general" }, action) => {
   switch (action.type) {
     
     case "LOGIN": {

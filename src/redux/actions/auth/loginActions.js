@@ -1,8 +1,8 @@
 import apiClient from "api/base"
 
-// export const changeRole = role => {
-//   return dispatch => dispatch({ type: "CHANGE_ROLE", userRole: role })
-// }
+export const changeRole = role => {
+  return dispatch => dispatch({ type: "CHANGE_ROLE", userRole: role })
+}
 
 export const loginWithJWT = (user, onError) => {
   return dispatch => {

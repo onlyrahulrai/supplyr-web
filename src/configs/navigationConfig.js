@@ -10,7 +10,7 @@ const navigationConfig = [
     title: "Home",
     type: "item",
     icon: <Home size={20} />,
-    permissions: ["admin", "editor"],
+    // permissions: ["admin", "editor"],
     navLink: "/dashboard"
   },
   {
@@ -18,7 +18,7 @@ const navigationConfig = [
     title: "Orders",
     type: "item",
     icon: <MdInput size={20} />,
-    permissions: ["admin", "editor"],
+    // permissions: ["admin", "editor"],
     navLink: "/orders"
   },
   {
@@ -26,7 +26,7 @@ const navigationConfig = [
     title: "Inventory",
     type: "collapse",
     icon: <FaBoxes size={20} />,
-    permissions: ["admin", "editor"],
+    // permissions: ["admin", "editor"],
     children: [
       // {
       //   id: "products",
@@ -41,7 +41,7 @@ const navigationConfig = [
         title: "Products List",
         type: "item",
         icon: <MdPlaylistAddCheck size={20} />,
-        permissions: ["admin", "editor"],
+        // permissions: ["admin", "editor"],
         navLink: "/inventory/list"
       },
       {
@@ -49,7 +49,7 @@ const navigationConfig = [
         title: "Add New Product",
         type: "item",
         icon: <MdPlaylistAdd size={20} />,
-        permissions: ["admin", "editor"],
+        // permissions: ["admin", "editor"],
         navLink: "/inventory/add"
       },
       {
@@ -57,7 +57,7 @@ const navigationConfig = [
         title: "Categories",
         type: "item",
         icon: <HiOutlineFolder size={20} />,
-        permissions: ["admin", "editor"],
+        permissions: ["admin", "staff"],
         navLink: "/inventory/categories/list"
       },
       {
@@ -65,7 +65,7 @@ const navigationConfig = [
         title: "Add Category",
         type: "item",
         icon: <HiOutlineFolderAdd size={20} />,
-        permissions: ["admin", "editor"],
+        permissions: ["admin", "staff"],
         navLink: "/inventory/categories/add"
       },
     ]

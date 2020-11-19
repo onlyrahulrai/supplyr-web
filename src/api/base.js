@@ -12,7 +12,15 @@ const apiClient = axios.create({
 apiClient.interceptors.response.use(
     response => {
     if (response.data?.user_info) {
-        store.dispatch({ type: 'SET_USER_INFO', userInfo: response.data.user_info})
+        const userInfo = response.data.user_info
+        store.dispatch({ type: 'SET_USER_INFO', userInfo})
+        
+        let userRole = null;
+        if (['admin', 'staff'].includes(userInfo.user_role)) {
+            userRole = userInfo.user_role
+        }
+        
+        userRole && store.dispatch({ type: "CHANGE_ROLE", userRole })
     }
     return response
     },
