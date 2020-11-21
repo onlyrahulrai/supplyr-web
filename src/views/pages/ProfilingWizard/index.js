@@ -20,7 +20,7 @@ const Approval = lazy(() =>
 
 class ProfilingWizard extends React.Component{
   getActiveStepFromProps = () => {
-    let current_user_state = this.props.user.seller_status
+    let current_user_state = this.props.user.user_status
       switch (current_user_state) {
         case 'registered': return 0;
         case 'verified': return 1;

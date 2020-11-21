@@ -125,7 +125,7 @@ const RouteConfig = ({
 
                 //Since user disn't pass the conditions above, this means the URL is pointing to private content
                 if (authenticated) {
-                    if (user.seller_status === 'approved') {
+                    if (user.user_status === 'approved') {
 
                         if (props.location.pathname === '/profiling') {
                             return authenticatedUserRedirect
