@@ -1,8 +1,9 @@
 import React from "react"
 import {Home} from "react-feather"
-import { FaBoxes } from "react-icons/fa"
+import { FaBoxes, FaUserTie } from "react-icons/fa"
 import {HiOutlineFolderAdd, HiOutlineFolder} from "react-icons/hi"
 import {MdPlaylistAdd, MdPlaylistAddCheck, MdInput} from "react-icons/md"
+import {FiSettings} from "react-icons/fi"
 
 const navigationConfig = [
   {
@@ -67,6 +68,24 @@ const navigationConfig = [
         icon: <HiOutlineFolderAdd size={20} />,
         permissions: ["admin", "staff"],
         navLink: "/inventory/categories/add"
+      },
+    ]
+  },
+
+  {
+    id: "management",
+    title: "Management",
+    type: "collapse",
+    icon: <FiSettings size={20} />,
+    // permissions: ["admin", "editor"],
+    children: [
+      {
+        id: "salesperson",
+        title: "Salespersons",
+        type: "item",
+        icon: <FaUserTie size={20} />,
+        // permissions: ["admin", "staff"],
+        navLink: "/management/salespersons"
       },
     ]
   }

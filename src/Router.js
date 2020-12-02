@@ -55,6 +55,10 @@ const Logout = lazy(() =>
     import("./views/pages/authentication/Logout")
 )
 
+const Salespersons = lazy(() =>
+    import("./views/management/Salespersons")
+)
+
 const Landing = lazy(() => import("./views/pages/Landing"))
 
 const error404 = lazy(() => import("./views/pages/404"))
@@ -239,6 +243,10 @@ class AppRouter extends React.Component {
                     <AppRoute
                         path="/orders"
                         component={OrdersList}
+                    />
+                    <AppRoute
+                        path="/management/salespersons"
+                        component={Salespersons}
                     />
 
                     <PublicOnlyAppRoute
