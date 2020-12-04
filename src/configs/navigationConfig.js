@@ -4,6 +4,7 @@ import { FaBoxes, FaUserTie } from "react-icons/fa"
 import {HiOutlineFolderAdd, HiOutlineFolder} from "react-icons/hi"
 import {MdPlaylistAdd, MdPlaylistAddCheck, MdInput} from "react-icons/md"
 import {FiSettings} from "react-icons/fi"
+import { RiFoldersLine } from "react-icons/ri"
 
 const navigationConfig = [
   {
@@ -53,22 +54,6 @@ const navigationConfig = [
         // permissions: ["admin", "editor"],
         navLink: "/inventory/add"
       },
-      {
-        id: "cetegories",
-        title: "Categories",
-        type: "item",
-        icon: <HiOutlineFolder size={20} />,
-        permissions: ["admin", "staff"],
-        navLink: "/inventory/categories/list"
-      },
-      {
-        id: "add-cetegory",
-        title: "Add Category",
-        type: "item",
-        icon: <HiOutlineFolderAdd size={20} />,
-        permissions: ["admin", "staff"],
-        navLink: "/inventory/categories/add"
-      },
     ]
   },
 
@@ -86,6 +71,38 @@ const navigationConfig = [
         icon: <FaUserTie size={20} />,
         // permissions: ["admin", "staff"],
         navLink: "/management/salespersons"
+      },
+    ]
+  },
+
+  {
+    type: "groupHeader",
+    groupTitle: "ADMIN",
+    permissions: ["admin", "staff"],
+  },
+
+  {
+    id: "category_management",
+    title: "Categories",
+    type: "collapse",
+    icon: <HiOutlineFolder size={20} />,
+    permissions: ["admin", "staff"],
+    children: [
+      {
+        id: "cetegories",
+        title: "Categories List",
+        type: "item",
+        icon: <RiFoldersLine size={20} />,
+        permissions: ["admin", "staff"],
+        navLink: "/inventory/categories/list"
+      },
+      {
+        id: "add-cetegory",
+        title: "Add Category",
+        type: "item",
+        icon: <HiOutlineFolderAdd size={20} />,
+        permissions: ["admin", "staff"],
+        navLink: "/inventory/categories/add"
       },
     ]
   }
