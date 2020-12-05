@@ -14,6 +14,7 @@ import {
   Row
 } from "reactstrap";
 
+import { history } from "../../history"
 import {OrdersApi} from "api/endpoints"
 import {getMediaURL} from "api/utils"
 import VariantLabel from "components/inventory/VariantLabel"
@@ -172,7 +173,9 @@ export default function OrderDetails() {
             </div>
             <CardBody>
               <div className="item-name">
+                <a href="#" onClick={e => {e.preventDefault(); history.push(`/product/${item.product_variant.product.id}`)}}>
                 <h3>{item.product_variant.product.title}</h3>
+                </a>
                 {item.product_variant.product.has_multiple_variants &&
                   <p className="item-company">
                     <span className="company-name">
