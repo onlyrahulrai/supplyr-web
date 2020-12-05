@@ -8,7 +8,7 @@ class Landing extends React.Component{
     <div id="landing-box">
         <h1 className="text-light display-4">SUPPLYR</h1>
         <h3>
-            LANDING PAGE TO LAND HERE
+            Modernize Your Sales &amp; Purchases
         </h3>
         <div>
             <a href="/login"><Button.Ripple outline color="light" size="lg">PROCEED TO LOGIN</Button.Ripple></a>

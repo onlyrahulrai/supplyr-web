@@ -2,7 +2,7 @@ import React from "react"
 import { Navbar } from "reactstrap"
 import classnames from "classnames"
 import NavbarUser from "./NavbarUser"
-import userImg from "../../../assets/img/portrait/small/avatar-s-11.jpg"
+import userImg from "../../../assets/img/portrait/small/user.png"
 import { connect } from "react-redux"
 
 
