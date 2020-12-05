@@ -1,7 +1,6 @@
 import React from "react"
 import { Navbar } from "reactstrap"
 import classnames from "classnames"
-import NavbarBookmarks from "./NavbarBookmarks"
 import NavbarUser from "./NavbarUser"
 import userImg from "../../../assets/img/portrait/small/avatar-s-11.jpg"
 import { connect } from "react-redux"
@@ -50,10 +49,12 @@ const ThemeNavbar = props => {
               id="navbar-mobile"
             >
               <div className="bookmark-wrapper">
-                <NavbarBookmarks
-                  sidebarVisibility={props.sidebarVisibility}
-                  handleAppOverlay={props.handleAppOverlay}
-                />
+                {props.user.profile?.connection_code &&
+                  <>
+                    <small>Connection Code</small>
+                    <h5>{props.user.profile.connection_code}</h5>
+                  </>
+                }
               </div>
               {props.horizontal ? (
                 <div className="logo d-flex align-items-center">
@@ -65,7 +66,7 @@ const ThemeNavbar = props => {
                 handleAppOverlay={props.handleAppOverlay}
                 changeCurrentLang={props.changeCurrentLang}
                 userName={props.user.name}
-                connectionCode={props.user.profile?.connection_code}
+                businessName={props.user.profile?.business_name}
                 userImg={ userImg }
               />
             </div>

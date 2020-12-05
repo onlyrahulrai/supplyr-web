@@ -37,7 +37,7 @@ import { RiCheckboxMultipleBlankLine } from "react-icons/ri"
 import { connect } from "react-redux"
 import Checkbox from "components/@vuexy/checkbox/CheckboxesVuexy"
 import { SimpleInputField } from "components/forms/fields"
-import matchSorter from "match-sorter"
+import {matchSorter} from "match-sorter"
 import Swal from "utility/sweetalert"
 import CustomPagination from "components/common/CustomPagination"
 
@@ -119,7 +119,8 @@ class SubcategorySelector extends React.Component {
                 const val = e.target.value;
                 const subCategories = this.props.subCategories
                 const match = matchSorter(subCategories, val, {keys: ['name', 'category']})
-                this.setState({displayedSubCategories: match})
+                val && this.setState({displayedSubCategories: match})
+                !val && this.setState({displayedSubCategories: subCategories})
                 this.setState({searchBarValue: val})
               }}
             />
@@ -430,7 +431,7 @@ class UsersList extends React.Component {
                     </Col>
                     <Col sm="auto " md="auto" className="ml-auto ml-md-0 mr-0 mr-md-auto">
                       <Button.Ripple color={this.isFiltersDataPresent? 'warning' : 'light'} onClick={this.onFilter}>
-                        Filter
+                        Apply Filters
                       </Button.Ripple>
                     </Col>
                     {filtersApplied &&

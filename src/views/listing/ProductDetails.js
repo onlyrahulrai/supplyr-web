@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { Card, CardBody, Row, Col, Button, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { ShoppingCart, Edit3, PlusCircle, Trash } from "react-feather";
-import "swiper/css/swiper.css";
+// import "swiper/css/swiper.css";
 import "assets/scss/pages/app-ecommerce-shop.scss";
 import apiClient from "api/base";
 import Select from "react-select";
