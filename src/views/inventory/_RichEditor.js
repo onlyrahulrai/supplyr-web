@@ -28,7 +28,7 @@ export default class RichEditor extends React.Component {
     }
 
   
-    onEditorStateChange: Function = (editorState) => {
+    onEditorStateChange = (editorState) => {
       this.setState({
         editorState,
       });

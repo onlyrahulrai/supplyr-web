@@ -3,12 +3,12 @@ import React, { Component } from "react";
 import CreatableSelect from "react-select/creatable";
 // import { colourOptions } from '../data';
 
-const createOption = (value: string) => ({
+const createOption = (value) => ({
   value,
   label: value,
 });
 
-export default class CreatableSingle extends Component<*, State> {
+export default class CreatableSingle extends Component {
   state = {
     options: [],
   };
@@ -27,7 +27,7 @@ export default class CreatableSingle extends Component<*, State> {
       value: defaultValue
       });
   }
-  handleChange = (newValue: any, actionMeta: any) => {
+  handleChange = (newValue, actionMeta) => {
     this.setState({
       value: newValue,
     });
@@ -39,7 +39,7 @@ export default class CreatableSingle extends Component<*, State> {
     let newOptions = [...this.state.options, createOption(value)];
     this.setState({ value: createOption(value), options: newOptions });
   };
-  handleInputChange = (inputValue: any, actionMeta: any) => {
+  handleInputChange = (inputValue, actionMeta) => {
   };
   render() {
     return (

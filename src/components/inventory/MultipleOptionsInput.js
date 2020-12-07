@@ -6,12 +6,12 @@ const components = {
   DropdownIndicator: null,
 };
 
-const createOption = (label: string) => ({
+const createOption = (label) => ({
   label,
   value: label,
 });
 
-export default class CreatableInputOnly extends Component<*, State> {
+export default class CreatableInputOnly extends Component {
   state = {
     inputValue: '',
     value: [],
@@ -29,7 +29,7 @@ export default class CreatableInputOnly extends Component<*, State> {
     this.props.onChange(values_filtered)
   }
 
-  handleChange = (value: any, actionMeta: any) => {
+  handleChange = (value, actionMeta) => {
     // Mainly handles when item gets removed
     // console.group('Value Changed');
     // console.log(value);
@@ -41,7 +41,7 @@ export default class CreatableInputOnly extends Component<*, State> {
   handleInputChange = (inputValue: string) => {
     this.setState({ inputValue });
   };
-  handleKeyDown = (event: SyntheticKeyboardEvent<HTMLElement>) => {
+  handleKeyDown = (event) => {
     let { inputValue, value } = this.state;
     inputValue = inputValue.trim()
     if (!inputValue) return;
