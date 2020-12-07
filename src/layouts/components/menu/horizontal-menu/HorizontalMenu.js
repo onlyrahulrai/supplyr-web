@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import {
   Dropdown,
   DropdownToggle,
@@ -11,7 +11,7 @@ import { Link } from "react-router-dom"
 import { connect } from "react-redux"
 import { history } from "../../../../history"
 import navigationConfig from "../../../../configs/horizontalMenuConfig"
-class HorizontalSidebar extends React.Component {
+class HorizontalSidebar extends Component {
   constructor(props) {
     super(props)
 
@@ -136,7 +136,7 @@ class HorizontalSidebar extends React.Component {
           }
 
           let renderChildItems = (
-            <React.Fragment key={child.id}>
+            <Fragment key={child.id}>
               <li
                 className={classnames({
                   active: this.state.activeParents.includes(child.id)
@@ -211,7 +211,7 @@ class HorizontalSidebar extends React.Component {
                   )}
                 </DropdownItem>
               </li>
-            </React.Fragment>
+            </Fragment>
           )
 
           if (
@@ -232,7 +232,7 @@ class HorizontalSidebar extends React.Component {
           }
         })}
       </DropdownMenu>
-    )
+    );
   }
 
   renderDropdown = arr => {

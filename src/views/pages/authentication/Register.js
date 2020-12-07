@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import {
   Card,
   CardHeader,
@@ -11,7 +11,7 @@ import RegisterJWT from "./_RegistrationForm"
 import registerImg from "assets/img/pages/register.jpg"
 import "assets/scss/pages/authentication.scss"
 
-class Register extends React.Component {
+class Register extends Component {
 
   render() {
     return (

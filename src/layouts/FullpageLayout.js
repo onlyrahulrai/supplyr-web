@@ -1,4 +1,3 @@
-import React from "react"
 import themeConfig from "../configs/themeConfig"
 import classnames from "classnames"
 

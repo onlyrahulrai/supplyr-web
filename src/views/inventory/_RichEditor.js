@@ -1,4 +1,4 @@
-import React from 'react'
+import { Component } from 'react';
 import { Card, CardBody } from 'reactstrap'
 import { EditorState, convertToRaw, ContentState, convertFromHTML } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
@@ -7,7 +7,7 @@ import "assets/scss/plugins/extensions/editor.scss"
 import draftToHtml from 'draftjs-to-html';
 import htmlToDraft from 'html-to-draftjs';
 
-export default class RichEditor extends React.Component {
+export default class RichEditor extends Component {
     constructor(props) {
       super(props);
       if(!props.defaultValue) {

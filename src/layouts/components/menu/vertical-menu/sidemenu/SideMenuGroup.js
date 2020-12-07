@@ -1,9 +1,9 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import { Link } from "react-router-dom"
 import { Badge } from "reactstrap"
 import classnames from "classnames"
 import { ChevronRight } from "react-feather"
-class SideMenuGroup extends React.Component {
+class SideMenuGroup extends Component {
   constructor(props) {
     super(props)
     this.flag = true
@@ -166,7 +166,7 @@ class SideMenuGroup extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <Fragment>
         {this.renderChild(
           this.props.group,
           this.props.activeGroup,
@@ -174,8 +174,8 @@ class SideMenuGroup extends React.Component {
           this.props.handleActiveItem,
           null
         )}
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 export default SideMenuGroup

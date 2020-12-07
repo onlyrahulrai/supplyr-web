@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import {
   Card,
   CardHeader,
@@ -22,7 +22,7 @@ import {
 } from "react-feather"
 import { dividerIcon } from "./DividerSourceCode"
 
-class DividerIcon extends React.Component {
+class DividerIcon extends Component {
   state = {
     activeTab: "1"
   }
@@ -35,7 +35,7 @@ class DividerIcon extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <Fragment>
         <Card>
           <CardHeader>
             <CardTitle>Icons</CardTitle>
@@ -105,8 +105,8 @@ class DividerIcon extends React.Component {
             </TabContent>
           </CardBody>
         </Card>
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 export default DividerIcon

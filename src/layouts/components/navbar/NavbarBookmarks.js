@@ -1,4 +1,4 @@
-import React from "react"
+import { PureComponent } from "react";
 import {
   NavItem,
   NavLink,
@@ -28,7 +28,7 @@ const reorder = (list, startIndex, endIndex) => {
   return result
 }
 
-class NavbarBookmarks extends React.PureComponent {
+class NavbarBookmarks extends PureComponent {
   state = {
     showBookmarks: false,
     value: "",

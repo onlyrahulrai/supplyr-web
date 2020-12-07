@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import { Row, Col, Card, CardBody, Badge, Button, PaginationLink, PaginationItem, Pagination, Spinner} from "reactstrap"
 import {history} from "../../history"
 import Breacrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
@@ -11,7 +11,7 @@ import { RiCheckboxMultipleBlankLine, RiFileList3Line } from 'react-icons/ri'
 import { FaShoppingCart } from 'react-icons/fa'
 
 
-class ProductListItem extends React.Component {
+class ProductListItem extends Component {
 
   render() {
     const product = this.props.data
@@ -101,7 +101,7 @@ class ProductListItem extends React.Component {
   }
 }
 
-class ProductsList extends React.Component{
+class ProductsList extends Component{
   state = {
     view: "grid-view", //Options: grid-view & list-view 
     products: {},
@@ -184,7 +184,7 @@ class ProductsList extends React.Component{
         )
     }
     return (
-      <React.Fragment>
+      <Fragment>
         <Breacrumbs
           breadCrumbTitle="All Products"
           breadCrumbParent="Inventory"
@@ -228,8 +228,8 @@ class ProductsList extends React.Component{
             </Row>
           </div>
         </div>
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 

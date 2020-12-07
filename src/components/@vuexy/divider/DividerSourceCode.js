@@ -1,5 +1,3 @@
-import React from "react"
-
 export const dividerDefault = (
   <pre>
     <code className="language-jsx">

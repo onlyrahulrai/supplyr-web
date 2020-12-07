@@ -1,8 +1,8 @@
-import React from "react"
+import { Component } from "react";
 import { Card, CardBody } from "reactstrap"
 import Chart from "react-apexcharts"
 
-class StatisticsCards extends React.Component {
+class StatisticsCards extends Component {
   render() {
     return (
       <Card>

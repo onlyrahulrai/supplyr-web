@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import {
   Button,
   Card,
@@ -23,7 +23,7 @@ import { loginWithJWT } from "../../../redux/actions/auth/loginActions"
 import "../../../assets/scss/pages/authentication.scss"
 
 
-class Login extends React.Component {
+class Login extends Component {
   state = {
     email: "",
     password: "",

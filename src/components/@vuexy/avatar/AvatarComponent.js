@@ -1,7 +1,7 @@
-import React from "react"
+import { Component } from "react";
 import classnames from "classnames"
 import { Badge } from "reactstrap"
-class Avatar extends React.Component {
+class Avatar extends Component {
   render() {
     return (
       <div

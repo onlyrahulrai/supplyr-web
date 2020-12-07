@@ -1,5 +1,5 @@
-import React from "react"
-class CheckBoxesVuexy extends React.Component {
+import { Component } from "react";
+class CheckBoxesVuexy extends Component {
   render() {
     return (
       <div

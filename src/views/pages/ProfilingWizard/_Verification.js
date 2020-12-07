@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import {
     Card,
     CardHeader,
@@ -8,7 +8,7 @@ import {
 } from "reactstrap"
 import { Check } from "react-feather"
 
-class Verification extends React.Component{
+class Verification extends Component{
   render(){
     return (
         <div className="mt-3">

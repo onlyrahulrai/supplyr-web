@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import { Component, useEffect, useState } from "react";
 import { connect, useSelector } from "react-redux"
 import { Card, CardBody, CardHeader, CardTitle, Col, Row } from "reactstrap"
 import { RiCheckLine, RiCheckDoubleLine, RiTruckLine, RiStarLine, RiMoneyDollarCircleLine, RiUserReceived2Line } from "react-icons/ri"
@@ -139,7 +139,7 @@ const LineChart = (props) => {
   )
 }
 
-class Home extends React.Component {
+class Home extends Component {
 
   render() {
     // const userName = props => <p>{ user.name }</p>

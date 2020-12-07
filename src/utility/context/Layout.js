@@ -1,4 +1,4 @@
-import React from "react"
+import { createContext, Component } from "react";
 import VerticalLayout from "../../layouts/VerticalLayout"
 import FullLayout from "../../layouts/FullpageLayout"
 // import HorizontalLayout from "../../layouts/HorizontalLayout"
@@ -11,9 +11,9 @@ const layouts = {
   // horizontal: HorizontalLayout
 }
 
-const ContextLayout = React.createContext()
+const ContextLayout = createContext()
 
-class Layout extends React.Component {
+class Layout extends Component {
   state = {
     activeLayout: themeConfig.layout,
     width: window.innerWidth,

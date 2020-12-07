@@ -1,10 +1,10 @@
-import React from "react";
+import { Component } from "react";
 import { Input, Button, FormGroup, Label, Col,  FormFeedback, Spinner, Badge } from "reactstrap";
 import { CheckCircle } from "react-feather"
 import classnames from "classnames"
 
 
-export default class DynamicUncontrolledField extends React.Component {
+export default class DynamicUncontrolledField extends Component {
     render() {
         let schema = this.props.schema;
         let fieldError = this.props.error;

@@ -1,9 +1,9 @@
 import "../../assets/scss/plugins/extensions/react-paginate.scss"
 import { ChevronLeft, ChevronRight } from "react-feather"
-import React from "react"
+import { Component } from "react";
 import ReactPaginate from "react-paginate"
 
-export default class CustomPagination extends React.Component {
+export default class CustomPagination extends Component {
     render() {
         return <ReactPaginate
             previousLabel={<ChevronLeft size={15} />}

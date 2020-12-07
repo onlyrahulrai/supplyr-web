@@ -1,6 +1,6 @@
-import React from "react"
+import { Component } from "react";
 import "../../../assets/scss/components/app-loader.scss"
-class ComponentSpinner extends React.Component {
+class ComponentSpinner extends Component {
   render() {
     return (
       <div className="fallback-spinner">

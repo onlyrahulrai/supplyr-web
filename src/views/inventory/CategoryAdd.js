@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useEffect } from 'react'
+import { useState, useReducer, useEffect } from 'react';
 import { SimpleInputField } from 'components/forms/fields'
 import { Button, Row, Col, ListGroup, ListGroupItem,  FormGroup, Label, Input } from 'reactstrap'
 import apiClient from 'api/base';

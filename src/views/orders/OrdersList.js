@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import {
   Card,
   CardBody,
@@ -34,7 +34,7 @@ const orderStatusLabels = {
   dispatched: 'Dispatched',
 }
 
-class OrdersList extends React.Component {
+class OrdersList extends Component {
 
   state = {
     filters: {},

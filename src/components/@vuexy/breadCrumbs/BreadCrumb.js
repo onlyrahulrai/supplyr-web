@@ -1,11 +1,11 @@
-import React from "react"
+import { Component } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
 } from "reactstrap"
 import { Home } from "react-feather"
 import { NavLink } from "react-router-dom"
-class BreadCrumbs extends React.Component {
+class BreadCrumbs extends Component {
   render() {
     return (
       <div className="content-header row">

@@ -1,5 +1,5 @@
 import { SimpleInputField } from 'components/forms/fields';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Card, CardBody, Col, Input, Row } from 'reactstrap';
 import { SalespersonsApi } from 'api/endpoints'
 import { X } from "react-feather"

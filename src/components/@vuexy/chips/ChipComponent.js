@@ -1,6 +1,6 @@
-import React from "react"
+import { Component } from "react";
 import { X } from "react-feather"
-class Chip extends React.Component {
+class Chip extends Component {
   closeChip = e => {
     e.target.closest(".chip").remove()
   }

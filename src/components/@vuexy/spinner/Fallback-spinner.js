@@ -1,7 +1,7 @@
-import React from "react"
+import { Component } from "react";
 import logo from "../../../assets/img/logo/logo.png"
 import "../../../assets/scss/components/app-loader.scss"
-class SpinnerComponent extends React.Component {
+class SpinnerComponent extends Component {
   render() {
     return (
       <div className="fallback-spinner vh-100">

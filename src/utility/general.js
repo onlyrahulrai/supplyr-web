@@ -1,5 +1,3 @@
-import React from 'react'
-
 export const numberFormatter = (n) => {
     const [preDecimal, postDecimal] = n.toString().split('.');
     let formattedNumber = null
@@ -14,5 +12,5 @@ export const numberFormatter = (n) => {
   
     return formattedNumber + (postDecimal ? ('.' + postDecimal) : '')
   }
-  
-  export const priceFormatter = _price => <span>&#8377; {numberFormatter(_price)}</span>
+
+export const priceFormatter = _price => <span>&#8377; {numberFormatter(_price)}</span>

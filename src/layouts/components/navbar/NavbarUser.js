@@ -1,4 +1,4 @@
-import React from "react"
+import { PureComponent } from "react";
 import {
   NavItem,
   NavLink,
@@ -34,7 +34,7 @@ const UserDropdown = props => {
   )
 }
 
-class NavbarUser extends React.PureComponent {
+class NavbarUser extends PureComponent {
   state = {
     navbarSearch: false,
     suggestions: []

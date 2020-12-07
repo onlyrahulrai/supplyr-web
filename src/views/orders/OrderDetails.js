@@ -1,6 +1,6 @@
 import "assets/scss/pages/app-ecommerce-shop.scss";
 import { useParams } from "react-router-dom";
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {priceFormatter} from "utility/general"
 import {
   Heart, Star,

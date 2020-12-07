@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import { CustomInput } from "reactstrap"
 import { Settings, X } from "react-feather"
 import classnames from "classnames"
@@ -7,7 +7,7 @@ import { ContextLayout } from "../../../utility/context/Layout"
 import Radio from "../radio/RadioVuexy"
 import "../../../assets/scss/components/customizer.scss"
 
-class Customizer extends React.Component {
+class Customizer extends Component {
   state = {
     activeNavbar: this.props.activeNavbar,
     navbarType: null,
@@ -195,7 +195,7 @@ class Customizer extends React.Component {
                     </div>
                   }
                 </div>
-                { context.state.activeLayout !== "horizontal" && <React.Fragment>
+                { context.state.activeLayout !== "horizontal" && <Fragment>
                     <hr />
                     <div className="collapse-sidebar d-flex justify-content-between align-items-center">
                       <h5 className="pt-25">Collapse Sidebar</h5>
@@ -210,11 +210,11 @@ class Customizer extends React.Component {
                         inline
                       />
                     </div>
-                  </React.Fragment>
+                  </Fragment>
                 }
                 <hr />
                 {context.state.activeLayout === "vertical" && (
-                  <React.Fragment>
+                  <Fragment>
                     <div className="navbar-colors">
                       <h5>Navbar Colors</h5>
                       <ul className="list-inline unstyled-list">
@@ -285,7 +285,7 @@ class Customizer extends React.Component {
                       </ul>
                     </div>
                     <hr />
-                  </React.Fragment>
+                  </Fragment>
                 )}
                 <div className="navbar-type">
                   <h5>Navbar Type</h5>
@@ -392,10 +392,10 @@ class Customizer extends React.Component {
                 </div>
               </PerfectScrollbar>
             </div>
-          )
+          );
         }}
       </ContextLayout.Consumer>
-    )
+    );
   }
 }
 

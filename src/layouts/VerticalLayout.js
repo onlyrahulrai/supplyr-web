@@ -1,4 +1,4 @@
-import React, { PureComponent } from "react"
+import { PureComponent } from "react";
 import classnames from "classnames"
 import Customizer from "../components/@vuexy/customizer/Customizer"
 import Sidebar from "./components/menu/vertical-menu/Sidebar"

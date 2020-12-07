@@ -1,8 +1,8 @@
-import React from "react"
+import { Component } from "react";
 import { Card, CardBody, Button, Row, Col } from "reactstrap"
 import errorImg from "assets/img/pages/404.png"
 
-class Error404 extends React.Component {
+class Error404 extends Component {
   render() {
     return (
       <Row className="m-0">

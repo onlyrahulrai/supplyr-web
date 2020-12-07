@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import { Form, FormGroup, Input, Label, Button, FormFeedback, Alert, Col, Row } from "reactstrap"
 import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy"
 import { Check, AlertCircle } from "react-feather"
@@ -6,7 +6,7 @@ import { connect } from "react-redux"
 import { signupWithJWT } from "../../../redux/actions/auth/registerActions"
 import { history } from "../../../history"
 
-class CustomFormFeedback extends React.Component {
+class CustomFormFeedback extends Component {
   render() {
     return this.props.text
       ? (<FormFeedback>{this.props.text}</FormFeedback>)
@@ -14,7 +14,7 @@ class CustomFormFeedback extends React.Component {
   }
 }
 
-class RegisterJWT extends React.Component {
+class RegisterJWT extends Component {
   state = {
     email: "",
     password1: "",

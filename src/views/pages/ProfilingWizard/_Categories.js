@@ -1,4 +1,4 @@
-import React from 'react'
+import { Component } from 'react';
 import { Row, Col, Container, Card, CardHeader, CardBody, CardTitle, Button, UncontrolledTooltip } from 'reactstrap'
 import { Plus, X, Check, ChevronLeft } from 'react-feather'
 import Chip from 'components/profiling/ChipSelectable';
@@ -20,7 +20,7 @@ function CategoryEmptyPlaceholder(props) {
 }
 
 
-class CategoryListItem extends React.Component {
+class CategoryListItem extends Component {
   
   render() {
     let isSelected = this.props.isSelected;
@@ -44,7 +44,7 @@ class CategoryListItem extends React.Component {
   }
 }
 
-class CategoryDetailed extends React.Component {
+class CategoryDetailed extends Component {
     render() {
         return (
             <Card
@@ -109,7 +109,7 @@ class CategoryDetailed extends React.Component {
     }
 }
 
-class SubCategory extends React.Component {
+class SubCategory extends Component {
     state = {
         isSelected: true,
     }
@@ -128,7 +128,7 @@ class SubCategory extends React.Component {
     }
 }
 
-export default class Categories extends React.Component {
+export default class Categories extends Component {
     state = {
         selectedCategories : [],
         selectedSubcategories: [],

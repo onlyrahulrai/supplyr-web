@@ -1,4 +1,4 @@
-import React, { Fragment, useState, useEffect, useReducer } from "react";
+import { Fragment, useState, useEffect, useReducer } from "react";
 import RUG from 'react-upload-gallery'
 import 'react-upload-gallery/dist/style.css' // or scss
 import apiClient from "api/base";

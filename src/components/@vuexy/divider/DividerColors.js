@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import {
   Card,
   CardHeader,
@@ -14,7 +14,7 @@ import classnames from "classnames"
 import { Eye, Code } from "react-feather"
 import { dividerColors } from "./DividerSourceCode"
 
-class DividerColors extends React.Component {
+class DividerColors extends Component {
   state = {
     activeTab: "1"
   }
@@ -27,7 +27,7 @@ class DividerColors extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <Fragment>
         <Card>
           <CardHeader>
             <CardTitle>Colors</CardTitle>
@@ -96,8 +96,8 @@ class DividerColors extends React.Component {
             </TabContent>
           </CardBody>
         </Card>
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 export default DividerColors

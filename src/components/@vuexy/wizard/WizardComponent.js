@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import PropTypes from "prop-types"
 import classnames from "classnames"
 import {
@@ -12,7 +12,7 @@ import {
 } from "reactstrap"
 import { AvForm } from "availity-reactstrap-validation"
 
-class VuexyWizard extends React.Component {
+class VuexyWizard extends Component {
   static getDerivedStateFromProps(props, state) {
     if (props.activeStep) {
       if (props.activeStep !== state.activeStep) {
@@ -81,7 +81,7 @@ class VuexyWizard extends React.Component {
     let FormTag = this.props.validate ? AvForm : Form
 
     return (
-      <React.Fragment>
+      <Fragment>
         <Nav
           className={`vx-wizard ${
             this.props.className ? this.props.className : ""
@@ -148,8 +148,8 @@ class VuexyWizard extends React.Component {
             )
           })}
         </TabContent>
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 

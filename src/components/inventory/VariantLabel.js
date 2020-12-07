@@ -1,5 +1,3 @@
-import React from 'react'
-
 export default function VariantLabel({variantData, colorTheme = 'light'}) {
     const colorScheme = {
       'dark': {

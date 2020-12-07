@@ -1,4 +1,4 @@
-import React from "react";
+import { Component } from "react";
 import { Button, Alert } from "reactstrap";
 import { Form, Formik } from "formik";
 import DynamicField from "./DynamicField"
@@ -6,7 +6,7 @@ import DynamicUncontrolledField from "./DynamicUncontrolledField";
 import { AlertCircle } from "react-feather"
 
 
-class DynamicForm extends React.Component {
+class DynamicForm extends Component {
 
     getDynamicField(fieldSchema, values, errors) {
         let field_error = errors[fieldSchema.name]

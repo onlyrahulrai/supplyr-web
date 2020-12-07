@@ -1,6 +1,6 @@
-import React from "react"
+import { Component } from "react";
 import classnames from "classnames"
-class RadioVuexy extends React.Component {
+class RadioVuexy extends Component {
   render() {
     return (
       <div

@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import ReactDOM from "react-dom"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import {
@@ -12,7 +12,7 @@ import {
 import { Send } from "react-feather"
 import senderImg from "../../../assets/img/portrait/small/avatar-s-2.jpg"
 import receiverImg from "../../../assets/img/portrait/small/avatar-s-5.jpg"
-class ChatWidget extends React.Component {
+class ChatWidget extends Component {
   state = {
     chatsList: [
       {

@@ -1,11 +1,11 @@
-import React from "react";
+import { Component } from "react";
 import { Input, FormGroup, Label, Col, Row, FormFeedback } from "reactstrap";
 import { Field } from "formik";
 import Radio from "components/@vuexy/radio/RadioVuexyEnhanced"
 // import Select from 'react-select';
 import classnames from "classnames"
 
-export default class DynamicField extends React.Component {
+export default class DynamicField extends Component {
     render() {
         let schema = this.props.schema;
         let fieldError = this.props.error;

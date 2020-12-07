@@ -1,11 +1,11 @@
-import React from "react"
+import { Component } from "react";
 import { CardBody, Card } from "reactstrap"
 import DynamicForm from "components/forms/dynamic-form/DynamicForm"
 import apiClient from "api/base"
 
 
 
-class Profiling extends React.Component {
+class Profiling extends Component {
 
   formSchema = {
     fields: [

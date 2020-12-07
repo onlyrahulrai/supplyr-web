@@ -1,4 +1,4 @@
-import React, { lazy } from "react"
+import { Component, lazy } from "react";
 import { connect } from "react-redux"
 import Wizard from "components/profiling/ProfilingWizardComponent"
 import { UserCheck, FileText, CheckCircle, Package } from "react-feather"
@@ -18,7 +18,7 @@ const Approval = lazy(() =>
 )
 
 
-class ProfilingWizard extends React.Component{
+class ProfilingWizard extends Component{
   getActiveStepFromProps = () => {
     let current_user_state = this.props.user.user_status
       switch (current_user_state) {

@@ -1,13 +1,13 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import BreadCrumbs from "../../@vuexy/breadCrumbs/BreadCrumb"
 import {Row, Col} from "reactstrap" 
 import WizardBasic from "./WizardBasic"
 import WizardIcons from "./WizardIcons"
 import WizardValidation from "./WizardValidation"
-class Wizard extends React.Component {
+class Wizard extends Component {
   render() {
     return (
-      <React.Fragment>
+      <Fragment>
         <BreadCrumbs
           breadCrumbTitle="Wizard"
           breadCrumbParent="Extra Components"
@@ -24,8 +24,8 @@ class Wizard extends React.Component {
             <WizardValidation />
           </Col>
         </Row>
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 export default Wizard

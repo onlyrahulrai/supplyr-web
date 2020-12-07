@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import Wizard from "./WizardComponent"
 import {
   Form,
@@ -16,7 +16,7 @@ import {
 } from "reactstrap"
 import Checkbox from "../checkbox/CheckboxesVuexy"
 import { Check, Home, Briefcase, Image } from "react-feather"
-class WizardIcons extends React.Component {
+class WizardIcons extends Component {
   state = {
     activeStep: 0,
     steps: {

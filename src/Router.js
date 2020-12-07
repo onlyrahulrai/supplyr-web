@@ -1,4 +1,5 @@
-import React, { Suspense, lazy } from "react"
+import { Suspense, lazy } from "react";
+import * as React from "react";
 import { Router, Switch, Route, Redirect } from "react-router-dom"
 import { history } from "./history"
 import { connect } from "react-redux"

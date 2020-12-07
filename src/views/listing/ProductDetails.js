@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Card, CardBody, Row, Col, Button, Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { ShoppingCart, Edit3, PlusCircle, Trash } from "react-feather";
 // import "swiper/css/swiper.css";
@@ -71,158 +71,155 @@ const customStyles = {
     }
   })
 };
-  return (
-    Object.keys(currentVariant).length !==0 &&
-    <React.Fragment>
-      <Row>
-        <Col md="6">
-          <h2 className="content-header-title float-left mb-0">
-            Product Details
-          </h2>
-          <div className="breadcrumb-wrapper vx-breadcrumbs d-sm-block d-none col-12">
-            <Breadcrumb tag="ol">
-              <BreadcrumbItem tag="li" className="text-primary">
-                {productData.owner?.business_name}
-              </BreadcrumbItem>
+  return Object.keys(currentVariant).length !==0 &&
+  <Fragment>
+    <Row>
+      <Col md="6">
+        <h2 className="content-header-title float-left mb-0">
+          Product Details
+        </h2>
+        <div className="breadcrumb-wrapper vx-breadcrumbs d-sm-block d-none col-12">
+          <Breadcrumb tag="ol">
+            <BreadcrumbItem tag="li" className="text-primary">
+              {productData.owner?.business_name}
+            </BreadcrumbItem>
 
-              <BreadcrumbItem tag="li" active>
-                {productData.title}
-              </BreadcrumbItem>
-            </Breadcrumb>
-          </div>
-        </Col>
-        <Col md="6 text-right">
-            <Button.Ripple className="mr-1 mb-1" color="warning" onClick={e => history.push('/inventory/edit/'+productData.id)}>
-              <Edit3 size={15} />
-              <span className="align-middle ml-50">Edit</span>
-            </Button.Ripple>
+            <BreadcrumbItem tag="li" active>
+              {productData.title}
+            </BreadcrumbItem>
+          </Breadcrumb>
+        </div>
+      </Col>
+      <Col md="6 text-right">
+          <Button.Ripple className="mr-1 mb-1" color="warning" onClick={e => history.push('/inventory/edit/'+productData.id)}>
+            <Edit3 size={15} />
+            <span className="align-middle ml-50">Edit</span>
+          </Button.Ripple>
 
-            <Button.Ripple className="mr-1 mb-1" color="danger" onClick={(e) => {
-            return Swal.fire({
-                    title: 'Are you sure?',
-                    text: "You won't be able to revert this!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'Yes, delete product!'
-                  }).then(result => {
-                    if (result.value){
-                      apiClient.post('/inventory/delete/', {
-                        id: productData.id
-                      })
-                      .then(result => {
-                        if (result.data.success){
-                          history.push('/inventory')
-                          Swal.fire("Product Deleted !")
-                        }
-                      })
-                    }
-                    return false;
-                  })
-        }}>
-              <Trash size={15} />
-              <span className="align-middle ml-50">Delete Product</span>
-            </Button.Ripple>
-
-            <Button.Ripple className="mr-1 mb-1" color="success" onClick={e => history.push('/inventory/add')}>
-              <PlusCircle size={15} />
-              <span className="align-middle ml-50">Add New Product</span>
-            </Button.Ripple>
-        </Col>
-      </Row>
-      <Card className="app-ecommerce-details">
-        <CardBody className="pb-0">
-          <Row className="mb-5 mt-2">
-            <Col
-              className="d-flex align-items-center justify-content-center mb-2 mb-md-0"
-              sm="12"
-              md="5"
-            >
-              {productData.images.length > 0 &&
-
-              <Row>
-              {productData.images.map(image => {
-                return (<Col md="4">
-                  <img className="w-100" alt='' src={getApiURL(image.image)} />
-                </Col>)
-              })}
-              </Row>
-              }
-              {productData.images.length === 0 && 
-              <ShoppingCart size="300" color="#4442" />
-              }
-            </Col>
-            <Col md="7" sm="12">
-              <h3>{productData.title}</h3>
-              <p className="text-muted">by {productData.owner?.business_name}</p>
-              <div className="d-flex flex-wrap">
-                <h3 className="text-primary">{productPriceDisplay}</h3>
-              </div>
-              <hr />
-              <blockquote className="blockquote pl-1 border-left-secondary border-left-3">
-                <div dangerouslySetInnerHTML={{__html: productData.description}} />
-              </blockquote>
-              {/* <ul className="list-unstyled">
-                <li className="mb-50">
-                  <Truck size={15} />
-                  <span className="align-middle font-weight-bold ml-50">
-                    Next Day Delivery 
-                  </span>
-                </li>
-              </ul> */}
-              <hr />
-              {isMultiVariant && 
-              <>
-                <h4>Variants</h4>
-                <Select
-                  options={
-                    productData.variants_data.data.map(variant => {
-                      const label = (
-                        <div>
-                          <img src={variant.featured_image ? getApiURL(productData.images?.find(image => image.id === variant.featured_image)?.image ) : ''} alt='featured' className="float-left mr-1 img-40" />
-                          <div>{getVariantShortDescription(variant)}</div>
-                          <div className="text-lightgray">&#8377; {variant.price}</div>
-                        </div>
-                      )
-                      return {
-                        label: label,
-                        value: variant.id
+          <Button.Ripple className="mr-1 mb-1" color="danger" onClick={(e) => {
+          return Swal.fire({
+                  title: 'Are you sure?',
+                  text: "You won't be able to revert this!",
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonColor: '#d33',
+                  confirmButtonText: 'Yes, delete product!'
+                }).then(result => {
+                  if (result.value){
+                    apiClient.post('/inventory/delete/', {
+                      id: productData.id
+                    })
+                    .then(result => {
+                      if (result.data.success){
+                        history.push('/inventory')
+                        Swal.fire("Product Deleted !")
                       }
                     })
                   }
-                  defaultValue = {
-                    {
-                      label: getVariantShortDescription(currentVariant),
-                      value: currentVariant.id
+                  return false;
+                })
+      }}>
+            <Trash size={15} />
+            <span className="align-middle ml-50">Delete Product</span>
+          </Button.Ripple>
+
+          <Button.Ripple className="mr-1 mb-1" color="success" onClick={e => history.push('/inventory/add')}>
+            <PlusCircle size={15} />
+            <span className="align-middle ml-50">Add New Product</span>
+          </Button.Ripple>
+      </Col>
+    </Row>
+    <Card className="app-ecommerce-details">
+      <CardBody className="pb-0">
+        <Row className="mb-5 mt-2">
+          <Col
+            className="d-flex align-items-center justify-content-center mb-2 mb-md-0"
+            sm="12"
+            md="5"
+          >
+            {productData.images.length > 0 &&
+
+            <Row>
+            {productData.images.map(image => {
+              return (<Col md="4">
+                <img className="w-100" alt='' src={getApiURL(image.image)} />
+              </Col>)
+            })}
+            </Row>
+            }
+            {productData.images.length === 0 && 
+            <ShoppingCart size="300" color="#4442" />
+            }
+          </Col>
+          <Col md="7" sm="12">
+            <h3>{productData.title}</h3>
+            <p className="text-muted">by {productData.owner?.business_name}</p>
+            <div className="d-flex flex-wrap">
+              <h3 className="text-primary">{productPriceDisplay}</h3>
+            </div>
+            <hr />
+            <blockquote className="blockquote pl-1 border-left-secondary border-left-3">
+              <div dangerouslySetInnerHTML={{__html: productData.description}} />
+            </blockquote>
+            {/* <ul className="list-unstyled">
+              <li className="mb-50">
+                <Truck size={15} />
+                <span className="align-middle font-weight-bold ml-50">
+                  Next Day Delivery 
+                </span>
+              </li>
+            </ul> */}
+            <hr />
+            {isMultiVariant && 
+            <>
+              <h4>Variants</h4>
+              <Select
+                options={
+                  productData.variants_data.data.map(variant => {
+                    const label = (
+                      <div>
+                        <img src={variant.featured_image ? getApiURL(productData.images?.find(image => image.id === variant.featured_image)?.image ) : ''} alt='featured' className="float-left mr-1 img-40" />
+                        <div>{getVariantShortDescription(variant)}</div>
+                        <div className="text-lightgray">&#8377; {variant.price}</div>
+                      </div>
+                    )
+                    return {
+                      label: label,
+                      value: variant.id
                     }
-                  }
-                  onChange = {data => {
-                    let variantId = data.value
-                    let variant = productData.variants_data.data.filter(variant => variant.id === variantId)[0]
-                    setCurrentVariant(variant)
-                  }}
-                  styles={customStyles}
-                />
-                <hr />
-              </>
-              }
-
-              <p className="my-50">
-                <span>Quanitities</span>
-                <span className="mx-50">-</span>
-                {isProductInStock
-                ? (<strong className="text-success">{currentVariant.quantity} Units</strong>)
-                : (<span className="text-danger">Out Of Stock</span>)
-                  
+                  })
                 }
-              </p>
+                defaultValue = {
+                  {
+                    label: getVariantShortDescription(currentVariant),
+                    value: currentVariant.id
+                  }
+                }
+                onChange = {data => {
+                  let variantId = data.value
+                  let variant = productData.variants_data.data.filter(variant => variant.id === variantId)[0]
+                  setCurrentVariant(variant)
+                }}
+                styles={customStyles}
+              />
+              <hr />
+            </>
+            }
 
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-    </React.Fragment>
-    
-  );
+            <p className="my-50">
+              <span>Quanitities</span>
+              <span className="mx-50">-</span>
+              {isProductInStock
+              ? (<strong className="text-success">{currentVariant.quantity} Units</strong>)
+              : (<span className="text-danger">Out Of Stock</span>)
+                
+              }
+            </p>
+
+          </Col>
+        </Row>
+      </CardBody>
+    </Card>
+  </Fragment>;
 }
 export default DetailPage;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import { Component, useState, useEffect } from "react";
 import { Card, CardHeader, CardBody, CardTitle } from "reactstrap"
 import { useDropzone } from "react-dropzone"
 import "assets/scss/plugins/extensions/dropzone.scss"
@@ -49,7 +49,7 @@ function BasicDropzone(props) {
   )
 }
 
-class DropzoneBasic extends React.Component {
+class DropzoneBasic extends Component {
   render() {
     return (
       <Card>

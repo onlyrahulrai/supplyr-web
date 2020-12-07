@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import {
     Card,
     CardHeader,
@@ -6,7 +6,7 @@ import {
 } from "reactstrap"
 import { Clock } from "react-feather"
 
-class Page2 extends React.Component{
+class Page2 extends Component{
   render(){
     return (
         <div className="mt-3 col-lg-6 mx-auto">

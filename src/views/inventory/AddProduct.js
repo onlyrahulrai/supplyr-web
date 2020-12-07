@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import { Button, Col, Row, FormGroup, Label, Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, UncontrolledTooltip, Spinner } from 'reactstrap'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"

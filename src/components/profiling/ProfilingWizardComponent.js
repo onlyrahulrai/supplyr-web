@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import PropTypes from "prop-types"
 import classnames from "classnames"
 import {
@@ -22,7 +22,7 @@ import { AvForm } from "availity-reactstrap-validation"
  * 
  */
 
-class VuexyWizard extends React.Component {
+class VuexyWizard extends Component {
   // static getDerivedStateFromProps(props, state) {
   //   if (props.activeStep) {
   //     if (props.activeStep !== state.activeStep) {
@@ -103,7 +103,7 @@ class VuexyWizard extends React.Component {
       : Form
 
     return (
-      <React.Fragment>
+      <Fragment>
       
         <Card>
           <CardBody>
@@ -180,8 +180,8 @@ class VuexyWizard extends React.Component {
             )
           })}
         </TabContent>
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 

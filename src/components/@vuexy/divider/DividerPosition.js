@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import {
   Card,
   CardHeader,
@@ -14,7 +14,7 @@ import classnames from "classnames"
 import { Eye, Code } from "react-feather"
 import { dividerPosition } from "./DividerSourceCode"
 
-class DividerPosition extends React.Component {
+class DividerPosition extends Component {
   state = {
     activeTab: "1"
   }
@@ -27,7 +27,7 @@ class DividerPosition extends React.Component {
 
   render() {
     return (
-      <React.Fragment>
+      <Fragment>
         <Card>
           <CardHeader>
             <CardTitle>Text Position</CardTitle>
@@ -92,8 +92,8 @@ class DividerPosition extends React.Component {
             </TabContent>
           </CardBody>
         </Card>
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 export default DividerPosition

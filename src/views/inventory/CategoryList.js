@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import apiClient from 'api/base'
 import { Card, CardHeader, CardTitle, CardBody } from 'reactstrap'
 import { X, Edit } from 'react-feather'

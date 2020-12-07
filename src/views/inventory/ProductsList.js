@@ -1,4 +1,4 @@
-import React from "react"
+import { Component } from "react";
 import {
   Card,
   CardBody,
@@ -41,7 +41,7 @@ import {matchSorter} from "match-sorter"
 import Swal from "utility/sweetalert"
 import CustomPagination from "components/common/CustomPagination"
 
-class SubcategorySelector extends React.Component {
+class SubcategorySelector extends Component {
   constructor(props){
     super(props)
     this.state = {
@@ -174,7 +174,7 @@ class SubcategorySelector extends React.Component {
 }
 
 
-class UsersList extends React.Component {
+class UsersList extends Component {
   multiple_sign = (<>
     <RiCheckboxMultipleBlankLine className="ml-1" id="multiple-warning" color="#777"/>
     <UncontrolledTooltip

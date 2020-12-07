@@ -1,4 +1,4 @@
-import React from "react"
+import { Fragment } from "react";
 import { Navbar } from "reactstrap"
 import classnames from "classnames"
 import NavbarUser from "./NavbarUser"
@@ -10,7 +10,7 @@ const ThemeNavbar = props => {
   const colorsArr = [ "primary", "danger", "success", "info", "warning", "dark"]
   const navbarTypes = ["floating" , "static" , "sticky" , "hidden"]
   return (
-    <React.Fragment>
+    <Fragment>
       <div className="content-overlay" />
       <div className="header-navbar-shadow" />
       <Navbar
@@ -73,8 +73,8 @@ const ThemeNavbar = props => {
           </div>
         </div>
       </Navbar>
-    </React.Fragment>
-  )
+    </Fragment>
+  );
 }
 
 

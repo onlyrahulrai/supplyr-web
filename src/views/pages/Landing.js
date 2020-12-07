@@ -1,8 +1,8 @@
-import React from "react"
+import { Component } from "react";
 import {Button} from "reactstrap"
 import '../../assets/scss/landing/landing.scss'
 
-class Landing extends React.Component{
+class Landing extends Component{
   render(){
     return (
     <div id="landing-box">

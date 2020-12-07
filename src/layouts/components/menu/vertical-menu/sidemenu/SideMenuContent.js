@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import { Link } from "react-router-dom"
 import classnames from "classnames"
 import navigationConfig from "../../../../../configs/navigationConfig"
@@ -7,7 +7,7 @@ import { Badge } from "reactstrap"
 import { ChevronRight } from "react-feather"
 import { history } from "../../../../../history"
 
-class SideMenuContent extends React.Component {
+class SideMenuContent extends Component {
   constructor(props) {
     super(props)
 
@@ -256,7 +256,7 @@ class SideMenuContent extends React.Component {
         return this.redirectUnauthorized()
       }
     })
-    return <React.Fragment>{menuItems}</React.Fragment>
+    return <Fragment>{menuItems}</Fragment>;
   }
 }
 export default SideMenuContent

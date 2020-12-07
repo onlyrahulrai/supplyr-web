@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import { Fragment, Component } from "react";
 import classnames from "classnames"
 import { ContextLayout } from "../../../../utility/context/Layout"
 import { connect } from "react-redux"
@@ -138,7 +138,7 @@ class Sidebar extends Component {
         {context => {
           let dir = context.state.direction
           return (
-            <React.Fragment>
+            <Fragment>
               <Hammer
                 onSwipe={e => {
                   sidebarVisibility()
@@ -211,11 +211,11 @@ class Sidebar extends Component {
                   </Hammer>
                 </ScrollbarTag>
               </div>
-            </React.Fragment>
-          )
+            </Fragment>
+          );
         }}
       </ContextLayout.Consumer>
-    )
+    );
   }
 }
 

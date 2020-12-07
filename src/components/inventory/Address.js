@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function Address(props) {
     const { name, line1, line2, pin, city, state, phone } = props;
 

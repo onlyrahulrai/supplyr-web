@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import { Component } from "react";
 
 import CreatableSelect from "react-select/creatable";
 // import { colourOptions } from '../data';

@@ -1,11 +1,11 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import ReactDOM from "react-dom"
 import PropTypes from "prop-types"
 import classnames from "classnames"
 import { history } from "../../../history"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import { AlertTriangle } from "react-feather"
-class Autocomplete extends React.Component {
+class Autocomplete extends Component {
   constructor(props) {
     super(props)
 
@@ -261,7 +261,7 @@ class Autocomplete extends React.Component {
 
         this.filteredData.push(...sortData)
         return (
-          <React.Fragment key={suggestion[filterHeaderKey]}>
+          <Fragment key={suggestion[filterHeaderKey]}>
             <li className="suggestion-item suggestion-title text-primary text-bold-600">
               {suggestion[filterHeaderKey]}
             </li>
@@ -273,9 +273,9 @@ class Autocomplete extends React.Component {
                 <span className="align-middle ml-50">No Result</span>
               </li>
             )}
-          </React.Fragment>
-        )
-      })
+          </Fragment>
+        );
+      });
     }
   }
 

@@ -1,4 +1,4 @@
-import React from "react"
+import { Component, Fragment } from "react";
 import { Row, Col } from "reactstrap"
 import BreadCrumbs from "../../@vuexy/breadCrumbs/BreadCrumb"
 import DividerDefault from "./DividerDefault"
@@ -9,13 +9,13 @@ import DividerIcons from "./DividerIcons"
 import DividerStyle from "./DividerStyle"
 import Prism from "prismjs"
 import "prismjs/components/prism-jsx.min"
-class Divider extends React.Component {
+class Divider extends Component {
   componentDidMount() {
     Prism.highlightAll()
   }
   render() {
     return (
-      <React.Fragment>
+      <Fragment>
         <BreadCrumbs
           breadCrumbTitle="Divider"
           breadCrumbParent="Extra Components"
@@ -41,8 +41,8 @@ class Divider extends React.Component {
             <DividerStyle />
           </Col>
         </Row>
-      </React.Fragment>
-    )
+      </Fragment>
+    );
   }
 }
 export default Divider
