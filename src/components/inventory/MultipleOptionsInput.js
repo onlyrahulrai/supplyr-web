@@ -38,7 +38,7 @@ export default class CreatableInputOnly extends Component {
     this.setState({ value: value ?? [] });
     this.propogateValuesToParent(value ?? []);
   };
-  handleInputChange = (inputValue: string) => {
+  handleInputChange = (inputValue) => {
     this.setState({ inputValue });
   };
   handleKeyDown = (event) => {
