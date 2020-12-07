@@ -18,17 +18,20 @@
 // usage: theme-color("name_of_color", "type_of_color")
 // to avoid to repeating map-get($colors, ...)
 
-@function color-function($color, $type) {
+@function colorfunction($color, $type) {
   @if map-has-key($colors, $color) {
     $curr_color: map-get($colors, $color);
 
     @if map-has-key($curr_color, $type) {
       @return map-get($curr_color, $type);
     }
+    @else if map-has-key($curr_color, 'base') {
+      @return map-get($curr_color, 'base');
+    }
   }
 
   // @warn "Unknown `#{name}` in $colors.";
-  @return null;
+  @return #999999;
 }
 
 // Color palettes
@@ -103,7 +106,7 @@
 
       // badge
       .badge.badge-light-#{$color_name} {
-        background-color: color-function($color_name, "light-badge");
+        background-color: colorfunction($color_name, "light-badge");
         color: $color_value !important;
         font-weight: 500;
         text-transform: uppercase;
@@ -125,12 +128,12 @@
 
       // Basic buttons
       .btn-#{$color_name} {
-        border-color: color-function($color_name, "darken-2") !important;
+        border-color: colorfunction($color_name, "darken-2") !important;
         background-color: $color_value !important;
         color: #fff;
 
         &:hover {
-          border-color: color-function($color_name, "darken-1") !important;
+          border-color: colorfunction($color_name, "darken-1") !important;
           color: #fff !important;
           box-shadow: 0 8px 25px -8px rgba($color-value, 1);
         }
@@ -423,18 +426,18 @@
       }
 
       .btn-#{$color_name}.btn-#{$color_type} {
-        border-color: color-function($color_name, "darken-2") !important;
+        border-color: colorfunction($color_name, "darken-2") !important;
         background-color: $color_value !important;
 
         &:hover {
-          border-color: color-function($color_name, "darken-2") !important;
-          background-color: color-function($color_name, "darken-3") !important;
+          border-color: colorfunction($color_name, "darken-2") !important;
+          background-color: colorfunction($color_name, "darken-3") !important;
         }
 
         &:focus,
         &:active {
-          border-color: color-function($color_name, "darken-3") !important;
-          background-color: color-function($color_name, "darken-4") !important;
+          border-color: colorfunction($color_name, "darken-3") !important;
+          background-color: colorfunction($color_name, "darken-4") !important;
         }
       }
 
