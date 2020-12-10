@@ -895,6 +895,14 @@ function AddProduct(props) {
                     options={props.profile.sub_categories.map(
                       getRenderedSubcategory
                     )}
+                    filterOption={({label, value, data}, searchString) => {
+                      if (!searchString) return true;
+                      const subcat = props.profile.sub_categories.filter(sc => sc.id == value)
+                      console.log(subcat)
+                      // return false
+                      return subcat[0]?.name.toLowerCase().includes(searchString.toLowerCase()) || subcat[0]?.category.toLowerCase().includes(searchString.toLowerCase())
+                    }
+                    }
                     styles = {{ menu: styles => ({ ...styles, zIndex: 2 }) }}
                     onChange={(data) => {
                       const sub_categories = data?.map((item) => item.value);
