@@ -45,6 +45,7 @@ function App(props) {
       <Fragment>
         <RUG
          initialState={initialState}
+         inOrder={true}
         // action="http://127.0.0.1:8000/inventory/add-product-image/" 
         accept = {['jpg', 'jpeg', 'png']}
         source={response => getApiURL(response.image)}

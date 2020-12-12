@@ -30,6 +30,7 @@ export function SimpleInputField(props) {
                 innerRef = {props.innerRef}
                 onKeyPress={props.onKeyPress}
                 accept={props.accept}
+                step={props.step}
             />
         }
         {fieldError &&

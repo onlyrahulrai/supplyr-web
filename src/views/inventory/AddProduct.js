@@ -60,6 +60,7 @@ function VariantFields(props) {
             label = "Product Actual Price"
             name="price"
             type="number"
+            step='0.01'
             min="0"
             onChange={e => props.onChange("price", e.target.value)}
             requiredIndicator
@@ -69,6 +70,7 @@ function VariantFields(props) {
         <SimpleInputField
             label = "Sale Price"
             name="sale_price"
+            step='0.01'
             type="number"
             onChange={e => props.onChange("sale_price", e.target.value)}
             value={variantData.sale_price ?? ''}
@@ -730,7 +732,7 @@ function AddProduct(props) {
     const [basicData, setBasicData] = useState({title: ''}) //This title has been given to eleminate 'Uncontrolled to controlled' error in console
     const [variantsDataContainer, setVariantsDataContainer] = useState({})
     const [productImages, setProductImages] = useState([])
-    const [initialData, setInitialData] = useState({})
+    const [initialData, setInitialData] = useState(null)
 
     const productId = props.match.params.productId;
     const isEditingExistingProduct = Boolean(props.match.params.productId)
@@ -754,7 +756,10 @@ function AddProduct(props) {
                 setIsProductDataLoaded(true)
               })
           }
-    }, [])
+          else if (initialData) { // If someone has opened add product page just after edit page of some product, we need to clear the data, because edit & add, both are using same components and data is retained if moving from edit -> add product.
+            window.location.reload()
+          }
+    }, [productId])
 
     function setBasicFieldData(field, value) {
         let basicDataCopy = {...basicData}
@@ -927,7 +932,7 @@ function AddProduct(props) {
                 onChange={(images) => {
                   setProductImages(images);
                 }}
-                initialImages={initialData.images}
+                initialImages={initialData?.images}
                 isRenderable={isPageRenderReady}
               />
 
@@ -974,8 +979,8 @@ function AddProduct(props) {
                     })
                   }
                   initialVariantData={
-                    !initialData.variants_data?.multiple &&
-                    initialData.variants_data?.data
+                    !initialData?.variants_data?.multiple &&
+                    initialData?.variants_data?.data
                   }
                 />
               )}
@@ -995,8 +1000,8 @@ function AddProduct(props) {
                     })
                   }
                   initialVariantsData={
-                    initialData.variants_data?.multiple &&
-                    initialData.variants_data?.data
+                    initialData?.variants_data?.multiple &&
+                    initialData?.variants_data?.data
                   }
                   productImages={productImages}
                 />
