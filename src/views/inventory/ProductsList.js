@@ -247,13 +247,20 @@ class UsersList extends Component {
         // filter: true,
         width: 250,
         cellRendererFramework: params => {
-          const stock = params.value >= 10 ? (
+          let compare_value = params.value;
+          let display_value = params.value;
+
+          if (params.data.has_multiple_variants) {
+            compare_value = params.data.quantity_all_variants
+            display_value = `${params.data.quantity_all_variants} (across ${params.data.variants_count} variants)`
+          }
+          const stock = compare_value >= 10 ? (
             <div className="badge badge-pill badge-light-success">
-              <b>{params.value}</b>
+              <b>{display_value}</b>
             </div>
           ) : params.value >=1  ? (
             <div className="badge badge-pill badge-light-warning">
-              <b>{params.value}</b>
+              <b>{display_value}</b>
             </div>
           ) : (
             <div className="badge badge-pill badge-light-danger">
