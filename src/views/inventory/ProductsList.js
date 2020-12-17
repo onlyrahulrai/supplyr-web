@@ -213,7 +213,7 @@ class UsersList extends Component {
           return (
             <div>
               <span>{params.value} </span>
-              <Edit3 size={20} color="cadetblue" title="Edit" role="button" className="pointer" onClick={e => history.push('/inventory/edit/'+params.value)} />
+              <Edit3 size={20} color="cadetblue" title="Edit" role="button" className="pointer" onClick={e => history.push('/product/'+params.value + '/edit/')} />
             </div>
           )
         }
@@ -512,7 +512,7 @@ class UsersList extends Component {
                     />
                   </Col>
                   <Col lg="auto">
-                    <Button color="primary" onClick={e => {e.preventDefault(); history.push("/inventory/add")}}><PlusCircle size="20" className="mr-1"/> Add New Product</Button>
+                    <Button color="primary" onClick={e => {e.preventDefault(); history.push("/products/add/")}}><PlusCircle size="20" className="mr-1"/> Add New Product</Button>
                   </Col>
                   </Row>
 

@@ -208,20 +208,20 @@ class AppRouter extends React.Component {
                     />
                     <AppRoute
                         exact
-                        path="/inventory/list"
+                        path="/products/"
                         component={ProductsList}
                     />
                     <AppRoute
                         exact
-                        path="/product/:id"
+                        path="/product/:id/"
                         component={ProductDetails}
                     />
                     <AppRoute
-                        path="/inventory/add"
+                        path="/products/add/"
                         component={AddProduct}
                     />
                     <AppRoute
-                        path="/inventory/edit/:productId"
+                        path="/product/:productId/edit/"
                         component={AddProduct}
                     />
                     <AppRoute

@@ -137,7 +137,7 @@ class Login extends Component {
                   </CardBody>
 
 
-
+{/* 
                   <div className="auth-footer">
                     <div className="divider">
                       <div className="divider-text">OR</div>
@@ -156,7 +156,8 @@ class Login extends Component {
                         <GitHub size={14} stroke="white" />
                       </Button.Ripple>
                     </div>
-                  </div>
+                  </div> */}
+                  
                 </Card>
               </Col>
             </Row>

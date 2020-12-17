@@ -88,7 +88,7 @@ class ProductListItem extends Component {
                 <RiFileList3Line size="16" />
                 <span className="align-middle ml-50">View</span>
               </Link>
-              <Link to={`/inventory/edit/${ product.id }`} className="cart">
+              <Link to={`/product/${ product.id }/edit/`} className="cart">
                 <Edit size={15} />
                 <span className="align-middle ml-50">
                     Edit Details
@@ -190,7 +190,7 @@ class ProductsList extends Component{
           breadCrumbParent="Inventory"
           breadCrumbActive="Products"
           rightSection={
-            <Button color="primary" onClick={e => {e.preventDefault(); history.push("/inventory/add")}}><PlusCircle size="20" className="mr-1"/> Add</Button>
+            <Button color="primary" onClick={e => {e.preventDefault(); history.push("/products/add/")}}><PlusCircle size="20" className="mr-1"/> Add</Button>
           }
         />
         <div className="ecommerce-application">

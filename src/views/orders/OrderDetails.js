@@ -23,6 +23,7 @@ import ProductDummyImage from "assets/img/svg/cart.svg"
 import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsFillCaretDownFill} from "react-icons/bs"
 import {RiTruckLine} from "react-icons/ri"
 import Swal from "utility/sweetalert"
+import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 // import { productsList } from "./cartData";
 
 const statusDisplayDict = {
@@ -162,7 +163,11 @@ export default function OrderDetails() {
 
   return orderData && (
     <div className="ecommerce-application">
-
+    <BreadCrumb
+      breadCrumbTitle={"Order #" + orderId}
+      breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</a>}
+      breadCrumbActive = {`#${orderId} (${orderData.buyer_name})`}
+    />
     <div className="list-view product-checkout">
     <div className="checkout-items">
       {orderData?.items.map((item, i) => (

@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { NavLink } from "react-router-dom"
-import { Disc, X, Circle } from "react-feather"
+import { X, ArrowLeftCircle, ArrowRightCircle } from "react-feather"
 import classnames from "classnames"
 class SidebarHeader extends Component {
   render() {
@@ -24,7 +24,7 @@ class SidebarHeader extends Component {
           <li className="nav-item nav-toggle">
             <div className="nav-link modern-nav-toggle">
               {collapsed === false ? (
-                <Disc
+                <ArrowLeftCircle
                   onClick={() => {
                     toggleSidebarMenu(true)
                     toggle()
@@ -44,7 +44,7 @@ class SidebarHeader extends Component {
                   data-tour="toggle-icon"
                 />
               ) : (
-                <Circle
+                <ArrowRightCircle
                   onClick={() => {
                     toggleSidebarMenu(false)
                     toggle()

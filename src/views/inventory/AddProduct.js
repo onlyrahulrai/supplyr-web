@@ -22,6 +22,7 @@ import ImagePicker from 'components/inventory/react-image-picker'
 import Select from 'react-select';
 import { connect } from 'react-redux';
 import { SimpleInputField } from 'components/forms/fields'
+import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 
 const Swal = withReactContent(_Swal)
 
@@ -867,7 +868,12 @@ function AddProduct(props) {
 
     return (
       <>
-        <h4>ADD A NEW PRODUCT</h4>
+        <h4></h4>
+        <BreadCrumb
+          breadCrumbTitle={productId ? "EDIT PRODUCT" : "ADD NEW PRODUCT"}
+          breadCrumbActive = {initialData?.title ?? "New Product"}
+          breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/products/`)}}>All Products</a>}
+        />
         <hr />
         <form onSubmit={submitForm}>
           <Row>
@@ -935,6 +941,7 @@ function AddProduct(props) {
                 initialImages={initialData?.images}
                 isRenderable={isPageRenderReady}
               />
+              <br />
 
               <FormGroup>
                 <Row>

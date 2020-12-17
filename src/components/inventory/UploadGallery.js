@@ -111,7 +111,7 @@ function App(props) {
         }}
 
          />
-        <h1 style={style.title}>Hold Drag and Sort Items</h1>
+        {/* <h1 style={style.title}>Hold Drag and Sort Items</h1> */}
       </Fragment>
     );
   }

@@ -15,14 +15,6 @@ const navigationConfig = [
     navLink: "/dashboard"
   },
   {
-    id: "orders",
-    title: "Orders",
-    type: "item",
-    icon: <MdInput size={20} />,
-    // permissions: ["admin", "editor"],
-    navLink: "/orders"
-  },
-  {
     id: "inventory",
     title: "Inventory",
     type: "collapse",
@@ -39,21 +31,30 @@ const navigationConfig = [
       // },
       {
         id: "products-list",
-        title: "Products List",
+        title: "Manage Products",
         type: "item",
         icon: <MdPlaylistAddCheck size={20} />,
         // permissions: ["admin", "editor"],
-        navLink: "/inventory/list"
+        navLink: "/products/"
       },
-      {
-        id: "add-product",
-        title: "Add New Product",
-        type: "item",
-        icon: <MdPlaylistAdd size={20} />,
-        // permissions: ["admin", "editor"],
-        navLink: "/inventory/add"
-      },
+      // {
+      //   id: "add-product",
+      //   title: "Add New Product",
+      //   type: "item",
+      //   icon: <MdPlaylistAdd size={20} />,
+      //   // permissions: ["admin", "editor"],
+      //   navLink: "/products/add/"
+      // },
     ]
+  },
+
+  {
+    id: "orders",
+    title: "Orders",
+    type: "item",
+    icon: <MdInput size={20} />,
+    // permissions: ["admin", "editor"],
+    navLink: "/orders"
   },
 
   {
