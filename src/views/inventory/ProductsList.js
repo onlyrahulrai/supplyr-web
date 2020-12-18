@@ -40,6 +40,7 @@ import { SimpleInputField } from "components/forms/fields"
 import {matchSorter} from "match-sorter"
 import Swal from "utility/sweetalert"
 import CustomPagination from "components/common/CustomPagination"
+import {priceFormatter} from "utility/general"
 
 class SubcategorySelector extends Component {
   constructor(props){
@@ -267,17 +268,21 @@ class UsersList extends Component {
               OUT OF STOCK
             </div>
           ) 
-          return (<div>{stock}{params.data.has_multiple_variants && this.multiple_sign}</div>)
+          return (<div>{stock}</div>)
         }
       },
       {
         headerName: "Sale Price",
         field: "sale_price",
         // filter: true,
-        width: 200,
+        width: 250,
         cellRendererFramework: params => {
+          let display_value = priceFormatter(params.value)
+          if(params.data.has_multiple_variants && params.data.sale_price_maximum && params.data.sale_price_minimum &&  params.data.sale_price_maximum !==  params.data.sale_price_minimum) {
+            display_value = <>{priceFormatter(params.data.sale_price_minimum)} {'-'} {priceFormatter(params.data.sale_price_maximum)}</>
+          }
           return (
-            <div>&#8377; {params.value} {params.data.has_multiple_variants && this.multiple_sign}</div>
+            <div>{display_value} {params.data.has_multiple_variants && this.multiple_sign}</div>
           )
         }
       },
@@ -285,7 +290,7 @@ class UsersList extends Component {
         headerName: "Variants",
         field: "variants_count",
         // filter: true,
-        width: 200,
+        width: 150,
         cellRendererFramework: params => {
           if (!params.data.has_multiple_variants)
             return '-'
