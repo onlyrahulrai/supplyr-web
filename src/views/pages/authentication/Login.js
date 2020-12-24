@@ -22,6 +22,10 @@ import loginImg from "../../../assets/img/pages/login.png"
 import { loginWithJWT } from "../../../redux/actions/auth/loginActions"
 import "../../../assets/scss/pages/authentication.scss"
 
+function validateMobileOrEmail(text) {
+  const re = /^([_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5}))|(^\d{10}$)$/;
+  return re.test(text);
+}
 
 class Login extends Component {
   state = {
@@ -44,6 +48,13 @@ class Login extends Component {
       is_submitting: true
     })
     this.props.loginWithJWT(this.state, this.handleError)
+  }
+
+  onEmailChange = e => {
+    this.setState({ email: e.target.value })
+    console.log(e.target.validity.valid)
+    e.target.setCustomValidity('')
+    !validateMobileOrEmail(e.target.value) && e.target.setCustomValidity('Enter valid 10-digit Mobile Number or Email Address')
   }
 
   render() {
@@ -82,16 +93,16 @@ class Login extends Component {
                     <Form action="/" onSubmit={this.handleLogin}>
                       <FormGroup className="form-label-group position-relative has-icon-left">
                         <Input
-                          type="email"
-                          placeholder="Email"
+                          type="text"
+                          placeholder="10-digit Mobile Number or Email"
                           value={this.state.email}
-                          onChange={e => this.setState({ email: e.target.value })}
+                          onChange={e => this.onEmailChange(e)}
                           required
                         />
                         <div className="form-control-position">
                           <Mail size={15} />
                         </div>
-                        <Label>Email</Label>
+                        <Label>Mobile Number or Email</Label>
                       </FormGroup>
                       <FormGroup className="form-label-group position-relative has-icon-left">
                         <Input
