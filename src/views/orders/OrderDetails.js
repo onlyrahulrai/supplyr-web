@@ -24,6 +24,7 @@ import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsFillCaretDownFill} from 
 import {RiTruckLine} from "react-icons/ri"
 import Swal from "utility/sweetalert"
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
+import OrderTimeline from "components/common/OrderTimeline"
 // import { productsList } from "./cartData";
 
 const statusDisplayDict = {
@@ -211,6 +212,24 @@ export default function OrderDetails() {
           </div>
         </Card>
       ))}
+      <Card style={{zIndex: -1}}>
+        {/* zIndex -1 for timeline connector line (because of the way it is designed, it needed to) */}
+        <CardBody>
+          <h3>Order Timeline</h3>
+          <OrderTimeline 
+            data={orderData.history.concat([
+              {
+                status: 'created',
+                date: orderData.order_date,
+                time: orderData.order_time,
+                created_by_user: orderData.created_by_user,
+                created_by_entity: orderData.created_by_entity,
+              }
+            ])}
+          />
+
+        </CardBody>
+      </Card>
     </div>
 
 
