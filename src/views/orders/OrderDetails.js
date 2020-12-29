@@ -217,7 +217,7 @@ export default function OrderDetails() {
         <CardBody>
           <h3>Order Timeline</h3>
           <OrderTimeline 
-            data={orderData.history.concat([
+            data={(orderData.history??[]).concat([
               {
                 status: 'created',
                 date: orderData.order_date,

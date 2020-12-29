@@ -1,7 +1,7 @@
 import axios from "axios"
 import { store } from "redux/storeConfig/store"
 
-const baseURL = process.env.REACT_APP_API_URL + "/seller"
+const baseURL = process.env.REACT_APP_API_URL + "/v1/seller"
 
 const apiClient = axios.create({
     baseURL: baseURL,
