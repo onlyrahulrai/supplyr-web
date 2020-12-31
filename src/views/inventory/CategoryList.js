@@ -6,6 +6,8 @@ import Chip from 'components/@vuexy/chips/ChipComponent'
 import {history} from '../../history'
 import { getApiURL } from 'api/utils'
 import Swal from 'utility/sweetalert'
+import Spinner from "components/@vuexy/spinner/Loading-spinner"
+import NetworkError from "components/common/NetworkError"
 
 function CategoryListItem(props) {
     const {name, id:categoryId, image, sub_categories} = props.category
@@ -34,11 +36,20 @@ function CategoryListItem(props) {
 
 function CategoryList(props) {
     const [categories, setCategories] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [loadingError, setLoadingError] = useState(null)
+
     useEffect(() => {
         apiClient.get('/inventory/categories')
             .then((response) =>{
                 const categories = response.data;
                 setCategories(categories)
+            })
+            .catch(error => {
+              setLoadingError(error.message)
+            })
+            .finally(() => {
+              setIsLoading(false)
             })
     }, [])
 
@@ -70,10 +81,22 @@ function CategoryList(props) {
             })
     }
 
-    return (
+    return (<>
+      {isLoading &&
+        <Spinner />
+      }
+      {!isLoading && loadingError && (
+        <NetworkError
+          error={loadingError}
+        />
+      )
+      }
+      {!isLoading && categories &&
         <div className="card-columns">
             {categories.map(category => (<CategoryListItem category={category} onDelete={e => deleteCategory(category.id)}/>))}
         </div>
+      }
+        </>
     )
 }
 

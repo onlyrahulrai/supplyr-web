@@ -5,6 +5,7 @@ import { SalespersonsApi } from 'api/endpoints'
 import { X } from "react-feather"
 import { Spinner } from "reactstrap"
 import Swal from "utility/sweetalert"
+import NetworkError from "components/common/NetworkError"
 
 export default function Salesperson() {
 
@@ -13,11 +14,20 @@ export default function Salesperson() {
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [formError, setFormError] = useState("")
 
+    const [isLoading, setIsLoading] = useState(true)
+    const [loadingError, setLoadingError] = useState(null)
+
     useEffect(() => {
         SalespersonsApi.index()
             .then(({ data }) => {
                 console.log(data)
                 setSalespersons(data)
+            })
+            .catch(error => {
+                setLoadingError(error.message)
+            })
+            .finally(() => {
+            setIsLoading(false)
             })
     }, [])
 
@@ -89,6 +99,17 @@ export default function Salesperson() {
                         </Button>
                     </Col>
                 </Row>
+
+                {isLoading &&
+                    <div><Spinner /> <span>{"  "} Loading registered salespersons...</span></div>
+                }
+                {!isLoading && loadingError && (
+                    <NetworkError
+                    title="Unable to load registered salespersons"
+                    error={loadingError}
+                    />
+                )
+                }
 
                 {salespersons?.length > 0 &&
                     <>

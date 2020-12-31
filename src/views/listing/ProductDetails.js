@@ -11,6 +11,8 @@ import { getApiURL } from "api/utils"
 import _Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
+import NetworkError from "components/common/NetworkError"
+import Spinner from "components/@vuexy/spinner/Loading-spinner"
 
 const Swal = withReactContent(_Swal)
 
@@ -35,6 +37,8 @@ function DetailPage(props) {
   const [productData, setProductData] = useState({})
   const [currentVariant, setCurrentVariant] = useState({})
   const [isMultiVariant, setIsMultiVariant] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingError, setLoadingError] = useState(null)
   useEffect(() => {
     const url = 'inventory/product/' + productId
     apiClient.get(url)
@@ -45,6 +49,12 @@ function DetailPage(props) {
         setCurrentVariant(
           multiVariant ? response.data.variants_data.data[0] : response.data.variants_data.data
         )
+      })
+      .catch(error => {
+        setLoadingError(error.message)
+      })
+      .finally(() => {
+        setIsLoading(false)
       })
   }, [])
 
@@ -73,7 +83,18 @@ const customStyles = {
     }
   })
 };
-  return Object.keys(currentVariant).length !==0 &&
+  return <>
+  {isLoading &&
+    <Spinner />
+  }
+  {!isLoading && loadingError && (
+    <NetworkError
+      error={loadingError}
+    />
+  )
+  }
+  
+  {Object.keys(currentVariant).length !==0 &&
   <Fragment>
         <BreadCrumb
           breadCrumbTitle="Product Details"
@@ -210,6 +231,8 @@ const customStyles = {
         </Row>
       </CardBody>
     </Card>
-  </Fragment>;
+  </Fragment>
+  }
+  </>
 }
 export default DetailPage;

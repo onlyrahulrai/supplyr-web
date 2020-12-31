@@ -7,6 +7,8 @@ import { MdInput } from "react-icons/md"
 import { FaBoxes } from "react-icons/fa"
 import { DashboardApi } from "api/endpoints"
 import { numberFormatter } from "utility/general"
+import Spinner from "components/@vuexy/spinner/Loading-spinner"
+import NetworkError from "components/common/NetworkError"
 
 const StatsSmallCard = (props) => {
   const { title, description, icon, color } = props;
@@ -139,24 +141,12 @@ const LineChart = (props) => {
   )
 }
 
-class Home extends Component {
-
-  render() {
-    // const userName = props => <p>{ user.name }</p>
-    const msg = this.props.user?.name ?
-      <div> You are logged in as <b style={{ textTransform: 'capitalize', color: 'red' }}>{this.props.user.name}</b></div>
-      :
-      <div>You are not logged in</div>
-
-    return <h4>You're Home. {msg}</h4>
-  }
-}
-
 const Dashboard = () => {
   const userInfo = useSelector(state => state.auth.userInfo)
 
   const [isLoading, setIsLoading] = useState(true)
   const [sellerStats, setSellerStats] = useState(null)
+  const [loadingError, setLoadingError] = useState(null)
 
   const { daily_order_stats, weekly_order_stats, order_status_counts, products_count, buyers_count } = sellerStats ?? {}
 
@@ -171,6 +161,7 @@ const Dashboard = () => {
       .then(({ data }) => {
         setSellerStats(data)
       })
+      .catch(error => setLoadingError(error.message))
       .finally(() => {
         setIsLoading(false)
       })
@@ -180,7 +171,17 @@ const Dashboard = () => {
 
   return (
     <>
+      {isLoading &&
+        <Spinner />
+      }
       {!isLoading &&
+        <>
+        {loadingError &&
+            <NetworkError
+              error={loadingError}
+            />
+        }
+        {!loadingError && sellerStats &&
         <>
           <h3>Orders</h3>
           <hr />
@@ -290,6 +291,8 @@ const Dashboard = () => {
               </Row>
             </Col>
           </Row>
+          </>
+        }
         </>
       }
     </>

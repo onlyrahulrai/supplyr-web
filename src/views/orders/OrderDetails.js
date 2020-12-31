@@ -25,6 +25,8 @@ import {RiTruckLine} from "react-icons/ri"
 import Swal from "utility/sweetalert"
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 import OrderTimeline from "components/common/OrderTimeline"
+import Spinner from "components/@vuexy/spinner/Loading-spinner"
+import NetworkError from "components/common/NetworkError"
 // import { productsList } from "./cartData";
 
 const statusDisplayDict = {
@@ -85,12 +87,20 @@ export default function OrderDetails() {
   console.log({orderId})
 
   const [orderData, setOrderData] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [loadingError, setLoadingError] = useState(null)
 
   const fetchOrderData = () => {
     OrdersApi.retrieve(orderId)
     .then(response => {
       setOrderData(response.data)
       console.log("sds ", response.data)
+    })
+    .catch(error => {
+      setLoadingError(error.message)
+    })
+    .finally(() => {
+      setIsLoading(false)
     })
   }
 
@@ -162,7 +172,17 @@ export default function OrderDetails() {
 
 
 
-  return orderData && (
+  return <>
+  {isLoading &&
+    <Spinner />
+  }
+  {!isLoading && loadingError && (
+    <NetworkError
+      error={loadingError}
+    />
+  )
+  }
+  {!isLoading && orderData && (
     <div className="ecommerce-application">
     <BreadCrumb
       breadCrumbTitle={"Order #" + orderId}
@@ -352,5 +372,7 @@ export default function OrderDetails() {
     </div>
   </div>
   </div>
-  );
+  )
+  }
+  </>
 }
