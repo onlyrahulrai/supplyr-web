@@ -64,6 +64,8 @@ const Landing = lazy(() => import("./views/pages/Landing"))
 
 const error404 = lazy(() => import("./views/pages/404"))
 
+const ConfirmEmail = lazy(() => import("./views/pages/authentication/ConfirmEmail"))
+
 // Set Layout and Component Using App Route
 const RouteConfig = ({
     component: Component,
@@ -185,6 +187,12 @@ class AppRouter extends React.Component {
             // Set the directory path if you are deploying in sub-folder
             <Router history={history}>
                 <Switch>
+                    <PublicAppRoute
+                        exact
+                        path="/confirm-email/:key/"
+                        component={ConfirmEmail}
+                        noLayout
+                    />
                     <PublicOnlyAppRoute
                         exact
                         path="/"

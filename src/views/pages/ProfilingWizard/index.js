@@ -22,7 +22,7 @@ class ProfilingWizard extends Component{
   getActiveStepFromProps = () => {
     let current_user_state = this.props.user.user_status
       switch (current_user_state) {
-        case 'registered': return 0;
+        case 'unverified': return 0;
         case 'verified': return 1;
         case 'form_filled': return 2;
         case 'categories_selected': return 3;
