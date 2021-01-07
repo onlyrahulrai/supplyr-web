@@ -23,7 +23,8 @@ export default function ConfirmEmail(props) {
                     setResponseOk(true)
                     if (isAuthenticated) {
                         setTimeout(() => {
-                            history.push("/misc/not-authorized")
+                            history.push("/")
+                            window.location.reload()
                         }, 3000)
                     }
                 }
