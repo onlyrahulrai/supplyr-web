@@ -197,7 +197,7 @@ class Profiling extends Component {
 
   render() {
     return (
-      <div className="mt-3 col-xl-5 col-lg-8 col-md-10 col-12 mx-auto">
+      <div className="mt-3 col-xl-6 col-lg-8 col-md-10 col-12 mx-auto">
         <h4 className="">Business Details</h4>
         <hr />
         <h6 className="text-bold-400 mb-2 text-gray">

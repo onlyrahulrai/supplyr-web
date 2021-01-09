@@ -50,6 +50,7 @@ export function FloatingInputField(props) {
           placeholder={props.placeholder ?? props.label}
           onChange={props.onChange}
           value={props.value}
+          maxLength={props.maxLength}
         />
         <Label for={props.name}>{props.label}</Label>
       </FormGroup>
