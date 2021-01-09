@@ -1,4 +1,4 @@
-import { Component, useState } from "react";
+import { Component, useEffect, useState } from "react";
 import {
     Card,
     CardHeader,
@@ -9,11 +9,13 @@ import {
     Row,
     Spinner,
 } from "reactstrap"
-import { Check, Info, Send } from "react-feather"
+import { Check, Info, Repeat, Send } from "react-feather"
 import { useSelector } from "react-redux";
 import apiClient from "api/base";
 import {Toast} from "utility/sweetalert"
 import { FloatingInputField } from "components/forms/fields";
+
+const otpResendCountdownSeconds = 40;
 
 const styles = {
     fieldTitle: {
@@ -130,6 +132,12 @@ const Verification = () => {
     const [isSendingVerificationMail, setIsSendingVerificationMail] = useState(false)
     const [otpStatus, setOtpStatus] = useState("unsent") //unsent/sending/sent
     const [otpId, setOtpId] = useState(null)
+    const [otpResendCountdown, setOtpResendCountdown] = useState(0)
+
+    useEffect(() => {
+        otpResendCountdown > 0 && setTimeout(() => setOtpResendCountdown(otpResendCountdown - 1), 1000);
+    }, [otpResendCountdown])
+
 
     const resendVerificationMail = () => {
         setIsSendingVerificationMail(true)
@@ -153,8 +161,8 @@ const Verification = () => {
             })
     }
 
-    const onClickOtpSend = () => {
-        setOtpStatus('sending')
+    const onClickOtpSend = (mode) => {
+        setOtpStatus(mode === 'resend' ? 'resending' :  'sending')
         apiClient.post('/send-mobile-verification-otp/')
             .then((response) => {
                 const _otpId = response.data?.otp_id
@@ -165,6 +173,7 @@ const Verification = () => {
                         icon: 'success',
                         title: 'Verification OTP sent to your mobile'
                     })
+                    setOtpResendCountdown(otpResendCountdownSeconds)
                 }
                 else {
                     throw new Error()
@@ -234,8 +243,25 @@ const Verification = () => {
                                             Send OTP
                                         </Button>
                                     }
-                                    {(otpStatus === 'sent') &&
+                                    {['sent', 'resending'].includes(otpStatus) && <>
                                         <OTPVerificationForm otpId={otpId} />
+                                        <div className='text-right'>
+                                            {otpResendCountdown > 0 && (
+                                                <div className='small text-secondary'>Resend OTP in {otpResendCountdown} seconds</div>
+                                            )}
+                                            {otpResendCountdown === 0 && (<>
+                                                {otpStatus !== 'resending' &&
+                                                    <Repeat size={13} color="#2196f3" style={{marginRight: 5}} />
+                                                }
+                                                {otpStatus === 'resending' &&
+                                                    <Spinner color="secondary" size="sm" style={{marginRight: 5}} />
+                                                }   
+                                                <a className='small' style={styles.resendMailBtn} onClick={e => otpStatus !== 'resending' && onClickOtpSend('resend')} >Resend OTP</a>
+
+                                                </>
+                                            )}
+                                        </div>
+                                        </>
                                     }
                                 </Col>
                             }
