@@ -8,8 +8,11 @@ import {
     Col,
     Row,
     Spinner,
+    Input,
+    FormGroup,
+    Label,
 } from "reactstrap"
-import { Check, Info, Repeat, Send } from "react-feather"
+import { Check, Edit, Edit3, Info, Repeat, Send } from "react-feather"
 import { useSelector } from "react-redux";
 import apiClient from "api/base";
 import {Toast} from "utility/sweetalert"
@@ -69,6 +72,127 @@ const UnverifiedSymbol = () => (
     <span style={{...styles.verificationStatusText, ...styles.verificationStatusTextUnverified}}>Unverified</span>
   </>
 );
+
+const EditButton = ({onClick}) => (
+    <a onClick={onClick}>
+        <Edit3 size={13} color="#2196f3" /> 
+        <span style={{color: '#2196f3'}}> edit</span>
+    </a>
+)
+
+const EmailEditForm = ({onClose, onSuccess}) => {
+    const [value, setValue] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const onSubmit = () => {
+        setIsSubmitting(true)
+        apiClient.post('/change-email/', {new_email: value})
+            .then(() => {
+                onSuccess()
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Email changed successfully'
+                  })
+
+            })
+            .catch(error => {
+                const message = error.response?.data.message ?? error.message
+                Toast.fire({
+                    icon: 'error',
+                    title: message
+                  })
+            })
+            .finally(() => {
+                setIsSubmitting(false)
+            })
+    }
+
+    return (
+        <form onSubmit={onSubmit}>
+        <Row>
+            <Col sm={6}>
+                <FormGroup className="form-label-group">
+                    <Input
+                    type="email"
+                    placeholder="New Email"
+                    onChange={e=> setValue(e.target.value)}
+                    value={value}
+                    name="email"
+                    maxLength={150}
+                    disabled={isSubmitting}
+                    />
+                    <Label for="email">New Email</Label>
+                </FormGroup>
+            </Col>
+            <Col sm={3}>
+                <Button type="submit" color="primary" disabled={isSubmitting}>
+                    {isSubmitting && 
+                        <Spinner color="white" size="sm" style={{marginRight: 5}} />
+                    }
+                    Save
+                </Button>
+            </Col>
+            <Col sm={3}>
+                <Button type="submit" color="secondary" outline onClick={onClose} disabled={isSubmitting}>Cancel</Button>
+            </Col>
+        </Row>
+        </form>
+    )
+}
+
+const MobileEditForm = ({onClose, onSuccess}) => {
+    const [value, setValue] = useState('')
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const onSubmit = () => {
+        setIsSubmitting(true)
+        apiClient.post('/change-mobile/', {new_mobile: value})
+            .then(() => {
+                onSuccess()
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Mobile Number changed successfully'
+                  })
+
+            })
+            .catch(error => {
+                const message = error.response?.data.message ?? error.message
+                Toast.fire({
+                    icon: 'error',
+                    title: message
+                  })
+            })
+            .finally(() => {
+                setIsSubmitting(false)
+            })
+    }
+
+    return (
+        <form onSubmit={onSubmit}>
+        <Row>
+            <Col sm={6}>
+                <FormGroup className="form-label-group">
+                    <Input
+                    // type="email"
+                    placeholder="New Mobile Number"
+                    onChange={e=> setValue(e.target.value)}
+                    value={value}
+                    name="ph"
+                    maxLength={150}
+                    />
+                    <Label for="ph">New Mobile Number</Label>
+                </FormGroup>
+            </Col>
+            <Col sm={3}>
+                <Button type="submit" color="primary" >Save</Button>
+            </Col>
+            <Col sm={3}>
+                <Button type="submit" color="secondary" outline onClick={onClose}>Cancel</Button>
+            </Col>
+        </Row>
+        </form>
+    )
+}
 
 const OTPVerificationForm = ({otpId}) => {
     const [otpValue, setOtpValue] = useState('')
@@ -133,6 +257,8 @@ const Verification = () => {
     const [otpStatus, setOtpStatus] = useState("unsent") //unsent/sending/sent
     const [otpId, setOtpId] = useState(null)
     const [otpResendCountdown, setOtpResendCountdown] = useState(0)
+    const [emailEditable, setEmailEditable] = useState(false)
+    const [mobileEditable, setMobileEditable] = useState(false)
 
     useEffect(() => {
         otpResendCountdown > 0 && setTimeout(() => setOtpResendCountdown(otpResendCountdown - 1), 1000);
@@ -202,10 +328,18 @@ const Verification = () => {
 
                             <Col md={6}>
                                 <div>
+                                    {!emailEditable &&
                                     <span style={styles.fieldValue}>
-                                        {userInfo.email} {"  "}
+                                        {userInfo.email} {"  "} 
+                                        {!userInfo.is_email_verified && <EditButton onClick={e => setEmailEditable(true)} /> }
                                     </span>
-                                    
+                                    }
+                                    {emailEditable &&
+                                        <EmailEditForm 
+                                            onClose={e => setEmailEditable(false)}
+                                            onSuccess={e => setEmailEditable(false)}
+                                        />
+                                    }                         
                                 </div>
                                 {userInfo.is_email_verified ? <VerifiedSymbol /> : <UnverifiedSymbol /> }
                                 
@@ -230,7 +364,18 @@ const Verification = () => {
                             <Col md={2} style={styles.fieldTitle}>Mobile Number</Col>
 
                             <Col md={6} style={styles.fieldValue}>
-                                <div>{userInfo.mobile_number}</div>
+                                {!mobileEditable &&
+                                <div>
+                                    {userInfo.mobile_number} {" "}
+                                    {!userInfo.is_mobile_verified && <EditButton onClick={e => setMobileEditable(true)} /> }
+                                </div>
+                                }
+                                {mobileEditable &&
+                                <MobileEditForm 
+                                    onClose={e => setMobileEditable(false)}
+                                    onSuccess={e => {setMobileEditable(false); setOtpStatus('unsent')}}
+                                />
+                                }
                                 {userInfo.is_mobile_verified ? <VerifiedSymbol /> : <UnverifiedSymbol /> }
                             </Col>
                             {!userInfo.is_mobile_verified &&
