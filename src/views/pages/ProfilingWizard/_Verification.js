@@ -346,6 +346,7 @@ const Verification = () => {
                             </Col>
                             {!userInfo.is_email_verified &&
                                 <Col md={4} className="text-right">
+                                    <div className="secondary small">Click on the link sent to your email to verify your email address.</div>
                                     {isSendingVerificationMail &&
                                         <Spinner size="sm" color="secondary" />
                                     }
