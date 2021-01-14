@@ -130,8 +130,8 @@ export default function Salesperson() {
                                         </div>
                                     </div>
                                     <div className="title-section">
-                                        <h2 className="text-bold-600 mt-1 mb-25">{salesperson.name}</h2>
-                                        <p className="mb-0">{salesperson.email}</p>
+                                        <h2 className="text-bold-600 mt-1 mb-25">{salesperson.name ?? salesperson.email}</h2>
+                                        <p className={"mb-0 " + (!salesperson.is_joined ? 'danger' : '')}>{salesperson.name ? salesperson.email : !salesperson.is_joined ? 'Not joined yet' : ''}</p>
                                     </div>
                                 </CardBody>
 
