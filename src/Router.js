@@ -221,7 +221,7 @@ class AppRouter extends React.Component {
                     />
                     <AppRoute
                         exact
-                        path="/product/:id/"
+                        path="/product/:slug/"
                         component={ProductDetails}
                     />
                     <AppRoute
@@ -229,7 +229,7 @@ class AppRouter extends React.Component {
                         component={AddProduct}
                     />
                     <AppRoute
-                        path="/product/:productId/edit/"
+                        path="/product/:slug/edit/"
                         component={AddProduct}
                     />
                     <AppRoute

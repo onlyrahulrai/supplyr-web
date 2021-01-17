@@ -32,7 +32,7 @@ function getVariantShortDescription(variant) {
 }
 
 function DetailPage(props) {
-  let {id: productId} = useParams()
+  let {slug: productSlug} = useParams()
 
   const [productData, setProductData] = useState({})
   const [currentVariant, setCurrentVariant] = useState({})
@@ -40,7 +40,7 @@ function DetailPage(props) {
   const [isLoading, setIsLoading] = useState(true)
   const [loadingError, setLoadingError] = useState(null)
   useEffect(() => {
-    const url = 'inventory/product/' + productId
+    const url = 'inventory/product/' + productSlug
     apiClient.get(url)
       .then(response => {
         setProductData(response.data)
@@ -101,7 +101,7 @@ const customStyles = {
           breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/products/`)}}>All Products</a>}
           breadCrumbActive = {productData.title}
           rightSection={<>
-            <Button.Ripple className="mr-1 mb-1" color="warning" onClick={e => history.push('/product/' + productData.id + '/edit/')}>
+            <Button.Ripple className="mr-1 mb-1" color="warning" onClick={e => history.push('/product/' + productData.slug + '/edit/')}>
               <Edit3 size={15} />
               <span className="align-middle ml-50">Edit</span>
             </Button.Ripple>

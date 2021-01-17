@@ -735,14 +735,14 @@ function AddProduct(props) {
     const [productImages, setProductImages] = useState([])
     const [initialData, setInitialData] = useState(null)
 
-    const productId = props.match.params.productId;
-    const isEditingExistingProduct = Boolean(props.match.params.productId)
+    const productSlug = props.match.params.slug;
+    const isEditingExistingProduct = Boolean(props.match.params.slug)
     const [isProductDataLoaded, setIsProductDataLoaded] = useState(false) // For editing existing product
     const isPageRenderReady = !isEditingExistingProduct || isProductDataLoaded
 
     useEffect(() => {   //In case of Edit an existing product, initialize the fields on the first time component render
-        if(productId) {
-            const url = 'inventory/product/' + productId
+        if(productSlug) {
+            const url = 'inventory/product/' + productSlug
             apiClient.get(url)
               .then(response => {
                 setInitialData(response.data)
@@ -760,7 +760,7 @@ function AddProduct(props) {
           else if (initialData) { // If someone has opened add product page just after edit page of some product, we need to clear the data, because edit & add, both are using same components and data is retained if moving from edit -> add product.
             window.location.reload()
           }
-    }, [productId])
+    }, [productSlug])
 
     function setBasicFieldData(field, value) {
         let basicDataCopy = {...basicData}
@@ -841,9 +841,9 @@ function AddProduct(props) {
             const url = 'inventory/add-product/';
             apiClient.post(url, formData)
                 .then(response => {
-                    const productId = response.data.product.id
+                    const productSlug = response.data.product.slug
                     Swal.fire("Product Saved", '', "success")
-                    history.push('/product/'+productId)
+                    history.push('/product/'+productSlug)
                 })
                 .catch(error => {
                     Swal.fire("Error", JSON.stringify(error.response?.data), "error")
@@ -870,7 +870,7 @@ function AddProduct(props) {
       <>
         <h4></h4>
         <BreadCrumb
-          breadCrumbTitle={productId ? "EDIT PRODUCT" : "ADD NEW PRODUCT"}
+          breadCrumbTitle={productSlug ? "EDIT PRODUCT" : "ADD NEW PRODUCT"}
           breadCrumbActive = {initialData?.title ?? "New Product"}
           breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/products/`)}}>All Products</a>}
         />

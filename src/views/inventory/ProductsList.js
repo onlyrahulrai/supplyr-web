@@ -214,7 +214,7 @@ class UsersList extends Component {
           return (
             <div>
               <span>{params.value} </span>
-              <Edit3 size={20} color="cadetblue" title="Edit" role="button" className="pointer" onClick={e => history.push('/product/'+params.value + '/edit/')} />
+              <Edit3 size={20} color="cadetblue" title="Edit" role="button" className="pointer" onClick={e => history.push('/product/'+params.data.slug + '/edit/')} />
             </div>
           )
         }
@@ -228,7 +228,7 @@ class UsersList extends Component {
           return (
             <div
               className="d-flex align-items-center cursor-pointer"
-              onClick={() => history.push(`/product/${params.data.id}`)}
+              onClick={() => history.push(`/product/${params.data.slug}`)}
             >
               <img
                 className="rounded mr-50"
