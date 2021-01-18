@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Col, Row, FormGroup, Label, Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, UncontrolledTooltip, Spinner } from 'reactstrap'
+import { Button, Col, Row, FormGroup, Label, Card, CardBody, TabContent, TabPane, Nav, NavItem, NavLink, UncontrolledTooltip, Spinner, Alert } from 'reactstrap'
 import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css';
 import "assets/scss/plugins/extensions/editor.scss"
 import Radio from "components/@vuexy/radio/RadioVuexy"
@@ -57,24 +57,50 @@ function VariantFields(props) {
 
     return (
         <>
+        <Row>
+          <Col>
+            <SimpleInputField
+              label = "Actual Price"
+              name="price"
+              type="number"
+              step='0.01'
+              min="0"
+              onChange={e => props.onChange("price", e.target.value)}
+              requiredIndicator
+              required={props.singleVariant}
+              value={variantData.price ?? ''}
+          />
+          </Col>
+          <Col>
+            <SimpleInputField
+              label = "Sale Price"
+              name="sale_price"
+              step='0.01'
+              type="number"
+              onChange={e => props.onChange("sale_price", e.target.value)}
+              value={variantData.sale_price ?? ''}
+              min="0"
+          />
+          </Col>
+        </Row>
+        
+        
+
+        {parseFloat(variantData.sale_price) > parseFloat(variantData.price) &&
+          <Alert color="warning">
+            <Info size={20} /> <b>Warning:</b> Sale price should be lower than or equal to actual price.
+          </Alert>
+        }
+
         <SimpleInputField
-            label = "Product Actual Price"
-            name="price"
+            label = "Quantity Available"
+            placeholder="Quantity Available in Inventory"
+            name="quantity"
             type="number"
-            step='0.01'
-            min="0"
-            onChange={e => props.onChange("price", e.target.value)}
+            onChange={e => props.onChange("quantity", e.target.value)}
             requiredIndicator
             required={props.singleVariant}
-            value={variantData.price ?? ''}
-        />
-        <SimpleInputField
-            label = "Sale Price"
-            name="sale_price"
-            step='0.01'
-            type="number"
-            onChange={e => props.onChange("sale_price", e.target.value)}
-            value={variantData.sale_price ?? ''}
+            value={variantData.quantity ?? ''}
             min="0"
         />
         <Row>
@@ -101,17 +127,11 @@ function VariantFields(props) {
           </Col>
           }
         </Row>
-        <SimpleInputField
-            label = "Quantity Available"
-            placeholder="Quantity Available in Inventory"
-            name="quantity"
-            type="number"
-            onChange={e => props.onChange("quantity", e.target.value)}
-            requiredIndicator
-            required={props.singleVariant}
-            value={variantData.quantity ?? ''}
-            min="0"
-        />
+        {parseInt(variantData.minimum_order_quantity) > parseInt(variantData.quantity) &&
+          <Alert color="warning">
+            <Info size={20} /> The product will be shown <b>Out of Stock</b>, since minimum order quantity is more than quantity available.
+          </Alert>
+        }
         </>
     )
 }
@@ -136,7 +156,7 @@ function SingleVariantForm(props) {
             const initialVariantData = props.initialVariantData;
             let _variantData = {}
             Object.keys(initialVariantData).forEach(key => {
-                if(initialVariantData[key]) {
+                if(initialVariantData[key] !== undefined) {
                     _variantData[key] = initialVariantData[key];
                 }
             })
@@ -355,7 +375,7 @@ function MultipleVariantForm(props) {
             const initialVariantsData = props.initialVariantsData.map(initialVariantData => {
                 let _variantData = {}
                 Object.keys(initialVariantData).forEach(key => {
-                    if(initialVariantData[key]) {
+                    if(initialVariantData[key] !== undefined) {
                         _variantData[key] = initialVariantData[key];
                     }
                 })
@@ -877,7 +897,7 @@ function AddProduct(props) {
         <hr />
         <form onSubmit={submitForm}>
           <Row>
-            <Col lg={8}>
+            <Col lg={11} xl={9}>
               <SimpleInputField
                 label="Product Title"
                 type="text"
