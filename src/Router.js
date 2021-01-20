@@ -65,6 +65,8 @@ const Landing = lazy(() => import("./views/pages/Landing"))
 const error404 = lazy(() => import("./views/pages/404"))
 
 const ConfirmEmail = lazy(() => import("./views/pages/authentication/ConfirmEmail"))
+const PasswordReset = lazy(() => import("./views/pages/authentication/PasswordReset"))
+const PasswordResetRequest = lazy(() => import("./views/pages/authentication/PasswordResetRequest"))
 
 // Set Layout and Component Using App Route
 const RouteConfig = ({
@@ -192,6 +194,18 @@ class AppRouter extends React.Component {
                         path="/confirm-email/:key/"
                         component={ConfirmEmail}
                         noLayout
+                    />
+                    <PublicAppRoute
+                        exact
+                        path="/forgot-password/"
+                        component={PasswordResetRequest}
+                        fullLayout
+                    />
+                    <PublicAppRoute
+                        exact
+                        path="/password-reset/:uid/:token/"
+                        component={PasswordReset}
+                        fullLayout
                     />
                     <PublicOnlyAppRoute
                         exact
