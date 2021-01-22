@@ -30,6 +30,15 @@ const UserDropdown = props => {
         <Icon.Power size={14} className="mr-50" />
         <span className="align-middle">Log Out</span>
       </DropdownItem>
+
+      <DropdownItem
+        tag="a"
+        href="/logout"
+        onClick={e => {e.preventDefault(); history.push("/account-settings/")}}
+      >
+        <Icon.Power size={14} className="mr-50" />
+        <span className="align-middle">Change Password</span>
+      </DropdownItem>
     </DropdownMenu>
   )
 }

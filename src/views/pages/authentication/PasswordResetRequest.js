@@ -15,9 +15,6 @@ export default function PasswordReset(props) {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState(null)
     const [successMessage, setSuccessMessage] = useState(false)
-
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
     const [email, setEmail] = useState('')
 
 

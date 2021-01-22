@@ -6,6 +6,9 @@ const AuthenticationApi = {
         apiClient.post('auth/password/reset/', data),
     resetPassword: (data) =>
         apiClient.post('auth/password/reset/confirm/', data),
+    passwordChange: (data) =>
+        apiClient.post('auth/password/change/', data),
+    
 }
 
 

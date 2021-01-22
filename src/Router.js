@@ -60,6 +60,10 @@ const Salespersons = lazy(() =>
     import("./views/management/Salespersons")
 )
 
+const AccountSettings = lazy(() =>
+  import("./views/pages/account-settings/AccountSettings")
+)
+
 const Landing = lazy(() => import("./views/pages/Landing"))
 
 const error404 = lazy(() => import("./views/pages/404"))
@@ -212,6 +216,10 @@ class AppRouter extends React.Component {
                         path="/"
                         component={Landing}
                         noLayout
+                    />
+                    <AppRoute
+                        path="/account-settings"
+                        component={AccountSettings}
                     />
                     <AppRoute
                         exact
