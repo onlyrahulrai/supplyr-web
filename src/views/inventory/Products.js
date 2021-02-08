@@ -15,14 +15,14 @@ class ProductListItem extends Component {
 
   render() {
     const product = this.props.data
-    const productPriceDisplay = (product.sale_price && product.sale_price < product.price)
+    const productPriceDisplay = (product.price && product.price < product.actual_price)
     ? (<>
-      <del className="text-lightgray font-small-2">&#8377;{product.price}</del>
-      <span className="ml-1">&#8377;{product.sale_price}</span>
+      <del className="text-lightgray font-small-2">&#8377;{product.actual_price}</del>
+      <span className="ml-1">&#8377;{product.price}</span>
       </>
     )
     : (
-      <span>&#8377;{product.price}</span>
+      <span>&#8377;{product.actual_price}</span>
     )
     return (
       <Card className="ecommerce-card">

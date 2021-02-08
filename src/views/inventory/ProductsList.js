@@ -273,7 +273,7 @@ class UsersList extends Component {
       },
       {
         headerName: "Sale Price",
-        field: "sale_price",
+        field: "price",
         // filter: true,
         width: 250,
         cellRendererFramework: params => {

@@ -60,28 +60,29 @@ function VariantFields(props) {
         <Row>
           <Col>
             <SimpleInputField
-              label = "Actual Price"
+              label = "Sale Price"
               name="price"
-              type="number"
               step='0.01'
-              min="0"
+              type="number"
               onChange={e => props.onChange("price", e.target.value)}
-              requiredIndicator
-              required={props.singleVariant}
               value={variantData.price ?? ''}
+              min="0"
           />
           </Col>
           <Col>
             <SimpleInputField
-              label = "Sale Price"
-              name="sale_price"
-              step='0.01'
+              label = "Actual Price"
+              name="actual_price"
               type="number"
-              onChange={e => props.onChange("sale_price", e.target.value)}
-              value={variantData.sale_price ?? ''}
+              step='0.01'
               min="0"
+              onChange={e => props.onChange("actual_price", e.target.value)}
+              requiredIndicator
+              required={props.singleVariant}
+              value={variantData.actual_price ?? ''}
           />
           </Col>
+
         </Row>
         
         

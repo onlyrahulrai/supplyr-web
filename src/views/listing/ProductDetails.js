@@ -58,14 +58,14 @@ function DetailPage(props) {
       })
   }, [])
 
-  const productPriceDisplay = currentVariant.sale_price
+  const productPriceDisplay = currentVariant.price
             ? (<>
-              <del className="text-lightgray h6">&#8377;{currentVariant.price}</del>
-              <span className="ml-1">&#8377;{currentVariant.sale_price}</span>
+              <del className="text-lightgray h6">&#8377;{currentVariant.actual_price}</del>
+              <span className="ml-1">&#8377;{currentVariant.price}</span>
               </>
             )
             : (
-              <span>&#8377;{currentVariant.price}</span>
+              <span>&#8377;{currentVariant.actual_price}</span>
             )
   
   const isProductInStock = currentVariant.quantity > 0

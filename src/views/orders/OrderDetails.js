@@ -109,16 +109,16 @@ export default function OrderDetails() {
   }, [])
 
   let totals = orderData?.items.reduce((sum, item) => {
-    const actualPrice = parseFloat(item.price) * item.quantity
-    const salePrice = parseFloat(item.sale_price) * item.quantity
+    const actualPrice = parseFloat(item.actual_price) * item.quantity
+    const salePrice = parseFloat(item.price) * item.quantity
     const _sum = {
-      price: sum.price + actualPrice,
+      actualPrice: sum.actualPrice + actualPrice,
       salePrice: sum.salePrice + salePrice,
     }
     return _sum
   },
     {
-      price: 0,
+      actualPrice: 0,
       salePrice: 0
     }
   );
@@ -222,9 +222,9 @@ export default function OrderDetails() {
             <div className="item-options m-auto">
               <div className="item-wrapper">
                 <div className="item-cost">
-                  <h5 className="">{priceFormatter(item.sale_price)}</h5>
-                  { item.sale_price !== item.price &&
-                    <h6><del className="strikethrough text-secondary">{priceFormatter(item.price)}</del></h6>
+                  <h5 className="">{priceFormatter(item.price)}</h5>
+                  { item.actual_price !== item.price &&
+                    <h6><del className="strikethrough text-secondary">{priceFormatter(item.actual_price)}</del></h6>
                   }
                 </div>
               </div>
@@ -291,11 +291,11 @@ export default function OrderDetails() {
           </div>
           <div className="detail">
             <div className="detail-title">Total MRP</div>
-            <div className="detail-amt">{priceFormatter(totals.price)}</div>
+            <div className="detail-amt">{priceFormatter(totals.actualPrice)}</div>
           </div>
           <div className="detail">
             <div className="detail-title">Discount</div>
-            <div className="detail-amt discount-amt">{priceFormatter(totals.price - totals.salePrice)}</div>
+            <div className="detail-amt discount-amt">{priceFormatter(totals.actualPrice - totals.salePrice)}</div>
           </div>
 
           <hr />
