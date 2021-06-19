@@ -20,6 +20,12 @@ const ProductsList = lazy(() =>
 const AddProduct = lazy(() =>
     import("./views/inventory/AddProduct")
 )
+const ImportProduct = lazy(() =>
+    import("./views/import-export/ImportProduct")
+)
+const ExportProduct = lazy(() =>
+    import("./views/import-export/ExportProduct")
+)
 const ProductDetails = lazy(() =>
     import("./views/listing/ProductDetails")
 )
@@ -179,7 +185,7 @@ const mapStateToProps = state => {
     return {
         // user: state.auth.userRole
         user: state.auth.userInfo,
-        authenticated: state.auth.authenticated,
+        authenticated: state.auth.authenticated
     }
 }
 
@@ -199,13 +205,13 @@ class AppRouter extends React.Component {
                         component={ConfirmEmail}
                         noLayout
                     />
-                    <PublicAppRoute
+                    <PublicOnlyAppRoute
                         exact
                         path="/forgot-password/"
                         component={PasswordResetRequest}
                         fullLayout
                     />
-                    <PublicAppRoute
+                    <PublicOnlyAppRoute
                         exact
                         path="/password-reset/:uid/:token/"
                         component={PasswordReset}
@@ -249,6 +255,14 @@ class AppRouter extends React.Component {
                     <AppRoute
                         path="/products/add/"
                         component={AddProduct}
+                    />
+                    <AppRoute
+                        path="/products/import/"
+                        component={ImportProduct}
+                    />
+                    <AppRoute
+                        path="/products/export/"
+                        component={ExportProduct}
                     />
                     <AppRoute
                         path="/product/:slug/edit/"

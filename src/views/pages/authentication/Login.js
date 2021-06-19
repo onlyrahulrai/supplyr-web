@@ -33,6 +33,7 @@ class Login extends Component {
     password: "",
     error_msg: "",
     is_submitting: false,
+    successMessage:localStorage.getItem("successMessage")
   }
   handleError = e => {
     let error = e.response?.data?.non_field_errors || e.message
@@ -126,7 +127,7 @@ class Login extends Component {
                           onChange={this.handleRemember}
                         /> */}
                         <div className="float-right ">
-                          <Link to="/forgot-password/">Forgot Password?</Link>
+                          <Link to="/forgot-password">Forgot Password?</Link>
                         </div>
                       </FormGroup>
                       <div className="d-flex justify-content-between">

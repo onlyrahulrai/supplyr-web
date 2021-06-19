@@ -12,6 +12,7 @@ import NetworkError from "components/common/NetworkError"
 
 const StatsSmallCard = (props) => {
   const { title, description, icon, color } = props;
+  
   return (
     <Card>
       <CardBody

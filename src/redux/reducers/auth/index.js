@@ -25,6 +25,9 @@ const login = (state = { userRole: "general" }, action) => {
       return { ...state, userRole: action.userRole }
     }
 
+    case "RESET_PASSWORD_SUCCESS":
+      return {...state,message:action.payload}
+
     default: {
       return state
     }
