@@ -23,7 +23,7 @@ class RegisterJWT extends Component {
     password2: "",
     mobile_number: "",
     errors: {},
-
+    checked:true,
     isSubmitting: false,
   }
 
@@ -43,11 +43,19 @@ class RegisterJWT extends Component {
 
   handleRegister = e => {
     e.preventDefault();
-    this.setState({ 
-      errors: {},
-      isSubmitting: true,
-    })
-    this.props.signupWithJWT(this.state, this.handleError)
+    if(!this.state.checked){
+      this.setState({
+        errors:{
+          "non_field_errors": "Please select the terms and conditions"
+        }
+      })
+    }else{
+      this.setState({ 
+        errors: {},
+        isSubmitting: true,
+      })
+      this.props.signupWithJWT(this.state, this.handleError)
+    }
   }
 
   render() {
@@ -143,7 +151,8 @@ class RegisterJWT extends Component {
             required
             icon={<Check className="vx-icon" size={16} />}
             label=" I accept the terms & conditions."
-            defaultChecked={true}
+            defaultChecked={this.state.checked}
+            onChange={(e) => this.setState({"checked":e.target.value})}
           />
         </FormGroup>
         <div className="d-flex justify-content-between">
