@@ -6,6 +6,7 @@ import { connect } from "react-redux"
 import Spinner from "./components/@vuexy/spinner/Loading-spinner"
 import { ContextLayout } from "./utility/context/Layout"
 
+
 // Route-based code splitting
 const Home = lazy(() =>
     import("./views/pages/Home")
@@ -221,7 +222,7 @@ class AppRouter extends React.Component {
                         exact
                         path="/"
                         component={Landing}
-                        noLayout
+                        fullLayout
                     />
                     <AppRoute
                         path="/account-settings"
