@@ -9,7 +9,7 @@ import {
   CardBody
 } from "reactstrap"
 import classnames from "classnames"
-import { Settings, Lock, Info, Instagram, Link, Bell } from "react-feather"
+import { Settings, Lock, Info, Instagram, Link, Bell, Phone } from "react-feather"
 // import GeneralTab from "./General"
 import ChangePassword from "./ChangePassword"
 // import InfoTab from "./Info"
@@ -19,6 +19,7 @@ import ChangePassword from "./ChangePassword"
 import Breadcrumbs from "../../../components/@vuexy/breadCrumbs/BreadCrumb"
 
 import "../../../assets/scss/pages/account-settings.scss"
+import ChangeMobile from "./ChangeMobile"
 
 class AccountSettings extends React.Component {
   state = {
@@ -67,6 +68,17 @@ class AccountSettings extends React.Component {
                 <Lock size={16} />
                 <span className="d-md-inline-block d-none align-middle ml-1">Change Password</span>
               </NavLink>
+              <NavLink
+                className={classnames({
+                  active: this.state.activeTab === "2"
+                })}
+                onClick={() => {
+                  this.toggle("2")
+                }}
+              >
+                <Phone size={16} />
+                <span className="d-md-inline-block d-none align-middle ml-1">Change Mobile</span>
+              </NavLink>
             </NavItem>
 
           </Nav>
@@ -79,10 +91,10 @@ class AccountSettings extends React.Component {
                 <TabPane tabId="1">
                   <ChangePassword />
                 </TabPane>
-                {/* <TabPane tabId="3">
-                  <InfoTab />
+                 <TabPane tabId="2">
+                  <ChangeMobile />
                 </TabPane>
-                <TabPane tabId="4">
+                {/*<TabPane tabId="4">
                   <SocialLinks />
                 </TabPane>
                 <TabPane tabId="5">
