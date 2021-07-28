@@ -14,7 +14,6 @@ import {
   Spinner,
 } from "reactstrap";
 import { AuthenticationApi } from "api/endpoints";
-import { useHistory } from "react-router-dom";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { Repeat } from "react-feather";
 import { connect } from "react-redux"
@@ -40,7 +39,7 @@ const ChangeMobile = (props) => {
       setTimeout(() => {
         setOtpResendCountdown(otpResendCountdown - 1);
       }, 1000);
-    // otpResendCountdown <= 0 && removeResponse();
+
   }, [otpResendCountdown]);
 
   const removeResponse = () => {

@@ -40,8 +40,6 @@ export default function PasswordReset(props) {
 
   const url = `register/verify-email/`;
 
-  successMessage()
-
   const onSubmit = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -58,9 +56,7 @@ export default function PasswordReset(props) {
       email: query.get("email"),
     })
       .then((response) => {
-        history.push("/forgot-password");
         setSuccessMessage(response.data);
-        localStorage.setItem("successMessage", JSON.stringify(response.data));
       })
       .catch((error) => {
         let message =
@@ -174,6 +170,21 @@ export default function PasswordReset(props) {
                     {successMessage.message}
                   </h4>
                   <span>{successMessage.email}</span>
+                  <br />
+                  <Button.Ripple
+                    block
+                    color="primary"
+                    outline
+                    onClick={(e) => {
+                      e.preventDefault();
+                      history.push("/login");
+                    }}
+                    size="sm"
+                    className="pt-1 pb-1"
+                  >
+                    Go Back to Login
+                  </Button.Ripple>
+                  <br />
                 </div>
               )}
             </Col>

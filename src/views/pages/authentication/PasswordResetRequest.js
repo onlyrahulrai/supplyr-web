@@ -1,13 +1,6 @@
-import apiClient from "api/base";
 import React, { useEffect, useState } from "react";
-import {
-  MdVerifiedUser,
-  MdError,
-  MdCheck,
-  MdCheckCircle,
-} from "react-icons/md";
+import { MdCheckCircle } from "react-icons/md";
 import { history } from "../../../history";
-import { useSelector } from "react-redux";
 import {
   Alert,
   Button,
@@ -25,9 +18,8 @@ import {
 } from "reactstrap";
 import resetImg from "assets/img/pages/forgot-password.png";
 import "assets/scss/pages/authentication.scss";
-import { Mail, Lock, AlertCircle } from "react-feather";
+import { Mail, AlertCircle, Repeat } from "react-feather";
 import { AuthenticationApi } from "api/endpoints";
-import { Link } from "react-router-dom";
 
 export default function PasswordReset(props) {
   // const uid = props.match.params.uid
@@ -39,43 +31,20 @@ export default function PasswordReset(props) {
   const [otp, setOtp] = useState("");
   const [password1, setPassword1] = useState("");
   const [password2, setPassword2] = useState("");
-
-  const url = `register/verify-email/`;
-
-
-  const saveSuccessMessage = () => {
-    localStorage.setItem('successMessage',JSON.stringify(successMessage))
-  }
-
+  const [otpResendCountdown, setOtpResendCountdown] = useState(0);
 
   useEffect(() => {
-    getSuccessMessage();
-  }, []);
-
-  useEffect(() => {
-    saveSuccessMessage();
-  },[successMessage]);
-
-  const getSuccessMessage = () => {
-    if (localStorage.getItem("successMessage") === null) {
-      localStorage.setItem("successMessage", JSON.stringify(false));
-    } else {
-      let localSuccessMessage = JSON.parse(
-        localStorage.getItem("successMessage")
-      );
-      setSuccessMessage(localSuccessMessage);
-    }
-  };
+    const unsubscribe =
+      otpResendCountdown > 0 &&
+      setTimeout(() => {
+        setOtpResendCountdown(otpResendCountdown - 1);
+      }, 1000);
+    return unsubscribe;
+  }, [otpResendCountdown]);
 
   const onSubmit = (e) => {
     e.preventDefault();
-    // if(password !== confirmPassword) {
-    //     setError('Both password fields do not match')
-    //     return
-    // }
-
     setIsLoading(true);
-    console.log(value);
 
     validateMobileOrEmail(value) && value.includes("@")
       ? AuthenticationApi.requestPasswordReset({
@@ -84,7 +53,7 @@ export default function PasswordReset(props) {
           .then((response) => {
             console.log(response.data);
             setIsLoading(false);
-            setSuccessMessage(response.data)
+            setSuccessMessage(response.data);
           })
           .catch((error) => {
             let message = error.response?.data?.email ?? error.message;
@@ -100,7 +69,8 @@ export default function PasswordReset(props) {
           .then((response) => {
             console.log(response.data);
             setIsLoading(false);
-            setSuccessMessage(response.data)
+            setSuccessMessage(response.data);
+            setOtpResendCountdown(40);
           })
           .catch((error) => {
             let message = error.response?.data?.email ?? error.message;
@@ -115,23 +85,28 @@ export default function PasswordReset(props) {
   const handleOtp = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setSuccessMessage(false)
-    AuthenticationApi.resetMobilePassword({
-      otp_id: successMessage.otp_id,
-      code: otp,
-      new_password1: password1,
-      new_password2: password2,
-      mobile_number: successMessage?.mobile_number,
-    })
-      .then((res) => {
-        console.log(res.data);
-        setIsLoading(false);
-        setSuccessMessage(res.data)
+    // setSuccessMessage(false);
+    if (password1 !== password2) {
+      setError("Both password fields do not match");
+      setIsLoading(false);
+    } else {
+      AuthenticationApi.resetMobilePassword({
+        otp_id: successMessage.otp_id,
+        code: otp,
+        new_password1: password1,
+        new_password2: password2,
+        mobile_number: successMessage?.mobile_number,
       })
-      .catch((err) => {
-        setError(err);
-        console.log(err)
-      });
+        .then((res) => {
+          console.log(res.data);
+          setIsLoading(false);
+          setSuccessMessage(res.data);
+        })
+        .catch((err) => {
+          setError(err);
+          console.log(err);
+        });
+    }
   };
 
   function validateMobileOrEmail(text) {
@@ -235,106 +210,124 @@ export default function PasswordReset(props) {
             )}
 
             {successMessage && successMessage.mobile_number && (
-               <Col lg="6" md="12" className="p-0">
-              <CardBody>
-                <h4>Validate Otp</h4>
-                <p>Welcome back, please type your Otp.</p>
+              <Col lg="6" md="12" className="p-0">
+                <CardBody>
+                  <h4>Validate Otp</h4>
+                  <p>Welcome back, please type your Otp.</p>
+                  <Alert color="danger" isOpen={!!error}>
+                      <AlertCircle size={15} />
+                      <span>{error}</span>
+                    </Alert>
+                  <br />
+                  <Form onSubmit={handleOtp}>
+                    <FormGroup className="form-label-group position-relative has-icon-left">
+                      <Input
+                        type="text"
+                        placeholder="Please type your otp"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        required
+                      />
+                      <div className="form-control-position">
+                        <Mail size={15} />
+                      </div>
+                      <Label>Mobile Number or Email</Label>
+                    </FormGroup>
+                    <FormGroup className="form-label-group position-relative has-icon-left">
+                      <Input
+                        type="password"
+                        placeholder="Enter your new password"
+                        value={password1}
+                        onChange={(e) => setPassword1(e.target.value)}
+                        required
+                      />
+                      <div className="form-control-position">
+                        <Mail size={15} />
+                      </div>
+                    </FormGroup>
+                    <FormGroup className="form-label-group position-relative has-icon-left">
+                      <Input
+                        type="password"
+                        placeholder="confirm your new password"
+                        value={password2}
+                        onChange={(e) => setPassword2(e.target.value)}
+                        required
+                      />
+                      <div className="form-control-position">
+                        <Mail size={15} />
+                      </div>
+                      <Label>Mobile Number or Email</Label>
+                    </FormGroup>
+                    <div className="d-flex justify-content-between align-items-center">
+                      {successMessage && otpResendCountdown > 0 && (
+                        <>
+                          <div className="small text-secondary">
+                            OTP is valid for {otpResendCountdown} seconds
+                          </div>
 
-                <br />
-                <Alert color="danger" isOpen={false}>
-                  <AlertCircle size={15} />
-                  {false}
-                </Alert>
-                <br />
-                <Form onSubmit={handleOtp}>
-                  <FormGroup className="form-label-group position-relative has-icon-left">
-                    <Input
-                      type="text"
-                      placeholder="Please type your otp"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      required
-                    />
-                    <div className="form-control-position">
-                      <Mail size={15} />
+                          <Button.Ripple
+                            color="primary"
+                            type="submit"
+                            loading={isLoading}
+                            disabled={isLoading}
+                          >
+                            Submit
+                          </Button.Ripple>
+                        </>
+                      )}
+                      {successMessage &&
+                        successMessage.success &&
+                        otpResendCountdown === 0 && (
+                          <>
+                            <Repeat
+                              size={13}
+                              color="#2196f3"
+                              style={{ marginRight: 5 }}
+                            />
+                            <button
+                              className="btn btn-sm btn-primary"
+                              onClick={(e) => onSubmit(e)}
+                            >
+                              Resend OTP
+                            </button>
+                          </>
+                        )}
                     </div>
-                    <Label>Mobile Number or Email</Label>
-                  </FormGroup>
-                  <FormGroup className="form-label-group position-relative has-icon-left">
-                    <Input
-                      type="password"
-                      placeholder="Enter your new password"
-                      value={password1}
-                      onChange={(e) => setPassword1(e.target.value)}
-                      required
-                    />
-                    <div className="form-control-position">
-                      <Mail size={15} />
-                    </div>
-                  </FormGroup>
-                  <FormGroup className="form-label-group position-relative has-icon-left">
-                    <Input
-                      type="password"
-                      placeholder="confirm your new password"
-                      value={password2}
-                      onChange={(e) => setPassword2(e.target.value)}
-                      required
-                    />
-                    <div className="form-control-position">
-                      <Mail size={15} />
-                    </div>
-                    <Label>Mobile Number or Email</Label>
-                  </FormGroup>
-                  <div className="d-flex justify-content-between">
+                  </Form>
+                </CardBody>
+              </Col>
+            )}
+
+            {successMessage &&
+              successMessage.message &&
+              successMessage.success &&
+              !successMessage.mobile_number && (
+                <Col lg="6" md="12" className="p-0">
+                  <div className="d-flex flex-column align-items-center justify-content-between">
+                    <MdCheckCircle size={100} className="success" />
+                    <h4 style={{ color: "#2196F3", textAlign: "center" }}>
+                      {successMessage.message} <br />
+                      <br /> {successMessage && successMessage.email}
+                      {successMessage && successMessage.name}
+                    </h4>
                     <Button.Ripple
                       color="primary"
                       outline
                       onClick={() => {
                         history.push("/login");
+                        localStorage.setItem(
+                          "successMessage",
+                          JSON.stringify(false)
+                        );
                       }}
+                      size="sm"
+                      className="pt-1 pb-1 mt-2 mb-2"
                     >
                       Go Back To Login
                     </Button.Ripple>
-                    <Button.Ripple
-                      color="primary"
-                      type="submit"
-                      loading={isLoading}
-                      disabled={isLoading}
-                    >
-                      Submit
-                    </Button.Ripple>
                   </div>
-                </Form>
-              </CardBody>
-              </Col>
-            )}
-
-            {successMessage && successMessage.message && successMessage.success && (
-               <Col lg="6" md="12" className="p-0">
-
-              <div className="d-flex flex-column align-items-center justify-content-between">
-                <MdCheckCircle size={100} className="success" />
-                <h4 style={{ color: "#2196F3", textAlign: "center" }}>
-                  {successMessage.message} <br />
-                  <br /> {successMessage && successMessage.email}
-                  {successMessage && successMessage.name}  
-                </h4>
-                <Button.Ripple
-                  color="primary"
-                  outline
-                  onClick={() => {
-                    history.push("/login");
-                    localStorage.setItem("successMessage", JSON.stringify(false));
-                  }}
-                  size="sm"
-                  className="pt-1 pb-1 mt-2 mb-2"
-                >
-                  Go Back To Login
-                </Button.Ripple>
-              </div>
-              </Col>
-            )}
-            
+                </Col>
+              )}
           </Row>
         </Card>
       </Col>

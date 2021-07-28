@@ -214,7 +214,7 @@ class AppRouter extends React.Component {
                     />
                     <PublicOnlyAppRoute
                         exact
-                        path="/password-reset/:uid/:token/"
+                        path="/forgot-password/:uid/:token/"
                         component={PasswordReset}
                         fullLayout
                     />
