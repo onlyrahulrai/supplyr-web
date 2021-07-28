@@ -32,12 +32,10 @@ const UserDropdown = props => {
       </DropdownItem>
 
       <DropdownItem
-        tag="a"
-        href="/logout"
         onClick={e => {e.preventDefault(); history.push("/account-settings/")}}
       >
-        <Icon.Power size={14} className="mr-50" />
-        <span className="align-middle">Change Password</span>
+        <Icon.Settings size={14} className="mr-50" />
+        <span className="align-middle">Account Settings</span>
       </DropdownItem>
     </DropdownMenu>
   )

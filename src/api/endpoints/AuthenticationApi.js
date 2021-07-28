@@ -10,7 +10,10 @@ const AuthenticationApi = {
         apiClient.post('password-reset-mobile-confirm/', data),
     passwordChange: (data) =>
         apiClient.post('auth/password/change/', data),
-    
+    ChangeMobile: (data) =>
+        apiClient.post('update-mobile/', data),
+    VerifyOtp: (data) =>
+        apiClient.post('confirm-update-mobile/', data),
 }
 
 
