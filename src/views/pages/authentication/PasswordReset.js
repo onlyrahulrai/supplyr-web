@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MdCheckCircle } from "react-icons/md";
 import { history } from "../../../history";
-import { useSelector } from "react-redux";
 import {
   Alert,
   Button,
@@ -37,8 +36,6 @@ export default function PasswordReset(props) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const query = useQuery();
-
-  const url = `register/verify-email/`;
 
   const onSubmit = (e) => {
     e.preventDefault();

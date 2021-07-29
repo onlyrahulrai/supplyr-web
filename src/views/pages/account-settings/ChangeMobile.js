@@ -34,20 +34,24 @@ const ChangeMobile = (props) => {
     return re.test(text);
   };
 
+
+  // This is responsible for starting the countdown timer according to otpResndCountdown on every otpResndCountdown value change. It is usually used on requesting for change mobile by an authenticated user.
   useEffect(() => {
     otpResendCountdown > 0 &&
       setTimeout(() => {
         setOtpResendCountdown(otpResendCountdown - 1);
       }, 1000);
-
   }, [otpResendCountdown]);
 
+  // It is used for removing the response from the state(successMessage) after ----- otpResendCountDown value is equal to zero ------.
   const removeResponse = () => {
     setNewMobile("");
     setSuccessMessage(false);
     setError(false);
   };
 
+
+  // This is responsible for requesting mobile number change for the authenticated users.
   const handleOtp = (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -59,12 +63,13 @@ const ChangeMobile = (props) => {
           setError(true);
         } else {
           setSuccessMessage(res.data);
-          setOtpResendCountdown(40);
+          setOtpResendCountdown(60);
         }
       })
       .catch((error) => console.log(error));
   };
 
+  // This function is responsible for validating the input field.is its value is the mobile number or not.
   const onNewMobileChange = (e) => {
     setNewMobile(e.target.value);
     setError(false);
@@ -73,6 +78,7 @@ const ChangeMobile = (props) => {
       e.target.setCustomValidity("Enter valid 10-digit Mobile Number");
   };
 
+  // This function is responsible for verifying the mobile number by taking OTP after requesting a mobile number change for the authenticated users.
   const verifyOtp = (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -90,6 +96,7 @@ const ChangeMobile = (props) => {
       .catch((error) => console.log(error));
   };
 
+  // This is a function. It is only triggered when a mobile number change becomes successful. 
   const handleAlertBox = () => {
     setHandleAlert(false);
     removeResponse();
@@ -97,6 +104,7 @@ const ChangeMobile = (props) => {
 
   return (
     <>
+      {/* This is a form for requesting a mobile number change. */}
       <Form onSubmit={handleOtp}>
         <h4 className="text-center">Change Mobile Number</h4>
         <hr className="mt-1 mb-2 " style={{ width: "60%" }} />
@@ -137,6 +145,7 @@ const ChangeMobile = (props) => {
       </Form>
       <div className="row justify-content-end">
         <div className="col-md-7">
+          {/* This is a countdown timer for OTP verification. It is only shown when a user requests a mobile number change. */}
           {successMessage && otpResendCountdown > 0 && (
             <div className="small text-secondary">
               OTP is valid for {otpResendCountdown} seconds
@@ -145,6 +154,7 @@ const ChangeMobile = (props) => {
         </div>
         <div className="col-md-5 d-flex justify-content-end align-items-center">
           {successMessage && successMessage.success && otpResendCountdown !== 0 && (
+            // This is a form. It is used to verify the OTP for mobile number change.
             <Form onSubmit={verifyOtp}>
               <FormGroup>
                 <InputGroup>
@@ -168,6 +178,7 @@ const ChangeMobile = (props) => {
             </Form>
           )}
 
+          {/* This is a countdown timer for OTP verification. It is only shown when otp gets expired. */}
           {successMessage && successMessage.success && otpResendCountdown === 0 && (
             <>
               <Repeat size={13} color="#2196f3" style={{marginRight: 5}} />
@@ -177,6 +188,8 @@ const ChangeMobile = (props) => {
         </div>
       </div>
 
+
+      {/* This is a popup modal. It is only shown when mobile change becomes successful. */}
       <SweetAlert
         success
         title="Success"
