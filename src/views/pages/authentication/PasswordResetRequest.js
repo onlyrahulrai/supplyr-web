@@ -33,6 +33,8 @@ export default function PasswordReset(props) {
   const [password2, setPassword2] = useState("");
   const [otpResendCountdown, setOtpResendCountdown] = useState(0);
 
+
+  // This is responsible for starting the countdown timer according to otpResndCountdown on every otpResndCountdown value change. It is usually used on requesting for change mobile by an authenticated user.
   useEffect(() => {
     const unsubscribe =
       otpResendCountdown > 0 &&
@@ -42,6 +44,7 @@ export default function PasswordReset(props) {
     return unsubscribe;
   }, [otpResendCountdown]);
 
+  // This is a function. It is only triggered when anyone request a reset password. It works according to mobile number and email.
   const onSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -82,6 +85,7 @@ export default function PasswordReset(props) {
           });
   };
 
+  // This function is responsible for verifying the mobile number by taking OTP after requesting a mobile number change.
   const handleOtp = (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -109,11 +113,13 @@ export default function PasswordReset(props) {
     }
   };
 
+  // This function validates the mobile number and email.
   function validateMobileOrEmail(text) {
     const re =
       /^([_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5}))|(^\d{10}$)$/;
     return re.test(text);
   }
+  
   const onEmailChange = (e) => {
     setValue(e.target.value);
     e.target.setCustomValidity("");
