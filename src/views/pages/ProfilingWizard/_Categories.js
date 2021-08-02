@@ -252,7 +252,7 @@ export default class Categories extends Component {
         sub_categories: this.state.selectedSubcategories,
       })
       .then((response) => {
-        this.props.forceStepRefresh();
+        this.props.forceStepRefresh ? this.props.forceStepRefresh():this.props.setAddCategory(false)
       });
   };
 
@@ -260,6 +260,8 @@ export default class Categories extends Component {
     let selectedSubcategories = this.state.selectedSubcategories;
     let selectedCategories = this.state.selectedCategories;
     let categories = this.state.categories;
+
+    console.log(selectedSubcategories,selectedCategories,categories)
 
     return (
       <div>

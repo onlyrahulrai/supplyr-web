@@ -14,6 +14,7 @@ function CategoryListItem(props) {
     return (
             <Card
               className="card-reload card-action"
+              style={{boxShadow:"unset"}}
             >
               <CardHeader>
                 <CardTitle>
