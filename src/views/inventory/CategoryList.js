@@ -28,7 +28,7 @@ function CategoryListItem(props) {
               </CardHeader>
               <CardBody>
                 {sub_categories.map(sc => (
-                    <Chip text={sc.name} />
+                    <Chip text={sc.name} key={sc.id} />
                 ))}
               </CardBody>
             </Card>
@@ -94,7 +94,7 @@ function CategoryList(props) {
       }
       {!isLoading && categories &&
         <div className="card-columns">
-            {categories.map(category => (<CategoryListItem category={category} onDelete={e => deleteCategory(category.id)}/>))}
+            {categories.map(category => (<CategoryListItem category={category} onDelete={e => deleteCategory(category.id)} key={category.id} />))}
         </div>
       }
         </>

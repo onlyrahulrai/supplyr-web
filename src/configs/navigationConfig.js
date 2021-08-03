@@ -78,7 +78,7 @@ const navigationConfig = [
   {
     type: "groupHeader",
     groupTitle: "ADMIN",
-    permissions: ["admin", "staff"],
+    // permissions: ["admin", "staff"],
   },
 
   {
@@ -86,14 +86,14 @@ const navigationConfig = [
     title: "Categories",
     type: "collapse",
     icon: <HiOutlineFolder size={20} />,
-    permissions: ["admin", "staff"],
+    // permissions: ["admin", "staff"],
     children: [
       {
         id: "cetegories",
         title: "Categories List",
         type: "item",
         icon: <RiFoldersLine size={20} />,
-        permissions: ["admin", "staff"],
+        // permissions: ["admin", "staff"],
         navLink: "/inventory/categories/list"
       },
       {
@@ -101,7 +101,7 @@ const navigationConfig = [
         title: "Add Category",
         type: "item",
         icon: <HiOutlineFolderAdd size={20} />,
-        permissions: ["admin", "staff"],
+        // permissions: ["admin", "staff"],
         navLink: "/inventory/categories/add"
       },
     ]

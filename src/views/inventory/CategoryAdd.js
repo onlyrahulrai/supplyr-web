@@ -79,7 +79,7 @@ function subCategoryReducer(state, action) {
 
         case 'setFocus':
             let currentFocusValue = _state[action.index]['setFocus'] ?? 0
-            _state[action.index]['setFocus'] = ++currentFocusValue  //Changing focus values are only so thet react can focus an element multiple times with this method, if needed. Otherwise setting 'true' more than once won't trigger state change
+            _state[action.index]['setFocus'] = ++currentFocusValue  //Changing focus values are only so that react can focus an element multiple times with this method, if needed. Otherwise setting 'true' more than once won't trigger state change
             console.log("Setting focus ", _state[action.index]['setFocus'])
             return _state
 
@@ -115,6 +115,8 @@ function CategoryAdd(props) {
         // To clear state when navigating from edit category to add category (Same component)
         clearState()
     }, [props.location.pathname])
+
+    console.log(props.location.pathname)
 
     useEffect(() => {
         // Initialize state if editing existing category
@@ -154,7 +156,6 @@ function CategoryAdd(props) {
         }
         file && reader.readAsDataURL(file);
         setDeleteImage(false)
-        
     }
 
     function onImageRemove() {
