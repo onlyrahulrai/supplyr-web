@@ -16,8 +16,12 @@
 }
 
 .img-40 {
-    max-width: 40px;
+    width: 44px;
     max-height: 40px;
+}
+
+.rounded-full{
+    border-radius: 50%;
 }
 
 .img-100 {
@@ -28,3 +32,12 @@
 [dir] .card .card {
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
 }
+
+.text-truncate {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+

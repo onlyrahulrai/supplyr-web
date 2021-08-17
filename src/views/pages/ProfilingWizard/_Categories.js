@@ -10,13 +10,14 @@ import {
   Button,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Plus, X, Check, ChevronLeft } from "react-feather";
+import { Plus, X, Check, ChevronLeft, Eye } from "react-feather";
 import Chip from "components/profiling/ChipSelectable";
 import apiClient from "api/base";
 import {
   RiCheckboxMultipleLine,
   RiCheckboxMultipleBlankLine,
 } from "react-icons/ri";
+import {history} from "../../../history"
 
 function CategoryEmptyPlaceholder(props) {
   return (
@@ -66,11 +67,34 @@ class CategoryListItem extends Component {
 
 class CategoryDetailed extends Component {
   render() {
+    const seller = this.props.user.name
+    console.log(this.props.category.seller,seller,this.props.category.id)
     return (
       <Card>
         <CardHeader>
           <CardTitle>{this.props.category.name}</CardTitle>
           <div className="actions">
+
+          {
+            this.props.category.seller === seller && (
+              <>
+                <Button.Ripple
+                className="rounded-circle btn-icon mr-1"
+                size="sm"
+                color="secondary"
+                id="editCategory"
+                onClick={() => history.push('/inventory/categories/edit/'+this.props.category.id)}
+              >
+                <Eye />
+              </Button.Ripple>
+              <UncontrolledTooltip placement="top" target="editCategory">
+                Update Category
+              </UncontrolledTooltip>
+            </>
+            )
+          }
+          
+
             <Button.Ripple
               className="rounded-circle btn-icon mr-1"
               id="addAllSubCategories"
@@ -261,7 +285,6 @@ export default class Categories extends Component {
     let selectedCategories = this.state.selectedCategories;
     let categories = this.state.categories;
 
-    console.log(selectedSubcategories,selectedCategories,categories)
 
     return (
       <div>
@@ -296,6 +319,7 @@ export default class Categories extends Component {
                     )?.[0];
                     return (
                       <CategoryDetailed
+                        user={this.props.user}
                         category={category}
                         selectedSubcategories={selectedSubcategories}
                         toggleSubcategory={this.toggleSubcategory}

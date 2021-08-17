@@ -46,9 +46,11 @@ const CreateCategory = () => {
 const UserCategory = (props) => {
   const sub_categories = props.user.profile.sub_categories;
   const categories_data = props.user.profiling_data.categories_data;
+  const user = props.user
   const [addCategory, setAddCategory] = useState(false);
   const [createCategory, setCreateCategory] = useState(false);
   const history = useHistory()
+
 
   var obj = sub_categories.reduce((a, c) => {
     if (a[c.category]) a[c.category].push(c);
@@ -59,31 +61,34 @@ const UserCategory = (props) => {
   return (
     <>
       <Row className="justify-content-end">
-        <Col className="d-flex justify-content-end align-items-center">
+        <Col className="d-flex justify-content-between align-items-center">
           {addCategory ? (
             <>
-              <Button.Ripple
-                color="primary"
-                className="mr-1"
-                onClick={() => {
-                  history.push("/inventory/categories/add")
-                  // setCreateCategory(true);
-                  // setAddCategory(false);
-                }}
-              >
-                <Plus size={14} className="mr-1" />
-                Create Category
-              </Button.Ripple>
-              <Button.Ripple
-                color="danger"
-                onClick={() => {
-                  setAddCategory(false);
-                  setCreateCategory(false);
-                }}
-              >
-                <X size={14} className="mr-1" />
-                Cancel
-              </Button.Ripple>
+              <div></div>
+              <div>
+                <Button.Ripple
+                  color="primary"
+                  className="mr-1"
+                  onClick={() => {
+                    history.push("/inventory/categories/add")
+                    // setCreateCategory(true);
+                    // setAddCategory(false);
+                  }}
+                >
+                  <Plus size={14} className="mr-1" />
+                  Create Category
+                </Button.Ripple>
+                <Button.Ripple
+                  color="danger"
+                  onClick={() => {
+                    setAddCategory(false);
+                    setCreateCategory(false);
+                  }}
+                >
+                  <X size={14} className="mr-1" />
+                  Cancel
+                </Button.Ripple>
+              </div>
             </>
           ) : (
             <>
@@ -101,22 +106,26 @@ const UserCategory = (props) => {
                   </Button.Ripple>
                 </>
               ) : (
-                <Button.Ripple
-                  color="primary"
-                  onClick={() => setAddCategory(true)}
-                >
-                  <Plus size={14} className="mr-1" />
-                  Add Category
-                </Button.Ripple>
+                <>
+                  <h3 className="mb-0">Selected Categories</h3>
+                  <Button.Ripple
+                    color="primary"
+                    onClick={() => setAddCategory(true)}
+                  >
+                    <Plus size={14} className="mr-1" />
+                    Edit Category
+                  </Button.Ripple>
+                </>
               )}
             </>
           )}
         </Col>
       </Row>
 
-      <hr />
+      <hr />      
 
       <Row>
+      
         {!addCategory &&
           !createCategory &&
           Object.entries(obj).map(([key, value], i) => (
@@ -125,10 +134,13 @@ const UserCategory = (props) => {
             </Col>
           ))}
         {addCategory && (
-          <Category
-            categoriesData={categories_data}
-            setAddCategory={setAddCategory}
-          />
+          <>
+            <Category
+              user={user}
+              categoriesData={categories_data}
+              setAddCategory={setAddCategory}
+            />
+          </>
         )}
         {!addCategory && createCategory && <CategoryAdd />}
       </Row>
