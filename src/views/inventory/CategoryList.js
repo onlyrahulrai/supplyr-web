@@ -32,11 +32,8 @@ function CategoryListItem(props) {
                   {name}
                 </UncontrolledTooltip>
                 <div>
-                  {
-                    seller === props.seller && (
                       <Edit size={20} onClick={e => history.push('/inventory/categories/edit/'+categoryId)} />
-                    )
-                  }
+                  
                     <X size={20} className="ml-1" onClick={props.onDelete}/>
                 </div>
               </CardHeader>

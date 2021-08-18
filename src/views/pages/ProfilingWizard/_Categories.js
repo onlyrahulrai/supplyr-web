@@ -18,6 +18,7 @@ import {
   RiCheckboxMultipleBlankLine,
 } from "react-icons/ri";
 import {history} from "../../../history"
+import { BiPencil } from "react-icons/bi";
 
 function CategoryEmptyPlaceholder(props) {
   return (
@@ -68,16 +69,12 @@ class CategoryListItem extends Component {
 class CategoryDetailed extends Component {
   render() {
     const seller = this.props.user.name
-    console.log(this.props.category.seller,seller,this.props.category.id)
+    
     return (
       <Card>
         <CardHeader>
           <CardTitle>{this.props.category.name}</CardTitle>
           <div className="actions">
-
-          {
-            this.props.category.seller === seller && (
-              <>
                 <Button.Ripple
                 className="rounded-circle btn-icon mr-1"
                 size="sm"
@@ -85,14 +82,11 @@ class CategoryDetailed extends Component {
                 id="editCategory"
                 onClick={() => history.push('/inventory/categories/edit/'+this.props.category.id)}
               >
-                <Eye />
+                <BiPencil />
               </Button.Ripple>
               <UncontrolledTooltip placement="top" target="editCategory">
                 Update Category
               </UncontrolledTooltip>
-            </>
-            )
-          }
           
 
             <Button.Ripple
