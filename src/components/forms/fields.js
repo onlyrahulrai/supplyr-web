@@ -1,4 +1,4 @@
-import { Edit2, Save } from "react-feather";
+import { Check } from "react-feather";
 import { FormGroup, Label, Input, FormFeedback } from "reactstrap";
 
 export function SimpleInputField(props) {
@@ -40,7 +40,7 @@ export function SimpleInputField(props) {
           {props.iconRight && (
             <div className="form-control-position border shadow rounded-full" style={{marginRight:"16px",cursor:"pointer"}}>
               <span onClick={props.onKeyPress}>
-                <Save size={15}  />
+                <Check size={15}  />
               </span>
             </div>
           )}

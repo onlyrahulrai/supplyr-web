@@ -78,7 +78,7 @@ const navigationConfig = [
   {
     type: "groupHeader",
     groupTitle: "ADMIN",
-    // permissions: ["admin", "staff"],
+    permissions: ["general", "staff"],
   },
 
   {
@@ -86,7 +86,7 @@ const navigationConfig = [
     title: "Categories",
     type: "collapse",
     icon: <HiOutlineFolder size={20} />,
-    // permissions: ["admin", "staff"],
+    permissions: ["general", "staff"],
     children: [
       {
         id: "cetegories",

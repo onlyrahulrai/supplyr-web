@@ -9,6 +9,7 @@ import {
   FormGroup,
   Label,
   Input,
+  UncontrolledTooltip,
 } from "reactstrap";
 import apiClient from "api/base";
 import { Plus, Edit2, X } from "react-feather";
@@ -47,12 +48,17 @@ function SubCategory(props) {
           color="light"
           className="d-flex justify-content-between align-items-center"
         >
-          <span>{props.name}</span>
+          <span className="text-truncate" id={`tooltip-${props.index}`} style={{flex:"0.9"}} >
+            {props.name}
+          </span>
+          <UncontrolledTooltip placement="top" target={`tooltip-${props.index}`}>
+            {props.name}
+          </UncontrolledTooltip>
           <div>
-            
-            {
-              ((props.categoryId && props.authSeller === props.seller) || (!props.categoryId) || (props.categoryId && props.seller === undefined)) ? (
-                <>
+            {(props.categoryId && props.authSeller === props.seller) ||
+            !props.categoryId ||
+            (props.categoryId && props.seller === undefined) ? (
+              <>
                 <Button
                   size="sm"
                   color="primary"
@@ -76,8 +82,9 @@ function SubCategory(props) {
                   <X />
                 </Button>
               </>
-              ):("")
-            }
+            ) : (
+              ""
+            )}
           </div>
         </ListGroupItem>
       )}
@@ -87,13 +94,15 @@ function SubCategory(props) {
           value={props.name ?? ""}
           innerRef={fieldRef}
           size="lg"
-          onChange={(e) => props.onChange({"name":e.target.value,"seller":props.seller})}
+          onChange={(e) =>
+            props.onChange({ name: e.target.value, seller: props.seller })
+          }
           onBlur={(e) => props.name && setIsEditable(false)}
           onKeyPress={(e) => e.charCode === 13 && props.focusNextField()}
           onFocus={() => setIsEditable(true)}
           iconRight={true}
           placeholder="Subcategory Name"
-          styles={{paddingLeft:"15px"}}
+          styles={{ paddingLeft: "15px" }}
         />
       )}
     </>
@@ -149,12 +158,11 @@ function CategoryAdd(props) {
 
   const [categorySeller, setCategorySeller] = useState("");
 
-
   const formData = {
     name: categoryName,
     sub_categories: subCategoriesState
       .filter((sc) => sc.name)
-      .map((sc) => ({ ...sc, name: sc.name.trim(),seller:sc.seller})),
+      .map((sc) => ({ ...sc, name: sc.name.trim(), seller: sc.seller })),
     uploadedImage: uploadedImage,
   };
   categoryId && (formData.id = categoryId);
@@ -163,8 +171,6 @@ function CategoryAdd(props) {
     // To clear state when navigating from edit category to add category (Same component)
     clearState();
   }, [props.location.pathname]);
-
-  
 
   useEffect(() => {
     // Initialize state if editing existing category
@@ -212,18 +218,18 @@ function CategoryAdd(props) {
     setDisplayImage(undefined);
     setDeleteImage(true);
   }
-  
 
   function submitForm() {
     let url = "/inventory/categories/";
     let _formData = new FormData();
     _formData.append("id", formData.id);
     _formData.append("name", formData.name);
+    _formData.append("seller", props.authSeller);
     formData.uploadedImage && _formData.append("image", formData.uploadedImage);
     _formData.append("sub_categories", JSON.stringify(formData.sub_categories));
     deleteImage && _formData.append("delete_image", deleteImage);
 
-    console.log(formData.sub_categories[0].seller)
+    console.log(formData.sub_categories[0].seller);
 
     if (categoryId) {
       url += categoryId + "/";
@@ -236,7 +242,7 @@ function CategoryAdd(props) {
       })
       .then((response) => {
         Swal.fire("Category Saved !", "success");
-        // history.push("/inventory/categories/list");
+        history.push("/inventory/categories/list");
       });
   }
 
@@ -271,38 +277,36 @@ function CategoryAdd(props) {
           </Col>
           <Col md="auto">
             <Label for="img-upload">
-              {
-                displayImage && (
-                  <Button
-                    color="danger"
-                    className="mr-1"
-                    outline
-                    onClick={(e) => setTimeout(onImageRemove)}
-                    disabled={
-                      displayImage &&
-                      categoryId &&
-                      categorySeller !== props.authSeller
-                    }
-                  >
-                    {" "}
-                    {/** Done really know the cause, but without setTimeout, it's opening file upload dialog on removing an image (perhaps clicking the following button?) */}
-                    Remove
-                  </Button>
-                )
-              }
-                  
+              {displayImage && (
                 <Button
-                  color="primary"
-                  outline={props.is_submitted}
-                  onClick={(e) => document.getElementById("img-upload").click()}
+                  color="danger"
+                  className="mr-1"
+                  outline
+                  onClick={(e) => setTimeout(onImageRemove)}
                   disabled={
                     displayImage &&
                     categoryId &&
                     categorySeller !== props.authSeller
                   }
                 >
-                  <span>{displayImage ? "Change" : "Upload"}</span>
+                  {" "}
+                  {/** Done really know the cause, but without setTimeout, it's opening file upload dialog on removing an image (perhaps clicking the following button?) */}
+                  Remove
                 </Button>
+              )}
+
+              <Button
+                color="primary"
+                outline={props.is_submitted}
+                onClick={(e) => document.getElementById("img-upload").click()}
+                disabled={
+                  displayImage &&
+                  categoryId &&
+                  categorySeller !== props.authSeller
+                }
+              >
+                <span>{displayImage ? "Change" : "Upload"}</span>
+              </Button>
             </Label>
 
             <Input
@@ -325,7 +329,6 @@ function CategoryAdd(props) {
         <h6>Subcategories</h6>
         <ListGroup>
           {subCategoriesState.map((sc, index) => {
-          
             return (
               <SubCategory
                 key={index}
@@ -343,6 +346,7 @@ function CategoryAdd(props) {
                 {...sc}
                 authSeller={props.authSeller}
                 categoryId={categoryId}
+                index={index}
               />
             );
           })}
@@ -371,7 +375,7 @@ function CategoryAdd(props) {
 
 const mapStateToProps = (state) => {
   return {
-    authSeller: state.auth.userInfo.name,
+    authSeller: state.auth.userInfo.username,
   };
 };
 
