@@ -8,6 +8,7 @@ import {
   Button,
   Card,
   CardBody,
+  CardColumns,
   CardHeader,
   CardTitle,
   Col,
@@ -113,7 +114,7 @@ const UserCategory = (props) => {
                     onClick={() => setAddCategory(true)}
                   >
                     <Plus size={14} className="mr-1" />
-                    Edit Category
+                    Edit Categories
                   </Button.Ripple>
                 </>
               )}
@@ -124,15 +125,14 @@ const UserCategory = (props) => {
 
       <hr />      
 
-      <Row>
-      
-        {!addCategory &&
-          !createCategory &&
-          Object.entries(obj).map(([key, value], i) => (
-            <Col sm="6" key={i}>
-              <CategoryItem category={key} subCategories={value} />
-            </Col>
-          ))}
+      <>
+        <CardColumns>
+          {!addCategory &&
+            !createCategory &&
+            Object.entries(obj).map(([key, value], i) => (
+                <CategoryItem category={key} key={key} subCategories={value} />
+            ))}
+         </CardColumns>
         {addCategory && (
           <>
             <Category
@@ -143,7 +143,7 @@ const UserCategory = (props) => {
           </>
         )}
         {!addCategory && createCategory && <CategoryAdd />}
-      </Row>
+      </>
     </>
   );
 };

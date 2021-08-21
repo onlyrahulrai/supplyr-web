@@ -68,7 +68,7 @@ class CategoryListItem extends Component {
 
 class CategoryDetailed extends Component {
   render() {
-    const seller = this.props.user.name
+    
     
     return (
       <Card>

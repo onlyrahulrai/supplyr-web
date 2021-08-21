@@ -246,6 +246,8 @@ function CategoryAdd(props) {
       });
   }
 
+  
+
   return (
     <Row>
       <Col md="4 m-auto">
@@ -277,7 +279,7 @@ function CategoryAdd(props) {
           </Col>
           <Col md="auto">
             <Label for="img-upload">
-              {displayImage && (
+              {((displayImage && (!categoryId)) | (displayImage && categoryId && categorySeller === props.authSeller)) ? (
                 <Button
                   color="danger"
                   className="mr-1"
@@ -293,20 +295,23 @@ function CategoryAdd(props) {
                   {/** Done really know the cause, but without setTimeout, it's opening file upload dialog on removing an image (perhaps clicking the following button?) */}
                   Remove
                 </Button>
-              )}
+              ):("")}
 
-              <Button
-                color="primary"
-                outline={props.is_submitted}
-                onClick={(e) => document.getElementById("img-upload").click()}
-                disabled={
-                  displayImage &&
-                  categoryId &&
-                  categorySeller !== props.authSeller
-                }
-              >
-                <span>{displayImage ? "Change" : "Upload"}</span>
-              </Button>
+              {
+                ((categoryId && categorySeller === props.authSeller) | (!categoryId)) ?  (<Button
+                  color="primary"
+                  outline={props.is_submitted}
+                  onClick={(e) => document.getElementById("img-upload").click()}
+                  disabled={
+                    displayImage &&
+                    categoryId &&
+                    categorySeller !== props.authSeller
+                  }
+                >
+                  <span>{displayImage ? "Change" : "Upload"}</span>
+                </Button>):("")
+              }
+              
             </Label>
 
             <Input
