@@ -126,8 +126,9 @@ const ChangeMobile = (props) => {
             onChange={onNewMobileChange}
             disabled={successMessage && successMessage.success}
             required
+            invalid={error}
           />
-          <FormFeedback valid={error}>
+          <FormFeedback >
             <p>
               {successMessage &&
                 !successMessage.success &&
