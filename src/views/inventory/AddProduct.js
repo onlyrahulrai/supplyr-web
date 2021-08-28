@@ -50,7 +50,7 @@ import { SimpleInputField } from "components/forms/fields";
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb";
 
 import CreatableSelect from "react-select/creatable";
-import { Component } from "react";
+
 
 const Swal = withReactContent(_Swal);
 
@@ -860,8 +860,6 @@ function MultipleVariantForm(props) {
   );
 }
 
-
-
 function AddProduct(props) {
   const [isMultiVariant, setIsMultiVariant] = useState("no");
 
@@ -875,6 +873,7 @@ function AddProduct(props) {
   const [isProductDataLoaded, setIsProductDataLoaded] = useState(false); // For editing existing product
 
   const [tags, setTags] = useState([...props.profile.tags]);
+  const [vendors, setVendors] = useState([...props.profile.vendors]);
 
   const isPageRenderReady = !isEditingExistingProduct || isProductDataLoaded;
 
@@ -889,6 +888,7 @@ function AddProduct(props) {
           description: response.data.description,
           id: response.data.id,
           tags: response.data.tags,
+          vendors: response.data.vendors,
           sub_categories: response.data.sub_categories.map((sc) => sc.id),
         };
         setBasicData(initialBasicFieldsData);
@@ -912,7 +912,7 @@ function AddProduct(props) {
     images: productImages.map((image) => image.db_id),
     variants_data: variantsDataContainer,
   };
-  
+
   function validateForm() {
     let variantsData = variantsDataContainer;
     let errors = [];
@@ -1018,29 +1018,11 @@ function AddProduct(props) {
     };
   }
 
-
   const createOption = (label: string) => ({
-    id:label,
-    label: label.toLowerCase().replace(/\W/g, ''),
-    new:true
+    id: label,
+    label: label.toLowerCase().replace(/\W/g, ""),
+    new: true,
   });
-
-
-  function handleOnChange(value) {
-    setBasicFieldData("tags",value);
-  }
-
-  const handleCreate = (inputValue: any) => {
-    setTimeout(() => {
-      const newOption = createOption(inputValue);
-      console.groupEnd();
-
-      setTags((prevState) => {
-        return [...prevState,newOption]
-      })
-      setBasicFieldData("tags",[...basicData.tags,newOption])
-    }, 100);
-  };
 
   return (
     <>
@@ -1095,7 +1077,7 @@ function AddProduct(props) {
                     const subcat = props.profile.sub_categories.filter(
                       (sc) => sc.id == value
                     );
-                   
+
                     // return false
                     return (
                       subcat[0]?.name
@@ -1130,9 +1112,9 @@ function AddProduct(props) {
               label="Select/Create Product Tag(s)"
               requiredIndicator
               field={
-                <CreatableSelect 
+                <CreatableSelect
                   isMulti
-                  onChange={handleOnChange}
+                  onChange={(value) => setBasicFieldData("tags", value)}
                   onFilter={({ label, value, data }, searchString) => {
                     if (!searchString) return true;
                     if (data.__isNew__) {
@@ -1142,8 +1124,45 @@ function AddProduct(props) {
                   showNewOptionAtTop={false}
                   value={basicData?.tags}
                   options={tags}
-                  getOptionValue={option => option['id']}
-                  onCreateOption={handleCreate}
+                  getOptionValue={(option) => option["id"]}
+                  onCreateOption={(inputValue: any) => {
+                    const newOption = createOption(inputValue);
+                    console.groupEnd();
+
+                    setTags((prevState) => {
+                      return [...prevState, newOption];
+                    });
+                    setBasicFieldData("tags", [...basicData.tags, newOption]);
+                  }}
+                />
+              }
+            />
+
+            <SimpleInputField
+              label="Select/Create Product Vendor(s)"
+              requiredIndicator
+              field={
+                <CreatableSelect
+                  onChange={(value) => setBasicFieldData("vendors", value)}
+                  onFilter={({ label, value, data }, searchString) => {
+                    if (!searchString) return true;
+                    if (data.__isNew__) {
+                      return data.__isNew__;
+                    }
+                  }}
+                  showNewOptionAtTop={false}
+                  value={basicData?.vendors}
+                  options={vendors}
+                  getOptionValue={(option) => option["id"]}
+                  onCreateOption={(inputValue: any) => {
+                    const newOption = createOption(inputValue);
+                    console.groupEnd();
+
+                    setVendors((prevState) => {
+                      return [...prevState, newOption];
+                    });
+                    setBasicFieldData("vendors", newOption);
+                  }}
                 />
               }
             />
