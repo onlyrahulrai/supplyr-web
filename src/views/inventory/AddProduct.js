@@ -49,8 +49,8 @@ import { connect } from "react-redux";
 import { SimpleInputField } from "components/forms/fields";
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb";
 
-import CreatableSelect from "react-select/creatable";
 
+import CreatableSelect from "react-select/creatable";
 
 const Swal = withReactContent(_Swal);
 
@@ -875,6 +875,13 @@ function AddProduct(props) {
   const [tags, setTags] = useState([...props.profile.tags]);
   const [vendors, setVendors] = useState([...props.profile.vendors]);
 
+  const weightUnit = [
+    { value: "mg", label: "Milligram" },
+    { value: "kg", label: "kilogram" },
+    { value: "gm", label: "Gram" },
+    { value: "lbs", label: "Pound-Mass" },
+  ];
+
   const isPageRenderReady = !isEditingExistingProduct || isProductDataLoaded;
 
   useEffect(() => {
@@ -889,6 +896,8 @@ function AddProduct(props) {
           id: response.data.id,
           tags: response.data.tags,
           vendors: response.data.vendors,
+          weight_unit:response.data.weight_unit,
+          weight_value:response.data.weight_value,
           sub_categories: response.data.sub_categories.map((sc) => sc.id),
         };
         setBasicData(initialBasicFieldsData);
@@ -1019,10 +1028,12 @@ function AddProduct(props) {
   }
 
   const createOption = (label: string) => ({
-    id: label,
+    id: label.toLowerCase().replace(/\W/g, ""),
     label: label.toLowerCase().replace(/\W/g, ""),
     new: true,
   });
+
+  console.log("weight unit: ", basicData);
 
   return (
     <>
@@ -1117,9 +1128,7 @@ function AddProduct(props) {
                   onChange={(value) => setBasicFieldData("tags", value)}
                   onFilter={({ label, value, data }, searchString) => {
                     if (!searchString) return true;
-                    if (data.__isNew__) {
-                      return data.__isNew__;
-                    }
+                    return data.__isNew__;
                   }}
                   showNewOptionAtTop={false}
                   value={basicData?.tags}
@@ -1134,6 +1143,30 @@ function AddProduct(props) {
                     });
                     setBasicFieldData("tags", [...basicData.tags, newOption]);
                   }}
+                  isValidNewOption={(
+                    inputValue,
+                    selectValue,
+                    selectOptions
+                  ) => {
+                    if (
+                      inputValue.trim().length === 0 ||
+                      selectOptions.find(
+                        (option) =>
+                          option.label ===
+                          inputValue.toLowerCase().replace(/\W/g, "")
+                      )
+                    ) {
+                      return false;
+                    }
+                    return true;
+                  }}
+                  formatOptionLabel={({ value, label, customAbbreviation }) => (
+                    <div style={{ display: "flex" }}>
+                      <div>
+                        {label.charAt(0).toUpperCase() + label.slice(1)}
+                      </div>
+                    </div>
+                  )}
                 />
               }
             />
@@ -1165,6 +1198,31 @@ function AddProduct(props) {
                   }}
                 />
               }
+            />
+
+            <SimpleInputField
+              label="Select Product Weight Unit(s)"
+              requiredIndicator
+              field={
+                <Select
+                  options={weightUnit}
+                  onChange={(weightUnit) =>
+                    setBasicFieldData("weight_unit", weightUnit.value)
+                  }
+                  defaultOptions
+                  value={weightUnit.find((weight_unit) => weight_unit.value === basicData?.weight_unit)}
+                />
+              }
+            />
+
+            <SimpleInputField
+              label="Enter Product Weight"
+              type="number"
+              placeholder="Enter Product Weight"
+              onChange={(e) => setBasicFieldData("weight_value", e.target.value)}
+              requiredIndicator
+              required
+              value={basicData.weight_value}
             />
 
             <UploadGallery
