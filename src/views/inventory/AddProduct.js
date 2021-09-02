@@ -49,8 +49,8 @@ import { connect } from "react-redux";
 import { SimpleInputField } from "components/forms/fields";
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb";
 
-
 import CreatableSelect from "react-select/creatable";
+import { CountryData } from "../../assets/data/CountryData";
 
 const Swal = withReactContent(_Swal);
 
@@ -874,6 +874,7 @@ function AddProduct(props) {
 
   const [tags, setTags] = useState([...props.profile.tags]);
   const [vendors, setVendors] = useState([...props.profile.vendors]);
+  const [country, setCountry] = useState([...CountryData]);
 
   const weightUnit = [
     { value: "mg", label: "Milligram" },
@@ -896,8 +897,9 @@ function AddProduct(props) {
           id: response.data.id,
           tags: response.data.tags,
           vendors: response.data.vendors,
-          weight_unit:response.data.weight_unit,
-          weight_value:response.data.weight_value,
+          country: response.data.country,
+          weight_unit: response.data.weight_unit,
+          weight_value: response.data.weight_value,
           sub_categories: response.data.sub_categories.map((sc) => sc.id),
         };
         setBasicData(initialBasicFieldsData);
@@ -1033,7 +1035,10 @@ function AddProduct(props) {
     new: true,
   });
 
-  console.log("weight unit: ", basicData);
+  console.log(
+    "Country Data: ",
+    country.find((country) => country.value === basicData?.country)
+  );
 
   return (
     <>
@@ -1073,12 +1078,16 @@ function AddProduct(props) {
               field={
                 <Select
                   // closeMenuOnSelect={false}
-                  value={basicData.sub_categories
-                    ?.map((sc_id) =>
-                      props.profile.sub_categories.find((sc) => sc.id === sc_id)
-                    )
-                    .filter(Boolean)
-                    .map(getRenderedSubcategory)}
+                  value={
+                    basicData.sub_categories
+                      ?.map((sc_id) =>
+                        props.profile.sub_categories.find(
+                          (sc) => sc.id === sc_id
+                        )
+                      )
+                      .filter(Boolean)
+                      .map(getRenderedSubcategory) || ""
+                  }
                   isMulti
                   options={props.profile.sub_categories.map(
                     getRenderedSubcategory
@@ -1131,7 +1140,7 @@ function AddProduct(props) {
                     return data.__isNew__;
                   }}
                   showNewOptionAtTop={false}
-                  value={basicData?.tags}
+                  value={basicData?.tags || ""}
                   options={tags}
                   getOptionValue={(option) => option["id"]}
                   onCreateOption={(inputValue: any) => {
@@ -1184,7 +1193,7 @@ function AddProduct(props) {
                     }
                   }}
                   showNewOptionAtTop={false}
-                  value={basicData?.vendors}
+                  value={basicData?.vendors || ""}
                   options={vendors}
                   getOptionValue={(option) => option["id"]}
                   onCreateOption={(inputValue: any) => {
@@ -1200,29 +1209,63 @@ function AddProduct(props) {
               }
             />
 
+            <Row style={{ alignItems: "center" }}>
+              <Col md="6 m-auto">
+                <SimpleInputField
+                  label="Select Product Weight Unit"
+                  requiredIndicator
+                  field={
+                    <Select
+                      options={weightUnit}
+                      label="Select Product Weight Unit"
+                      onChange={(weightUnit) =>
+                        setBasicFieldData("weight_unit", weightUnit.value)
+                      }
+                      requiredIndicator
+                      defaultOptions
+                      value={
+                        weightUnit.find(
+                          (weight_unit) =>
+                            weight_unit.value === basicData?.weight_unit
+                        ) || ""
+                      }
+                    />
+                  }
+                />
+              </Col>
+              <Col md="6 m-auto ">
+                <SimpleInputField
+                  label="Enter Product Weight"
+                  type="number"
+                  placeholder="Enter Product Weight"
+                  onChange={(e) =>
+                    setBasicFieldData("weight_value", e.target.value)
+                  }
+                  requiredIndicator
+                  required
+                  value={basicData.weight_value || ""}
+                />
+              </Col>
+            </Row>
             <SimpleInputField
-              label="Select Product Weight Unit(s)"
+              label="Select Country"
               requiredIndicator
               field={
                 <Select
-                  options={weightUnit}
-                  onChange={(weightUnit) =>
-                    setBasicFieldData("weight_unit", weightUnit.value)
+                  options={country}
+                  placeholder="Select Country"
+                  onChange={(country) =>
+                    setBasicFieldData("country", country.value)
                   }
+                  requiredIndicator
                   defaultOptions
-                  value={weightUnit.find((weight_unit) => weight_unit.value === basicData?.weight_unit)}
+                  value={
+                    country.find(
+                      (country) => country.value === basicData?.country
+                    ) || ""
+                  }
                 />
               }
-            />
-
-            <SimpleInputField
-              label="Enter Product Weight"
-              type="number"
-              placeholder="Enter Product Weight"
-              onChange={(e) => setBasicFieldData("weight_value", e.target.value)}
-              requiredIndicator
-              required
-              value={basicData.weight_value}
             />
 
             <UploadGallery
