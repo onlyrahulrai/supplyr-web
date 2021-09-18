@@ -19,14 +19,14 @@ import {
 const Category = lazy(() => import("../ProfilingWizard/_Categories"));
 const CategoryAdd = lazy(() => import("../../inventory/CategoryAdd"));
 
-function CategoryItem({ category, subCategories }) {
+function CategoryItem({ category,selected_sub_categories }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{category}</CardTitle>
+        <CardTitle>{category.name}</CardTitle>
       </CardHeader>
       <CardBody>
-        {subCategories.map((sc) => (
+        {/* {subCategories.map((sc) => (
           <Badge
             color="primary"
             className="mr-1 mb-1 badge-glow rounded"
@@ -34,19 +34,36 @@ function CategoryItem({ category, subCategories }) {
           >
             <span>{sc.name}</span>
           </Badge>
-        ))}
+        ))} */}
+        {
+          category.sub_categories.map((subCategory) => 
+          {
+            return (
+              <>
+                {
+                  selected_sub_categories.includes(subCategory.id) ? <Badge
+                  color="primary"
+                  className="mr-1 mb-1 badge-glow rounded"
+                  key={subCategory.id}
+                >
+                  <span>{subCategory.name}</span>
+                </Badge>:("")
+                }
+              </>
+            )
+          })
+        }
       </CardBody>
     </Card>
   );
 }
 
-const CreateCategory = () => {
-  return <h3>Create Category</h3>;
-};
 
 const UserCategory = (props) => {
   const sub_categories = props.user.profile.sub_categories;
   const categories_data = props.user.profiling_data.categories_data;
+  const categories = props.user.profiling_data.categories_data.categories;
+  const selected_sub_categories =  props.user.profiling_data.categories_data.selected_sub_categories
   const user = props.user
   const [addCategory, setAddCategory] = useState(false);
   const [createCategory, setCreateCategory] = useState(false);
@@ -54,10 +71,22 @@ const UserCategory = (props) => {
 
 
   var obj = sub_categories.reduce((a, c) => {
-    if (a[c.category]) a[c.category].push(c);
+    if (a[c.category] && c.category !== "(Category)") a[c.category].push(c);
     else a[c.category] = [c];
     return a;
   }, {});
+
+
+  let selectedCategories = [];
+  selected_sub_categories.forEach((subcat_id) => {
+    let category_id = categories_data.categories.filter((category) =>
+      category.sub_categories.map((subcat) => subcat.id).includes(subcat_id)
+      )[0]?.id;
+
+      if (category_id && !selectedCategories.includes(category_id)) {
+          selectedCategories.push(category_id);
+      }
+    })
 
   return (
     <>
@@ -129,9 +158,16 @@ const UserCategory = (props) => {
         <CardColumns>
           {!addCategory &&
             !createCategory &&
-            Object.entries(obj).map(([key, value], i) => (
-                <CategoryItem category={key} key={key} subCategories={value} />
-            ))}
+            // Object.entries(obj).map(([key, value], i) => (
+            //     <CategoryItem category={key} key={key} subCategories={value} />
+            // ))
+            selectedCategories.map((category_id) => {
+              let category = categories.filter((cat) => cat.id === category_id)?.[0]
+              return(
+                <CategoryItem category={category} key={category_id} selected_sub_categories={selected_sub_categories} />
+              )
+            })
+          }
          </CardColumns>
         {addCategory && (
           <>

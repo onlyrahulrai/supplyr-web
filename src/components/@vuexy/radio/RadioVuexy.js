@@ -28,7 +28,7 @@ class RadioVuexy extends Component {
           <span className="vx-radio--border" />
           <span className="vx-radio--circle" />
         </span>
-        <span>{this.props.label}</span>
+        <h5>{this.props.label}</h5>
       </div>
     )
   }

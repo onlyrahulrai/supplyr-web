@@ -229,7 +229,7 @@ function CategoryAdd(props) {
     _formData.append("sub_categories", JSON.stringify(formData.sub_categories));
     deleteImage && _formData.append("delete_image", deleteImage);
 
-    console.log(formData.sub_categories[0].seller);
+ 
 
     if (categoryId) {
       url += categoryId + "/";

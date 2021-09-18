@@ -38,12 +38,14 @@ export function SimpleInputField(props) {
             style={props.styles}
           />
           {props.iconRight && (
-            <div className="form-control-position border shadow rounded-full" style={{marginRight:"16px",cursor:"pointer"}}>
-              <span onClick={props.onKeyPress}>
-                <Check size={15}  />
+            <div className={`form-control-position border shadow rounded-full ${props.icon ? "ml-1":""}`} style={{marginRight:"16px",cursor:"pointer"}}>
+              <span onClick={props.onKeyPress ?? props.onClick} >
+                {props.icon ?? <Check size={15}  /> }
               </span>
             </div>
           )}
+
+         
         </>
       )}
       {fieldError && <FormFeedback>{fieldError}</FormFeedback>}

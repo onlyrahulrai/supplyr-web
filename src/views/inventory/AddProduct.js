@@ -1017,9 +1017,10 @@ function AddProduct(props) {
   }
 
   function getRenderedSubcategory(subCategory) {
+    console.log("subcategory: ",subCategory.category)
     const label = (
       <div>
-        <div>{subCategory.name}</div>
+        <div className={`${subCategory.category === "(Category)" ? "text-bold-600":""}`}>{subCategory.name}</div>
         <div className="text-lightgray">{subCategory.category}</div>
       </div>
     );
