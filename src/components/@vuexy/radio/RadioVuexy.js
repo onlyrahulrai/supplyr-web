@@ -18,6 +18,7 @@ class RadioVuexy extends Component {
           onChange={this.props.onChange}
           ref={this.props.ref}
           checked={this.props.checked}
+          required={this.props.required}
         />
         <span
           className={classnames("vx-radio", {

@@ -1,236 +1,314 @@
-import { useState, useReducer, useEffect } from "react";
 import { SimpleInputField } from "components/forms/fields";
+import React, { useEffect, useState } from "react";
+import { ArrowLeft, Check, Plus, X } from "react-feather";
+import Radio from "../../components/@vuexy/radio/RadioVuexy";
+
 import {
   Button,
-  Row,
+  Card,
+  CardBody,
+  CardTitle,
   Col,
-  ListGroup,
-  ListGroupItem,
   FormGroup,
   Label,
-  Input,
-  UncontrolledTooltip,
+  Row,
+  Spinner,
 } from "reactstrap";
-import apiClient from "api/base";
-import { Plus, Edit2, X } from "react-feather";
-import Swal from "utility/sweetalert";
 import { history } from "../../history";
-import { useRef } from "react";
-import { getApiURL } from "api/utils";
+import RichEditor from "./_RichEditor";
+import Select from "react-select";
 import { connect } from "react-redux";
+import Swal from "sweetalert2";
+import apiClient from "api/base";
 
-function SubCategory(props) {
-  const [isEditable, setIsEditable] = useState(false);
-  const fieldRef = useRef(null);
+const compareByData = [
+  { value: "product_title", label: "Product title" },
+  { value: "product_category", label: "Product category" },
+  { value: "product_vendor", label: "Product vendor" },
+  { value: "product_tag", label: "Product tag" },
+  { value: "compare_at_price", label: "Compare at price" },
+  { value: "weight", label: "Weight" },
+  { value: "inventory_stock", label: "Inventory Stock" },
+  { value: "variants_title", label: "Variant's title" },
+];
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (props.setFocus) {
-        setIsEditable(true);
-        // eslint-disable-next-line
-        let _ = fieldRef.current?.focus();
-      }
-    }, 0);
-  }, [props.setFocus]);
+const compareWithData = [
+  {
+    value: "is_equal_to",
+    label: "Is equal to",
+    link: [
+      "product_title",
+      "product_category",
+      "product_vendor",
+      "product_tag",
+      "compare_at_price",
+      "weight",
+      "inventory_stock",
+      "variants_title",
+    ],
+  },
+  {
+    value: "is_not_equal_to",
+    label: "Is not equal to",
+    link: [
+      "product_title",
+      "product_category",
+      "product_vendor",
+      "product_tag",
+      "compare_at_price",
+      "weight",
+      "inventory_stock",
+      "variants_title",
+    ],
+  },
+  {
+    value: "is_greater_than",
+    label: "Is greater than",
+    link: ["compare_at_price", "weight", "inventory_stock"],
+  },
+  {
+    value: "is_less_than",
+    label: "Is less than",
+    link: ["compare_at_price", "weight", "inventory_stock"],
+  },
+  {
+    value: "starts_with",
+    label: "Starts with",
+    link: [
+      "product_title",
+      "product_category",
+      "product_vendor",
+      "product_tag",
+      "variants_title",
+    ],
+  },
+  {
+    value: "ends_with",
+    label: "Ends with",
+    link: [
+      "product_title",
+      "product_category",
+      "product_vendor",
+      "product_tag",
+      "variants_title",
+    ],
+  },
+  {
+    value: "contains",
+    label: "Contains",
+    link: [
+      "product_title",
+      "product_category",
+      "product_vendor",
+      "product_tag",
+      "variants_title",
+    ],
+  }
+];
 
-  useEffect(() => {
-    if (!props.name) {
-      setIsEditable(true);
-    } else if (document.activeElement !== fieldRef.current) {
-      setIsEditable(false);
-    }
-  }, [props.name]);
+const AddConditionsComponent = (props) => {
+  const removeConditions = (index) => {
+    let rulesCopy = [...props.basicData.rules];
+    rulesCopy.splice(index, 1);
+    props.setBasicFieldData("rules", rulesCopy);
+  };
+
+  console.log("rules data is ----> ", props.basicData.rules);
 
   return (
     <>
-      {!isEditable && (
-        <ListGroupItem
-          color="light"
-          className="d-flex justify-content-between align-items-center"
-        >
-          <span className="text-truncate" id={`tooltip-${props.index}`} style={{flex:"0.9"}} >
-            {props.name}
-          </span>
-          <UncontrolledTooltip placement="top" target={`tooltip-${props.index}`}>
-            {props.name}
-          </UncontrolledTooltip>
-          <div>
-            {(props.categoryId && props.authSeller === props.seller) ||
-            !props.categoryId ||
-            (props.categoryId && props.seller === undefined) ? (
-              <>
-                <Button
-                  size="sm"
-                  color="primary"
-                  title="Edit"
-                  className="round btn-icon"
-                  onClick={(e) => {
-                    setIsEditable(!isEditable);
-                    setTimeout(() => fieldRef.current.focus(), 0);
+      <Row className="mt-1 align-items-center">
+        <Col md="auto">
+          <span>Products must match:</span>
+        </Col>
+        <Col md="auto">
+          <Radio
+            label="All conditions"
+            defaultChecked={props.basicData.condition === "all" ?? false}
+            name="conditions"
+            value={
+              props.basicData.condition === "all"
+                ? props.basicData.condition
+                : "all"
+            }
+            onChange={(e) =>
+              props.setBasicFieldData("condition", e.target.value)
+            }
+            required={true}
+          />
+        </Col>
+        <Col md="auto">
+          <Radio
+            label="Any conditions"
+            defaultChecked={props.basicData.condition === "any" ?? false}
+            name="conditions"
+            value={
+              props.basicData.condition === "any"
+                ? props.basicData.condition
+                : "any"
+            }
+            onChange={(e) =>
+              props.setBasicFieldData("condition", e.target.value)
+            }
+            required={true}
+          />
+        </Col>
+      </Row>
+
+      {props.basicData.rules.map((rule, index) => (
+        <Row key={index} style={{ alignItems: "center" }} className="mt-2">
+          <Col md="4 m-auto">
+            <SimpleInputField
+              requiredIndicator
+              field={
+                <Select
+                  options={compareByData}
+                  onChange={(value, action) => {
+                    let _rules = props.basicData.rules;
+                    _rules[index].attribute_name = value.value;
+                    props.setBasicFieldData("rules", _rules);
                   }}
-                >
-                  <Edit2 />
-                </Button>
-                <Button
-                  size="sm"
-                  color="light"
-                  title="Remove"
-                  outline
-                  className="round btn-icon ml-1"
-                  onClick={props.onRemove}
-                >
-                  <X />
-                </Button>
-              </>
-            ) : (
-              ""
-            )}
-          </div>
-        </ListGroupItem>
-      )}
-      {isEditable && (
-        <SimpleInputField
-          formGroupClasses="mb-0  position-relative"
-          value={props.name ?? ""}
-          innerRef={fieldRef}
-          size="lg"
-          onChange={(e) =>
-            props.onChange({ name: e.target.value, seller: props.seller })
-          }
-          onBlur={(e) => props.name && setIsEditable(false)}
-          onKeyPress={(e) => e.charCode === 13 && props.focusNextField()}
-          onFocus={() => setIsEditable(true)}
-          iconRight={true}
-          placeholder="Subcategory Name"
-          styles={{ paddingLeft: "15px" }}
-        />
-      )}
+                  requiredIndicator
+                  required
+                  defaultOptions
+                  name="compareBy"
+                  defaultValue={compareByData.find(
+                    (item) => item.value === rule.attribute_name
+                  )}
+                  isOptionDisabled={(option) => option.disabled}
+                  menuPlacement="top"
+                />
+              }
+            />
+          </Col>
+          <Col md="4 m-auto ">
+            <SimpleInputField
+              requiredIndicator
+              field={
+                <Select
+                  options={compareWithData.filter((item) =>
+                    item.link.includes(props.basicData.rules[index].attribute_name)
+                  )}
+                  onChange={(value, action) => {
+                    let _rules = props.basicData.rules;
+                    _rules[index].comparison_type = value.value;
+                    props.setBasicFieldData("rules", _rules);
+                  }}
+                  requiredIndicator
+                  required
+                  defaultOptions
+                  name="compareWith"
+                  defaultValue={compareWithData.find(
+                    (item) => item.value === rule.comparison_type
+                  )}
+                  isOptionDisabled={(option) => option.disabled}
+                  menuPlacement="auto"
+                />
+              }
+            />
+          </Col>
+          <Col md="4 d-flex align-items-center ">
+            <SimpleInputField
+              type="text"
+              onChange={(e) => {
+                let _rules = props.basicData.rules;
+                _rules[index].attribute_value = e.target.value;
+                props.setBasicFieldData("rules", _rules);
+              }}
+              requiredIndicator
+              required
+              iconRight={props.basicData.rules.length > 1}
+              icon={<X size={15} />}
+              name="compareValue"
+              value={props.basicData.rules[index].attribute_value || ""}
+              styles={{
+                width: `${props.basicData.rules.length > 1 ? "90%" : "100%"}`,
+              }}
+              onClick={() => removeConditions(index)}
+            />
+          </Col>
+        </Row>
+      ))}
+      <Button
+        className="d-flex align-items-center"
+        color="secondary"
+        outline
+        size="sm"
+        type="button"
+        onClick={() =>
+          props.setBasicFieldData("rules", [
+            ...props.basicData.rules,
+            { setFocus: 1 },
+          ])
+        }
+      >
+        {" "}
+        <Plus size={19} className="mr-1" /> Add another condition
+      </Button>
     </>
   );
-}
+};
 
-function subCategoryReducer(state, action) {
-  let _state = [...state];
-  switch (action.type) {
-    case "add":
-      return [...state, { setFocus: 1 }];
-    case "remove":
-      _state.splice(action.index, 1);
-      return _state;
-    case "change":
-      _state[action.index]["name"] = action.value.name;
-      _state[action.index]["seller"] = action.value.seller;
-      return _state;
-    case "initialize":
-      return action.data;
+const CategoryAdd = (props) => {
+  const [basicData, setBasicData] = useState({
+    name: "",
+    rules: [{ setFocus: 1 }],
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [categoryId,setCategoryId] = useState("")
 
-    case "setFocus":
-      let currentFocusValue = _state[action.index]["setFocus"] ?? 0;
-      _state[action.index]["setFocus"] = ++currentFocusValue; //Changing focus values are only so that react can focus an element multiple times with this method, if needed. Otherwise setting 'true' more than once won't trigger state change
-      console.log("Setting focus ", _state[action.index]["setFocus"]);
-      return _state;
-
-    //   case 'decrement':
-    //     return {count: state.count - 1};
-    default:
-      console.log(
-        "Unknown action type: " + action.type + " in subCategoryReducer"
-      );
-  }
-}
-
-function CategoryAdd(props) {
   function clearState() {
-    setCategoryName("");
-    setCategoryId(undefined);
-    subCategoriesDispatch({ type: "initialize", data: [{ name: "" }] });
+    if (props.match.params.categoryId) {
+      setBasicData("");
+    }else{
+      setBasicData({ name: "", rules: [{ setFocus: 1 }] });
+      setTimeout(() => setIsLoading(false),100)
+    }
   }
-  const [categoryName, setCategoryName] = useState("");
-  const [categoryId, setCategoryId] = useState(undefined);
-  const [uploadedImage, setUploadedImage] = useState(undefined);
-  const [displayImage, setDisplayImage] = useState(undefined);
-  const [deleteImage, setDeleteImage] = useState(false); // To be sent to server if user deletes existing image
-  // const [subCategories, setSubCategories] = useState([{}])
-  const [subCategoriesState, subCategoriesDispatch] = useReducer(
-    subCategoryReducer,
-    [{ name: "" }]
-  );
-
-  const [categorySeller, setCategorySeller] = useState("");
-
-  const formData = {
-    name: categoryName,
-    sub_categories: subCategoriesState
-      .filter((sc) => sc.name)
-      .map((sc) => ({ ...sc, name: sc.name.trim(), seller: sc.seller })),
-    uploadedImage: uploadedImage,
-  };
-  categoryId && (formData.id = categoryId);
 
   useEffect(() => {
-    // To clear state when navigating from edit category to add category (Same component)
+    setIsLoading(true)
     clearState();
   }, [props.location.pathname]);
 
+  function setBasicFieldData(field, value) {
+    let basicDataCopy = { ...basicData };
+    basicDataCopy[field] = value;
+    setBasicData(basicDataCopy);
+  }
+
   useEffect(() => {
-    // Initialize state if editing existing category
-    const categoryId = props.match.params.categoryId;
-    if (categoryId) {
-      apiClient.get("/inventory/categories/" + categoryId).then((response) => {
+    const _categoryId = props.match.params.categoryId;
+    if (_categoryId) {
+      setIsLoading(true)
+      setCategoryId(_categoryId)
+      apiClient.get("/inventory/categories/" + _categoryId).then((response) => {
         const category = response.data;
-        setCategoryName(category.name);
-        setCategoryId(categoryId);
-        setCategorySeller(category.seller);
-        subCategoriesDispatch({
-          type: "initialize",
-          data: category.sub_categories,
-        });
-        response.data.image && setDisplayImage(getApiURL(response.data.image));
+        setBasicData((state) => ({
+          ...state,
+          name: category.name,
+          action: category.action,
+          condition: category.condition,
+          rules: category.rules,
+          description: category.description,
+        }));
+        setIsLoading(false)
       });
     }
-  }, [props.match.params.categoryId]); //This will probably never change, however, in page lifecycle
+  }, [props.match.params.categoryId]);
 
-  function focusNextField(index) {
-    // On enter key press,  focus on next field or add a new field if it's the last one
-    const nextIndex = index + 1;
-    if (nextIndex < subCategoriesState.length) {
-      subCategoriesDispatch({ type: "setFocus", index: nextIndex });
-    } else {
-      subCategoriesDispatch({ type: "add" });
-    }
-  }
-  function onImageSelect(e) {
-    let file = e.target.files[0];
-    console.log(file);
-    setUploadedImage(file);
-    // Frontend thumbnail generation
-    var reader = new FileReader();
-    reader.onloadend = function () {
-      const img_data = reader.result;
-      setDisplayImage(img_data);
-    };
-    file && reader.readAsDataURL(file);
-    setDeleteImage(false);
-  }
-
-  function onImageRemove() {
-    setUploadedImage(undefined);
-    setDisplayImage(undefined);
-    setDeleteImage(true);
-  }
-
-  function submitForm() {
+  const submitForm = (e) => {
+    e.preventDefault();
     let url = "/inventory/categories/";
     let _formData = new FormData();
-    _formData.append("id", formData.id);
-    _formData.append("name", formData.name);
+    _formData.append("id", basicData.id);
+    _formData.append("name", basicData.name);
+    _formData.append("action", basicData.action);
+    _formData.append("condition", basicData.condition);
+    _formData.append("rules", JSON.stringify(basicData.rules));
+    _formData.append("description", basicData.description);
     _formData.append("seller", props.authSeller);
-    formData.uploadedImage && _formData.append("image", formData.uploadedImage);
-    _formData.append("sub_categories", JSON.stringify(formData.sub_categories));
-    deleteImage && _formData.append("delete_image", deleteImage);
-
- 
-
+    
     if (categoryId) {
       url += categoryId + "/";
     }
@@ -244,139 +322,163 @@ function CategoryAdd(props) {
         Swal.fire("Category Saved !", "success");
         history.push("/inventory/categories/list");
       });
-  }
+  };
 
   
 
-  return (
-    <Row>
-      <Col md="4 m-auto">
-        <SimpleInputField
-          label="Category Name"
-          value={categoryName}
-          onChange={(e) => setCategoryName(e.target.value)}
-          disabled={
-            categoryName && categoryId && categorySeller !== props.authSeller
-          }
-        />
-        {/* <SimpleInputField
-                    label="Category Image"
-                    type="file"
-                    onChange = {onImageSelect}
-                    accept="image/jpeg, image/png, image/svg"
-                /> */}
+  if (isLoading) {
+    return (
+      <>
+        <Spinner />
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Row>
+          <Col sm="12">
+            <Card>
+              <CardBody>
+                <div className="ag-theme-material ag-grid-table">
+                  <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1"></div>
+                  <Row className="align-items-center">
+                    <Col lg="auto d-flex align-items-center">
+                      <ArrowLeft
+                        size="16"
+                        onClick={() =>
+                          history.push("/inventory/categories/list/")
+                        }
+                        className="cursor-pointer"
+                      />
+                      <CardTitle className="mb-0 pr-2 ml-1 border-right">
+                        Create Collections
+                      </CardTitle>
+                    </Col>
+                  </Row>
+                  <hr />
+                  <Row className="justify-content-center">
+                    <Col md="10">
+                      <form onSubmit={submitForm}>
+                        <SimpleInputField
+                          label="Category Name"
+                          type="text"
+                          name="name"
+                          placeholder="Type category name.."
+                          onChange={(e) =>
+                            setBasicFieldData("name", e.target.value)
+                          }
+                          value={basicData.name || ""}
+                          requiredIndicator
+                          required
+                        />
+                        <FormGroup>
+                          <Label for="category-description">
+                            <span className="text-bold-600">
+                              Category Description
+                            </span>
+                          </Label>
+                          <RichEditor
+                            onChange={(data) =>
+                              setBasicFieldData("description", data)
+                            }
+                            defaultValue={basicData.description || ""}
+                          />
+                        </FormGroup>
+                        <span className="text-bold-600 text-dark">
+                          Collection type 
+                        </span>
+                        <div className="mt-1">
+                          <Radio
+                            label="Manual"
+                            defaultChecked={
+                              basicData.action === "manual" ? true : false
+                            }
+                            name="action"
+                            value={
+                              basicData.action === "manual"
+                                ? basicData.action
+                                : "manual"
+                            }
+                            onChange={(e) =>
+                              setBasicFieldData("action", e.target.value)
+                            }
+                            required={true}
+                          />
+                          <div className="ml-2">
+                            <span>
+                              Add products to this collection one by one.Learn
+                              more about manual collections
+                            </span>
+                          </div>
+                        </div>
 
-        <h6>Category Image</h6>
-        <FormGroup row>
-          <Col md="auto mr-auto">
-            <Label>
-              {displayImage ? (
-                <img src={displayImage} className="img-100" alt="selected" />
-              ) : (
-                "No Image Selected"
-              )}
-            </Label>
+                        <div className="mt-1 mb-1">
+                          <Radio
+                            label="Automated"
+                            defaultChecked={
+                              basicData.action === "automated" ? true : false
+                            }
+                            name="action"
+                            value={
+                              basicData.action === "automated"
+                                ? basicData.action
+                                : "automated"
+                            }
+                            onChange={(e) =>
+                              setBasicFieldData("action", e.target.value)
+                            }
+                            required={true}
+                          />
+                          <div className="ml-2 ">
+                            <span>
+                              Existing and future products that match the
+                              conditions you set will automatically be added to
+                              this collection.Learn more about automated
+                              collections.
+                            </span>
+                          </div>
+                        </div>
+
+                        {basicData.action === "automated" ? (
+                          <div>
+                            <span className="text-bold-600 text-dark">
+                              Conditions
+                            </span>
+
+                            <AddConditionsComponent
+                              conditions={basicData.conditions}
+                              basicData={basicData}
+                              setBasicFieldData={setBasicFieldData}
+                            />
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                        <hr />
+                        <Button
+                          className="ml-auto d-block mt-1"
+                          onClick={() =>
+                            console.log("Form submitted successfully!")
+                          }
+                          color="primary"
+                          outline
+                          type="submit"
+                        >
+                          {" "}
+                          Save <Check size={19} />
+                        </Button>
+                      </form>
+                    </Col>
+                  </Row>
+                </div>
+              </CardBody>
+            </Card>
           </Col>
-          <Col md="auto">
-            <Label for="img-upload">
-              {((displayImage && (!categoryId)) | (displayImage && categoryId && categorySeller === props.authSeller)) ? (
-                <Button
-                  color="danger"
-                  className="mr-1"
-                  outline
-                  onClick={(e) => setTimeout(onImageRemove)}
-                  disabled={
-                    displayImage &&
-                    categoryId &&
-                    categorySeller !== props.authSeller
-                  }
-                >
-                  {" "}
-                  {/** Done really know the cause, but without setTimeout, it's opening file upload dialog on removing an image (perhaps clicking the following button?) */}
-                  Remove
-                </Button>
-              ):("")}
-
-              {
-                ((categoryId && categorySeller === props.authSeller) | (!categoryId)) ?  (<Button
-                  color="primary"
-                  outline={props.is_submitted}
-                  onClick={(e) => document.getElementById("img-upload").click()}
-                  disabled={
-                    displayImage &&
-                    categoryId &&
-                    categorySeller !== props.authSeller
-                  }
-                >
-                  <span>{displayImage ? "Change" : "Upload"}</span>
-                </Button>):("")
-              }
-              
-            </Label>
-
-            <Input
-              type="file"
-              // name={schema.name}
-              id="img-upload"
-              // required={schema.required} //It will clash with controlled forms if required is set (while submitting, if form empty)
-              placeholder="Upload"
-              onChange={onImageSelect}
-              className="d-none"
-              accept="image/jpeg, image/png, image/svg"
-              // value= ""
-              disabled={
-                displayImage && categoryId && categorySeller !== props.seller
-              }
-            />
-          </Col>
-        </FormGroup>
-
-        <h6>Subcategories</h6>
-        <ListGroup>
-          {subCategoriesState.map((sc, index) => {
-            return (
-              <SubCategory
-                key={index}
-                onChange={(value) =>
-                  subCategoriesDispatch({
-                    type: "change",
-                    index: index,
-                    value: value,
-                  })
-                }
-                onRemove={() =>
-                  subCategoriesDispatch({ type: "remove", index: index })
-                }
-                focusNextField={() => focusNextField(index)}
-                {...sc}
-                authSeller={props.authSeller}
-                categoryId={categoryId}
-                index={index}
-              />
-            );
-          })}
-        </ListGroup>
-        <Button
-          className="ml-auto d-block mt-1"
-          onClick={(e) => subCategoriesDispatch({ type: "add" })}
-          color="primary"
-          outline
-        >
-          {" "}
-          <Plus size={19} /> Add Subcategory
-        </Button>
-        <Button
-          className="mt-2 btn-block"
-          size="lg"
-          color="primary"
-          onClick={submitForm}
-        >
-          Submit
-        </Button>
-      </Col>
-    </Row>
-  );
-}
+        </Row>
+      </>
+    );
+  }
+};
 
 const mapStateToProps = (state) => {
   return {

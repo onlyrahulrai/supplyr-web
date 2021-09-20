@@ -54,6 +54,33 @@ const CategoryList = (props) => {
     });
   }
 
+  function deleteSubCategory(id){
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Yes, delete category!",
+    }).then((result) => {
+      if (result.value) {
+        apiClient.delete("/inventory/categories/" + id).then((response) => {
+          if (response.status === 204) {
+            Swal.fire(`Sub-Category Deleted`);
+            window.location.reload()
+          }
+        });
+      }
+      return false;
+    });
+
+    apiClient.delete("/inventory/categories/" + id).then((response) => {
+      console.log(response);
+    });
+  }
+
+
+
   return (
     <>
       <Row>
@@ -124,7 +151,7 @@ const CategoryList = (props) => {
                               />
                               <Delete
                                 size="16"
-                                onClick={() => deleteCategory(sub_category.id)}
+                                onClick={() => deleteSubCategory(sub_category.id,index)}
                                 className="cursor-pointer"
                               />
                             </td>
