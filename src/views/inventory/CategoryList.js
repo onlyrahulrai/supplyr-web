@@ -98,6 +98,7 @@ const CategoryList = (props) => {
                       <th>Secret Id</th>
                       <th>Category Name</th>
                       <th>No. of product</th>
+                      <th>Type.</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -108,6 +109,7 @@ const CategoryList = (props) => {
                           <td className="text-bold-600">{index + 1}</td>
                           <td className="text-bold-600">{category.name}</td>
                           <td className="text-bold-600">{category.no_of_product || "NA"}</td>
+                          <td className="text-bold-600 text-capitalize">{category.action}</td>
                           <td>
                             <Edit2
                               size="16"
@@ -125,6 +127,7 @@ const CategoryList = (props) => {
                             />
                           </td>
                         </tr>
+                     
                         {category.sub_categories.map((sub_category, pos) => (
                           <tr key={sub_category.id}>
                             <td>
@@ -137,6 +140,9 @@ const CategoryList = (props) => {
                             </td>
                             <td>
                               <span className="ml-2">{sub_category.no_of_product || "NA"}</span>
+                            </td>
+                            <td>
+                              <span className="ml-2 text-capitalize">{sub_category.action || "NA"}</span>
                             </td>
                             <td>
                               <Edit2
@@ -157,6 +163,7 @@ const CategoryList = (props) => {
                             </td>
                           </tr>
                         ))}
+                   
                       </>
                     ))}
                   </tbody>

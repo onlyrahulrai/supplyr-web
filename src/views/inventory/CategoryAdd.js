@@ -3,7 +3,9 @@ import React, { useEffect, useState } from "react";
 import { ArrowLeft, Check, Plus, X } from "react-feather";
 import Radio from "../../components/@vuexy/radio/RadioVuexy";
 
+
 import {
+  Badge,
   Button,
   Card,
   CardBody,
@@ -103,7 +105,7 @@ const compareWithData = [
       "product_tag",
       "variants_title",
     ],
-  }
+  },
 ];
 
 const AddConditionsComponent = (props) => {
@@ -187,7 +189,9 @@ const AddConditionsComponent = (props) => {
               field={
                 <Select
                   options={compareWithData.filter((item) =>
-                    item.link.includes(props.basicData.rules[index].attribute_name)
+                    item.link.includes(
+                      props.basicData.rules[index].attribute_name
+                    )
                   )}
                   onChange={(value, action) => {
                     let _rules = props.basicData.rules;
@@ -255,19 +259,21 @@ const CategoryAdd = (props) => {
     rules: [{ setFocus: 1 }],
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [categoryId,setCategoryId] = useState("")
+  const [categoryId, setCategoryId] = useState("");
+  const [parentCategories,setParentCategories] = useState([])
 
   function clearState() {
     if (props.match.params.categoryId) {
       setBasicData("");
-    }else{
+    } else {
       setBasicData({ name: "", rules: [{ setFocus: 1 }] });
-      setTimeout(() => setIsLoading(false),100)
+      setCategoryId("")
+      setTimeout(() => setIsLoading(false), 100);
     }
   }
 
   useEffect(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     clearState();
   }, [props.location.pathname]);
 
@@ -280,19 +286,21 @@ const CategoryAdd = (props) => {
   useEffect(() => {
     const _categoryId = props.match.params.categoryId;
     if (_categoryId) {
-      setIsLoading(true)
-      setCategoryId(_categoryId)
+      setIsLoading(true);
+      setCategoryId(_categoryId);
       apiClient.get("/inventory/categories/" + _categoryId).then((response) => {
         const category = response.data;
         setBasicData((state) => ({
           ...state,
+          id:category.id,
           name: category.name,
           action: category.action,
           condition: category.condition,
           rules: category.rules,
           description: category.description,
+          parent:category.parent
         }));
-        setIsLoading(false)
+        setIsLoading(false);
       });
     }
   }, [props.match.params.categoryId]);
@@ -307,8 +315,9 @@ const CategoryAdd = (props) => {
     _formData.append("condition", basicData.condition);
     _formData.append("rules", JSON.stringify(basicData.rules));
     _formData.append("description", basicData.description);
-    _formData.append("seller", props.authSeller);
-    
+    _formData.append("seller", props.authSeller.username);
+    _formData.append("parent",basicData.parent ?? "");
+
     if (categoryId) {
       url += categoryId + "/";
     }
@@ -324,7 +333,16 @@ const CategoryAdd = (props) => {
       });
   };
 
-  
+  const category = props.profilingData?.categories_data.categories.filter((category) => category.seller === props.authSeller.name ).map((category) => {
+    return {
+      "label":category.name,
+      "value":category.id
+    }
+  })
+
+  // console.log("categories data:  -----> ",category)
+  // console.log(props.profilingData?.categories_data.categories)
+  console.log("basic Data--------> : ",basicData)
 
   if (isLoading) {
     return (
@@ -371,6 +389,7 @@ const CategoryAdd = (props) => {
                           requiredIndicator
                           required
                         />
+
                         <FormGroup>
                           <Label for="category-description">
                             <span className="text-bold-600">
@@ -384,60 +403,94 @@ const CategoryAdd = (props) => {
                             defaultValue={basicData.description || ""}
                           />
                         </FormGroup>
-                        <span className="text-bold-600 text-dark">
-                          Collection type 
-                        </span>
-                        <div className="mt-1">
-                          <Radio
-                            label="Manual"
-                            defaultChecked={
-                              basicData.action === "manual" ? true : false
-                            }
-                            name="action"
-                            value={
-                              basicData.action === "manual"
-                                ? basicData.action
-                                : "manual"
-                            }
-                            onChange={(e) =>
-                              setBasicFieldData("action", e.target.value)
-                            }
-                            required={true}
-                          />
-                          <div className="ml-2">
-                            <span>
-                              Add products to this collection one by one.Learn
-                              more about manual collections
-                            </span>
-                          </div>
+                        
+
+                        {
+                          basicData.parent === null? "": <SimpleInputField
+                          label="Select parent category (Optional)"
+                          field={
+                            <Select
+                              onChange={(data) =>
+                                setBasicFieldData("parent", data.value)
+                              }
+                              value={category.find((parent) => parent.value === basicData.parent)}
+                              menuPlacement="auto"
+                              options={category}
+                            />
+                          }
+                        /> 
+                        }
+                        
+                        <div class="d-flex justify-content-between flex-column">
+                          <span className="text-bold-600 text-dark">
+                            Collection type
+                          </span>
+                          
+                          <p>
+                          {
+                            categoryId ? (
+                              <Badge color="primary text-capitalize mt-1 mb-1">{basicData.action}</Badge>
+                            ):("")
+                          }
+                          </p>
                         </div>
 
-                        <div className="mt-1 mb-1">
-                          <Radio
-                            label="Automated"
-                            defaultChecked={
-                              basicData.action === "automated" ? true : false
-                            }
-                            name="action"
-                            value={
-                              basicData.action === "automated"
-                                ? basicData.action
-                                : "automated"
-                            }
-                            onChange={(e) =>
-                              setBasicFieldData("action", e.target.value)
-                            }
-                            required={true}
-                          />
-                          <div className="ml-2 ">
-                            <span>
-                              Existing and future products that match the
-                              conditions you set will automatically be added to
-                              this collection.Learn more about automated
-                              collections.
-                            </span>
-                          </div>
-                        </div>
+                        { !categoryId ? (
+                          <div className="mt-1"> 
+                            <Radio
+                              label="Manual"
+                              defaultChecked={
+                                basicData.action === "manual" ? true : false
+                              }
+                              name="action"
+                              value={
+                                basicData.action === "manual"
+                                  ? basicData.action
+                                  : "manual"
+                              }
+                              onChange={(e) =>
+                                setBasicFieldData("action", e.target.value)
+                              }
+                              required={true}
+                            />
+                            <div className="ml-2">
+                              <span>
+                                Add products to this collection one by one.Learn
+                                more about manual collections
+                              </span>
+                            </div>
+                          </div>):("")
+                         } 
+
+                        { !categoryId ? (
+                            <div className="mt-1 mb-1">
+                              <Radio
+                                label="Automated"
+                                defaultChecked={
+                                  basicData.action === "automated" ? true : false
+                                }
+                                name="action"
+                                value={
+                                  basicData.action === "automated"
+                                    ? basicData.action
+                                    : "automated"
+                                }
+                                onChange={(e) =>
+                                  setBasicFieldData("action", e.target.value)
+                                }
+                                required={true}
+                              />
+                              <div className="ml-2 ">
+                                <span>
+                                  Existing and future products that match the
+                                  conditions you set will automatically be added to
+                                  this collection.Learn more about automated
+                                  collections.
+                                </span>
+                              </div>
+                            </div>
+                        ):("")
+                       } 
 
                         {basicData.action === "automated" ? (
                           <div>
@@ -482,7 +535,8 @@ const CategoryAdd = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-    authSeller: state.auth.userInfo.username,
+    authSeller: state.auth.userInfo,
+    profilingData: state.auth.userInfo.profiling_data,
   };
 };
 

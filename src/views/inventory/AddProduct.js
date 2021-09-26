@@ -863,7 +863,7 @@ function MultipleVariantForm(props) {
 function AddProduct(props) {
   const [isMultiVariant, setIsMultiVariant] = useState("no");
 
-  const [basicData, setBasicData] = useState({ title: "" }); //This title has been given to eleminate 'Uncontrolled to controlled' error in console
+  const [basicData, setBasicData] = useState({ title: "", tags: [] }); //This title has been given to eleminate 'Uncontrolled to controlled' error in console
   const [variantsDataContainer, setVariantsDataContainer] = useState({});
   const [productImages, setProductImages] = useState([]);
   const [initialData, setInitialData] = useState(null);
@@ -1017,10 +1017,15 @@ function AddProduct(props) {
   }
 
   function getRenderedSubcategory(subCategory) {
-    console.log("subcategory: ",subCategory.category)
     const label = (
       <div>
-        <div className={`${subCategory.category === "(Category)" ? "text-bold-600":""}`}>{subCategory.name}</div>
+        <div
+          className={`${
+            subCategory.category === "(Category)" ? "text-bold-600" : ""
+          }`}
+        >
+          {subCategory.name}
+        </div>
         <div className="text-lightgray">{subCategory.category}</div>
       </div>
     );
@@ -1035,11 +1040,6 @@ function AddProduct(props) {
     label: label.toLowerCase().replace(/\W/g, ""),
     new: true,
   });
-
-  console.log(
-    "Country Data: ",
-    country.find((country) => country.value === basicData?.country)
-  );
 
   return (
     <>
@@ -1145,6 +1145,7 @@ function AddProduct(props) {
                   options={tags}
                   getOptionValue={(option) => option["id"]}
                   onCreateOption={(inputValue: any) => {
+                    console.log("hello from tags create:-----> ", inputValue);
                     const newOption = createOption(inputValue);
                     console.groupEnd();
 
@@ -1211,6 +1212,19 @@ function AddProduct(props) {
             />
 
             <Row style={{ alignItems: "center" }}>
+              <Col md="6 m-auto ">
+                <SimpleInputField
+                  label="Enter Product Weight"
+                  type="number"
+                  placeholder="Enter Product Weight"
+                  onChange={(e) =>
+                    setBasicFieldData("weight_value", e.target.value)
+                  }
+                  requiredIndicator
+                  required
+                  value={basicData.weight_value || ""}
+                />
+              </Col>
               <Col md="6 m-auto">
                 <SimpleInputField
                   label="Select Product Weight Unit"
@@ -1232,19 +1246,6 @@ function AddProduct(props) {
                       }
                     />
                   }
-                />
-              </Col>
-              <Col md="6 m-auto ">
-                <SimpleInputField
-                  label="Enter Product Weight"
-                  type="number"
-                  placeholder="Enter Product Weight"
-                  onChange={(e) =>
-                    setBasicFieldData("weight_value", e.target.value)
-                  }
-                  requiredIndicator
-                  required
-                  value={basicData.weight_value || ""}
                 />
               </Col>
             </Row>
