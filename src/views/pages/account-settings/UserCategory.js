@@ -20,6 +20,7 @@ const Category = lazy(() => import("../ProfilingWizard/_Categories"));
 const CategoryAdd = lazy(() => import("../../inventory/CategoryAdd"));
 
 function CategoryItem({ category,selected_sub_categories }) {
+  console.log()
   return (
     <Card>
       <CardHeader>
@@ -39,7 +40,7 @@ function CategoryItem({ category,selected_sub_categories }) {
           category.sub_categories.map((subCategory) => 
           {
             return (
-              <>
+              <div key={subCategory.id}>
                 {
                   selected_sub_categories.includes(subCategory.id) ? <Badge
                   color="primary"
@@ -49,7 +50,7 @@ function CategoryItem({ category,selected_sub_categories }) {
                   <span>{subCategory.name}</span>
                 </Badge>:("")
                 }
-              </>
+              </div>
             )
           })
         }
@@ -161,7 +162,7 @@ const UserCategory = (props) => {
             // Object.entries(obj).map(([key, value], i) => (
             //     <CategoryItem category={key} key={key} subCategories={value} />
             // ))
-            selectedCategories.map((category_id) => {
+            selectedCategories.map((category_id,index) => {
               let category = categories.filter((cat) => cat.id === category_id)?.[0]
               return(
                 <CategoryItem category={category} key={category_id} selected_sub_categories={selected_sub_categories} />
