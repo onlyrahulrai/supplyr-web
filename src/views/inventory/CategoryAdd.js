@@ -451,6 +451,62 @@ class SubcategorySelector extends Component {
   }
 }
 
+class ManualActionCompoment extends Component {
+  constructor(props){
+    super(props)
+    this.state={
+      selectedSubCategories:[this.props.category]
+    }
+  }
+
+  onCategoryButtonClick = () => {
+    if (this.props.readyStateCheck) {
+      const is_ready = this.props.readyStateCheck();
+      if (!is_ready) {
+        Swal.fire(this.props.notReadyMessage ?? "Not Ready", "", "info");
+        return;
+      }
+    }
+      console.log("hello world from category add button >>>>>>>... ")
+      if (this.props.onConfirmPromise) {
+        this.setState({ isSubmitting: true });
+        let promise = this.props.onConfirmPromise(
+          this.state.selectedSubCategories
+        );
+        promise
+          .then(() => {
+            this.setState({ isSubmitting: false });
+            this.setState({ selectedSubCategories: [] });
+            this.props.fetchProducts()
+          })
+          .finally(() => {
+            this.setState({ isSubmitting: false });
+          });
+      
+    }
+  };
+
+  render(){
+    return(
+      <div className={this.props.className + " d-inline-block"}>
+        <ButtonGroup>
+          <Button.Ripple
+            disabled={this.props.disabled}
+            outline={true}
+            color="dark"
+            onClick={this.onCategoryButtonClick}
+          >
+            {this.props.buttonIcon ?? <Folder size={14} />}
+            <span className="ml-50">
+              {this.props.buttonLabel ?? "Categories"}
+            </span>
+          </Button.Ripple>
+        </ButtonGroup>
+      </div>
+    )
+  }
+}
+
 class ManualConditionsComponent extends Component {
   state = {
     filters: {},
@@ -619,6 +675,7 @@ class ManualConditionsComponent extends Component {
 
   
   async fetchProducts(options) {
+    console.log("hello world")
     const { filters, pageNumber } = options ?? {};
     const _filters = { ...filters };
     Object.keys(_filters).forEach((key) => {
@@ -692,7 +749,8 @@ class ManualConditionsComponent extends Component {
       .then((response) => {
         if (response.data?.success) {
           Swal.fire("Products Updated", "", "success");
-          // this.gridApi.deselectAll()
+          this.gridApi.deselectAll()
+          this.setState({filters:{}})
         }
       })
       .catch((err) => {
@@ -704,7 +762,7 @@ class ManualConditionsComponent extends Component {
 
   render() {
     const { filters,rowData, columnDefs, defaultColDef  } = this.state;
-    console.log(" category ------> ",this.props.category);
+    console.log(" category ------> ",this.props.operationalSubCategories);
     return (
       <Row className="mt-2">
         <Col sm="12">
@@ -778,46 +836,36 @@ class ManualConditionsComponent extends Component {
                       </CardTitle>
                     </Col>
                     <Col sm="12" md="auto">
-                      <SubcategorySelector
-                        subCategories={this.state.operationalSubCategories}
-                        buttonLabel="Add Categories"
-                        buttonIcon={<FolderPlus size={16} />}
-                        modalTitle="Add Categories"
-                        confirmButtonLabel="Add Selected Categories"
-                        className=""
+                      <ManualActionCompoment 
+                        buttonIcon={<FolderPlus  size={16} />}
+                        buttonLabel="Add Category"
+                        className="ml-sm-1"
                         disabled={!this.state.gridReady}
-                        readyStateCheck={() =>
-                          this.gridApi.getSelectedNodes().length > 0
-                        }
-                        notReadyMessage="Please select some products first !"
+                        readyStateCheck={() => this.gridApi.getSelectedNodes().length > 0}
+                        notReadyMessage="Please select some products
+                        first!"
+                        category={this.props.category}
                         onConfirmPromise={(subCategories) => {
-                          return this.bulkUpdate(
-                            "add-subcategories",
-                            subCategories
-                          );
+                          return this.bulkUpdate("add-subcategories",subCategories)
                         }}
+                        fetchProducts={() => this.fetchProducts()}
                       />
                     </Col>
                     <Col sm="12" md="auto">
 
-                    <SubcategorySelector
-                        subCategories={this.state.operationalSubCategories}
-                        buttonLabel="Remove Categories"
-                        buttonIcon={<FolderMinus size={16} />}
-                        modalTitle="Remove Categories"
-                        confirmButtonLabel="Remove Selected Categories"
+                    <ManualActionCompoment 
+                        buttonIcon={<FolderPlus  size={16} />}
+                        buttonLabel="Remove Category"
                         className="ml-sm-1"
                         disabled={!this.state.gridReady}
-                        readyStateCheck={() =>
-                          this.gridApi.getSelectedNodes().length > 0
-                        }
-                        notReadyMessage="Please select some products first !"
+                        readyStateCheck={() => this.gridApi.getSelectedNodes().length > 0}
+                        notReadyMessage="Please select some products
+                        first!"
+                        category={this.props.category}
                         onConfirmPromise={(subCategories) => {
-                          return this.bulkUpdate(
-                            "remove-subcategories",
-                            subCategories
-                          );
+                          return this.bulkUpdate("remove-subcategories",subCategories)
                         }}
+                        fetchProducts={() => this.fetchProducts()}
                       />
 
                     </Col>

@@ -470,6 +470,7 @@ class UsersList extends Component {
   };
 
   bulkUpdate = (operation, data) => {
+    console.log("hello world!  from bulk update category:----->",operation,data)
     const selectedNodes = this.gridApi.getSelectedNodes();
     const product_ids = selectedNodes.map((node) => node.data.id);
     return apiClient
