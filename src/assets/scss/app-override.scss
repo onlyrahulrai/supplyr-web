@@ -40,5 +40,26 @@
     text-overflow: ellipsis;
 }
 
+.product-tic{
+    position: relative;
+    margin-top: 5px;
+}
+
+.product-tic::after{
+    position: absolute;
+    content: "";
+    top: -3px;
+    left:-8px;
+    width: 15px;
+    height: 15px;
+    background-color: #786EFD;
+    color: #fff;
+    border-radius: 50%;
+}
 
 
+
+
+.rulesweightoptions h5{
+    margin-bottom: 0;
+}

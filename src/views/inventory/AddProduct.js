@@ -899,7 +899,7 @@ function AddProduct(props) {
           vendors: response.data.vendors,
           country: response.data.country,
           weight_unit: response.data.weight_unit,
-          weight_value: response.data.weight_value,
+          weight_value:  (response.data.weight_unit === "kg") ? parseFloat(response.data.weight_value) / 1000 : (response.data.weight_unit === "mg") ?  parseFloat(response.data.weight_value) * 1000 : response.data.weight_unit ,
           sub_categories: response.data.sub_categories.map((sc) => sc.id),
         };
         setBasicData(initialBasicFieldsData);
@@ -1040,6 +1040,8 @@ function AddProduct(props) {
     label: label.toLowerCase().replace(/\W/g, ""),
     new: true,
   });
+
+  console.log("Initial Data------>>>>>>>",initialData)
 
   return (
     <>
