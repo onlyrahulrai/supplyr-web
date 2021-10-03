@@ -15,7 +15,7 @@ export default function Timeline({data}) {
             {data.map(({time, date, status, created_by_user, created_by_entity}) => {
                 return (
                     <li>
-                        <div class={"bullet "+(orderStatusDisplayMapping[status].color||'grey')}></div>
+                        <div class="bullet grey"></div>
                         <div class="time">
                             <b>{time}</b>
                             <br/>

@@ -248,7 +248,7 @@ const CategoryAdd = (props) => {
     setDeleteImage(true);
   }
 
-  console.log("Basic Data is >>>>>>>> ", basicData);
+  console.log("Basic Data is >>>>>>>> ", basicData.rules);
 
   return (
     <>
@@ -581,7 +581,7 @@ const CategoryAdd = (props) => {
                                   icon={<X size={15} />}
                                   name="compareValue"
                                   value={
-                                    basicData.rules[index].attribute_value || ""
+                                  basicData.rules[index].attribute_value || ""
                                   }
                                   styles={{
                                     width: `${
@@ -598,23 +598,23 @@ const CategoryAdd = (props) => {
                                 {(rule.attribute_name === "weight" && rule.attribute_value )? (
                                   <Row className="mb-1 align-items-center ">
                                     <Col md="auto">
-                                      <span>Select weight unit:</span>
+                                      <span>Select weight unit: </span>
                                     </Col>
                                     <Col md="auto rulesweightoptions mt--1">
                                       <div className="d-inline-block mr-1">
                                         <Radio
                                           label="Kilogram"
                                           color="primary"
-                                          defaultChecked={true}
+                                          defaultChecked={rule.attribute_unit === "kg" || false}
                                           name="rulesweightoptions"
                                           value={
-                                            basicData.weightUnit === "kg"
-                                              ? basicData.weightUnit
+                                            basicData.attribute_unit === "kg"
+                                              ? basicData.attribute_unit
                                               : "kg"
                                           }
                                           onChange={(e) => {
                                             let _rules = basicData.rules;
-                                            _rules[index].weight_unit =
+                                            _rules[index].attribute_unit =
                                               e.target.value;
                                             setBasicFieldData("rules", _rules);
                                           }}
@@ -624,16 +624,16 @@ const CategoryAdd = (props) => {
                                         <Radio
                                           label="Gram"
                                           color="primary"
-                                          defaultChecked={false}
+                                          defaultChecked={rule.attribute_unit === "gm" || false }
                                           name="rulesweightoptions"
                                           value={
-                                            basicData.weightUnit === "gm"
-                                              ? basicData.weightUnit
+                                            rule.attribute_unit === "gm"
+                                              ? rule.attribute_unit
                                               : "gm"
                                           }
                                           onChange={(e) => {
                                             let _rules = basicData.rules;
-                                            _rules[index].weight_unit =
+                                            _rules[index].attribute_unit =
                                               e.target.value;
                                             setBasicFieldData("rules", _rules);
                                           }}
@@ -643,16 +643,16 @@ const CategoryAdd = (props) => {
                                         <Radio
                                           label="Milligram"
                                           color="primary"
-                                          defaultChecked={false}
+                                          defaultChecked={rule.attribute_unit === "mg" || false }
                                           name="rulesweightoptions"
                                           value={
-                                            basicData.condition === "mg"
-                                              ? basicData.condition
+                                            rule.attribute_unit === "mg"
+                                              ? rule.attribute_unit
                                               : "mg"
                                           }
                                           onChange={(e) => {
                                             let _rules = basicData.rules;
-                                            _rules[index].weight_unit =
+                                            _rules[index].attribute_unit =
                                               e.target.value;
                                             setBasicFieldData("rules", _rules);
                                           }}
