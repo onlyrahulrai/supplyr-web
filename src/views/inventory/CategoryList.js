@@ -54,27 +54,31 @@ const CategoryList = (props) => {
     });
   }
 
-  function deleteSubCategory(id){
+  function deleteSubCategory(categoryId,subcategoryId){
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#d33",
-      confirmButtonText: "Yes, delete category!",
+      confirmButtonText: "Yes, delete Subcategory!",
     }).then((result) => {
       if (result.value) {
-        apiClient.delete("/inventory/categories/" + id).then((response) => {
+        setIsLoading(true)
+        apiClient.delete("/inventory/categories/" + subcategoryId).then((response) => {
           if (response.status === 204) {
-            Swal.fire(`Sub-Category Deleted`);
-            window.location.reload()
+            Swal.fire(`Subcategory Deleted successfully!`);
+            const _categoriesCopy = categories
+            _categoriesCopy[categoryId].sub_categories =  categories[categoryId].sub_categories.filter((sub_categories) => sub_categories.id !== subcategoryId)
+            setCategories(_categoriesCopy)
+            setIsLoading(false)
           }
         });
       }
       return false;
     });
 
-    apiClient.delete("/inventory/categories/" + id).then((response) => {
+    apiClient.delete("/inventory/categories/" + subcategoryId).then((response) => {
       console.log(response);
     });
   }
@@ -103,10 +107,10 @@ const CategoryList = (props) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {categories.map((category, index) => (
+                    {categories.map((category, categoryId) => (
                       <>
                         <tr key={category.id}>
-                          <td className="text-bold-600">{index + 1}</td>
+                          <td className="text-bold-600">{categoryId + 1}</td>
                           <td className="text-bold-600">{category.name}</td>
                           <td className="text-bold-600">{category.no_of_product || "NA"}</td>
                           <td className="text-bold-600 text-capitalize">{category.action}</td>
@@ -127,11 +131,11 @@ const CategoryList = (props) => {
                             />
                           </td>
                         </tr>
-                     
+                        
                         {category.sub_categories.map((sub_category, pos) => (
-                          <tr key={sub_category.id}>
+                          <tr key={categoryId + sub_category.id}>
                             <td>
-                              <span className="ml-2">{`${index + 1}.${
+                              <span className="ml-2">{`${categoryId + 1}.${
                                 pos + 1
                               }`}</span>
                             </td>
@@ -157,7 +161,7 @@ const CategoryList = (props) => {
                               />
                               <Delete
                                 size="16"
-                                onClick={() => deleteSubCategory(sub_category.id,index)}
+                                onClick={() => deleteSubCategory(categoryId,sub_category.id)}
                                 className="cursor-pointer"
                               />
                             </td>
