@@ -21,6 +21,7 @@ class StateOrders extends Component {
               <tr key={order.state}>
                 <td>{order.state}</td>
                 <td>{order.state_orders_count}</td>
+                <td>{order.revenue > 99999 ? (order.revenue / 100000).toFixed() + "L" : order.revenue > 999 ? (order.revenue / 1000).toFixed() + "k" : order.revenue }</td>
               </tr>
             ))}
           </tbody>

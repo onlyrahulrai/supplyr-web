@@ -5,8 +5,8 @@ import Chart from "react-apexcharts";
 class StateOrdersChart extends React.Component {
     state = {
         options: {
-          colors: this.props.stateOrders.map(() => '#' + (Math.random().toString(16) + '0000000').slice(2, 8)),
-          labels: this.props.stateOrders.map((order) => order.state),
+          colors: this.props.labels.map(() => '#' + (Math.random().toString(16) + '0000000').slice(2, 8)),
+          labels: this.props.labels,
           responsive: [
             {
               breakpoint: 480,
@@ -25,11 +25,11 @@ class StateOrdersChart extends React.Component {
             fillSeriesColor: "#fff",
             theme: false,
             style:{
-              fontColor: "#fff"
+              fontSize: '12px',
             }
           }
         },
-        series: this.props.stateOrders.map((order) => order.state_orders_count)
+        series: this.props.series,
       }
 
   render() {
