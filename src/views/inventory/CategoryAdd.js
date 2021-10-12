@@ -34,7 +34,6 @@ const compareByData = [
   { value: "compare_at_price", label: "Compare at price" },
   { value: "weight", label: "Weight" },
   { value: "inventory_stock", label: "Inventory Stock" },
-  { value: "variants_title", label: "Variant's title" },
 ];
 
 const compareWithData = [

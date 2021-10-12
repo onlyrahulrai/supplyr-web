@@ -880,7 +880,6 @@ function AddProduct(props) {
     { value: "mg", label: "Milligram" },
     { value: "kg", label: "kilogram" },
     { value: "gm", label: "Gram" },
-    { value: "lbs", label: "Pound-Mass" },
   ];
 
   const isPageRenderReady = !isEditingExistingProduct || isProductDataLoaded;
