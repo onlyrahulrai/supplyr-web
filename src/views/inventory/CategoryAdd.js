@@ -498,9 +498,8 @@ const CategoryAdd = (props) => {
                           </Col>
                         </Row>
                         {basicData.rules.map((rule, index) => (
-                          <>
+                          <div key={rule.id}>
                             <Row
-                              key={index}
                               style={{ alignItems: "center" }}
                               className="mt-2"
                             >
@@ -664,7 +663,7 @@ const CategoryAdd = (props) => {
                                 )}
                               </Col>
                             </Row>
-                          </>
+                          </div>
                         ))}
                         <Button
                           className="d-flex align-items-center"
