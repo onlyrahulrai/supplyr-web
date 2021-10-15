@@ -315,7 +315,7 @@ const StateOrdersComponent = (props) => {
                               {sellerStateOrder.sort((a,b) => (a.revenue > b.revenue) ? 1 : ((b.revenue > a.revenue) ? -1:0)).reverse().map((order) => (
                                 <tr key={order.state}>
                                   <td>{order.state}</td>
-                                  <td>{ valueFormatter(order.revenue)}</td>
+                                  <td><span>&#8377;</span>{" "}{ numberFormatter(order.revenue)}</td>
                                 </tr>
                               ))}
                             </tbody>
@@ -328,12 +328,11 @@ const StateOrdersComponent = (props) => {
                             </span>
 
                             <span className="text-success font-medium-2">
-                              {valueFormatter(
+                            &#8377;{" "}{numberFormatter(
                                 sellerStateOrder.reduce(
                                   (a, b) => a + b.revenue,
                                   0
-                                )
-                              )}
+                                ))}
                             </span>
                           </div>
                         </Col>

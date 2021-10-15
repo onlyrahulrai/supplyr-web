@@ -1208,6 +1208,13 @@ function AddProduct(props) {
                     });
                     setBasicFieldData("vendors", newOption);
                   }}
+                  formatOptionLabel={({ value, label, customAbbreviation }) => (
+                    <div style={{ display: "flex" }}>
+                      <div>
+                        {label.charAt(0).toUpperCase() + label.slice(1)}
+                      </div>
+                    </div>
+                  )}
                 />
               }
             />
