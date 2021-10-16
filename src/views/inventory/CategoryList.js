@@ -84,6 +84,7 @@ const CategoryList = (props) => {
   }
 
 
+  console.log(categories)
 
   return (
     <>
@@ -95,7 +96,14 @@ const CategoryList = (props) => {
               {!isLoading && loadingError && (
                 <NetworkError error={loadingError} />
               )}
-              {!isLoading && categories && (
+
+                {
+                  categories.length === 0 && (
+                    <h4 className="text-center mb-0">Their is no category to Shown.</h4>
+                  )
+                }
+
+              {!isLoading && categories.length > 0 && (
                 <Table responsive bordered>
                   <thead>
                     <tr>
