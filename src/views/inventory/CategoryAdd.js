@@ -530,6 +530,8 @@ const CategoryAdd = (props) => {
                                         option.disabled
                                       }
                                       menuPlacement="top"
+                                      menuPortalTarget={document.body} 
+                                      styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                                     />
                                   }
                                 />
