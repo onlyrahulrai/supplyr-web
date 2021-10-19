@@ -68,7 +68,15 @@ class Approval extends Component {
               <h6>{this.props.user.user_profile_review}</h6>
             </CardHeader>
 
-            <CardBody className="text-center pt-0"></CardBody>
+            <CardBody className="text-center pt-0">
+            <Button.Ripple 
+                color="primary"
+                type="button"
+                onClick={() => this.onSubmit()}
+              >
+                Apply for Approval
+              </Button.Ripple>
+            </CardBody>
           </Card>
         </div>
       )
@@ -83,7 +91,15 @@ class Approval extends Component {
               <h6>{this.props.user.user_profile_review}</h6>
             </CardHeader>
 
-            <CardBody className="text-center pt-0"></CardBody>
+            <CardBody className="text-center pt-0 mt-1">
+            <Button.Ripple 
+                color="primary"
+                type="button"
+                onClick={() => this.onSubmit()}
+              >
+                Apply for Approval
+              </Button.Ripple>
+            </CardBody>
           </Card>
         </div>
       )
