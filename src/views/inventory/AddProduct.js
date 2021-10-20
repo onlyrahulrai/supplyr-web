@@ -1036,7 +1036,7 @@ function AddProduct(props) {
 
   const createOption = (label: string) => ({
     id: label.toLowerCase().replace(/\W/g, ""),
-    label: label.toLowerCase().replace(/\W/g, ""),
+    label: label.toLowerCase(),
     new: true,
   });
 
