@@ -1,103 +1,186 @@
-import { useState, useEffect } from 'react';
-import apiClient from 'api/base'
-import { Card, CardHeader, CardTitle, CardBody } from 'reactstrap'
-import { X, Edit } from 'react-feather'
-import Chip from 'components/@vuexy/chips/ChipComponent'
-import {history} from '../../history'
-import { getApiURL } from 'api/utils'
-import Swal from 'utility/sweetalert'
-import Spinner from "components/@vuexy/spinner/Loading-spinner"
-import NetworkError from "components/common/NetworkError"
+import apiClient from "api/base";
+import { connect } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
+import { Delete, Edit2 } from "react-feather";
+import Swal from "sweetalert2";
+import { history } from "../../history";
+import NetworkError from "components/common/NetworkError";
 
-function CategoryListItem(props) {
-    const {name, id:categoryId, image, sub_categories} = props.category
-    return (
-            <Card
-              className="card-reload card-action"
-            >
-              <CardHeader>
-                <CardTitle>
-                    {name}
-                    <img src={getApiURL(image)} alt="" className="ml-1 img-thumbnail img-40" />
-                </CardTitle>
-                <div>
-                    <Edit size={20} onClick={e => history.push('/inventory/categories/edit/'+categoryId)} />
-                    <X size={20} className="ml-1" onClick={props.onDelete}/>
-                </div>
-              </CardHeader>
-              <CardBody>
-                {sub_categories.map(sc => (
-                    <Chip text={sc.name} />
-                ))}
-              </CardBody>
-            </Card>
-    )
-}
+const CategoryList = (props) => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingError, setLoadingError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const seller = props.user.name;
 
-function CategoryList(props) {
-    const [categories, setCategories] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
-    const [loadingError, setLoadingError] = useState(null)
+  useEffect(() => {
+    apiClient
+      .get("/inventory/categories")
+      .then((response) => {
+        const categories = response.data;
+        setCategories(categories);
+      })
+      .catch((error) => {
+        setLoadingError(error.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, []);
 
-    useEffect(() => {
-        apiClient.get('/inventory/categories')
-            .then((response) =>{
-                const categories = response.data;
-                setCategories(categories)
-            })
-            .catch(error => {
-              setLoadingError(error.message)
-            })
-            .finally(() => {
-              setIsLoading(false)
-            })
-    }, [])
-
-    function deleteCategory(id) {
-        const category = categories.find(c => c.id === id)
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete category!'
-          }).then(result => {
-            if (result.value){
-                apiClient.delete('/inventory/categories/' + id)
-              .then(response => {
-                if (response.status === 204){
-                  setCategories(categories.filter(cat => cat.id !== id))
-                  Swal.fire(`Category Deleted: ${category.name}`)
-                }
-              })
-            }
-            return false;
-          })
-
-        apiClient.delete('/inventory/categories/' + id)
-            .then((response) => {
-                console.log(response)
-            })
-    }
-
-    return (<>
-      {isLoading &&
-        <Spinner />
+  function deleteCategory(id) {
+    const category = categories.find((c) => c.id === id);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Yes, delete category!",
+    }).then((result) => {
+      if (result.value) {
+        apiClient.delete("/inventory/categories/" + id).then((response) => {
+          if (response.status === 204) {
+            setCategories(categories.filter((cat) => cat.id !== id));
+            Swal.fire(`Category Deleted: ${category.name}`);
+          }
+        });
       }
-      {!isLoading && loadingError && (
-        <NetworkError
-          error={loadingError}
-        />
-      )
-      }
-      {!isLoading && categories &&
-        <div className="card-columns">
-            {categories.map(category => (<CategoryListItem category={category} onDelete={e => deleteCategory(category.id)}/>))}
-        </div>
-      }
-        </>
-    )
-}
+      return false;
+    });
 
-export default CategoryList
+    apiClient.delete("/inventory/categories/" + id).then((response) => {
+      console.log(response);
+    });
+  }
+
+  function deleteSubCategory(id){
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      confirmButtonText: "Yes, delete category!",
+    }).then((result) => {
+      if (result.value) {
+        apiClient.delete("/inventory/categories/" + id).then((response) => {
+          if (response.status === 204) {
+            Swal.fire(`Sub-Category Deleted`);
+            window.location.reload()
+          }
+        });
+      }
+      return false;
+    });
+
+    apiClient.delete("/inventory/categories/" + id).then((response) => {
+      console.log(response);
+    });
+  }
+
+
+
+  return (
+    <>
+      <Row>
+        <Col sm="12">
+          <Card>
+            <CardBody>
+              {isLoading && <Spinner />}
+              {!isLoading && loadingError && (
+                <NetworkError error={loadingError} />
+              )}
+              {!isLoading && categories && (
+                <Table responsive bordered>
+                  <thead>
+                    <tr>
+                      <th>Secret Id</th>
+                      <th>Category Name</th>
+                      <th>No. of product</th>
+                      <th>Type.</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {categories.map((category, index) => (
+                      <>
+                        <tr key={category.id}>
+                          <td className="text-bold-600">{index + 1}</td>
+                          <td className="text-bold-600">{category.name}</td>
+                          <td className="text-bold-600">{category.no_of_product || "NA"}</td>
+                          <td className="text-bold-600 text-capitalize">{category.action}</td>
+                          <td>
+                            <Edit2
+                              size="16"
+                              className="mr-1 cursor-pointer"
+                              onClick={() =>
+                                history.push(
+                                  "/inventory/categories/edit/" + category.id
+                                )
+                              }
+                            />
+                            <Delete
+                              size="16"
+                              onClick={() => deleteCategory(category.id)}
+                              className="cursor-pointer"
+                            />
+                          </td>
+                        </tr>
+                     
+                        {category.sub_categories.map((sub_category, pos) => (
+                          <tr key={sub_category.id}>
+                            <td>
+                              <span className="ml-2">{`${index + 1}.${
+                                pos + 1
+                              }`}</span>
+                            </td>
+                            <td>
+                              <span className="ml-2">{sub_category.name}</span>
+                            </td>
+                            <td>
+                              <span className="ml-2">{sub_category.no_of_product || "NA"}</span>
+                            </td>
+                            <td>
+                              <span className="ml-2 text-capitalize">{sub_category.action || "NA"}</span>
+                            </td>
+                            <td>
+                              <Edit2
+                                size="16"
+                                className="mr-1 cursor-pointer"
+                                onClick={() =>
+                                  history.push(
+                                    "/inventory/categories/edit/" +
+                                      sub_category.id
+                                  )
+                                }
+                              />
+                              <Delete
+                                size="16"
+                                onClick={() => deleteSubCategory(sub_category.id,index)}
+                                className="cursor-pointer"
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                   
+                      </>
+                    ))}
+                  </tbody>
+                </Table>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+    </>
+  );
+};
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.auth.userInfo,
+  };
+};
+
+export default connect(mapStateToProps)(CategoryList);

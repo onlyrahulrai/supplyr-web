@@ -10,13 +10,15 @@ import {
   Button,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Plus, X, Check, ChevronLeft } from "react-feather";
+import { Plus, X, Check, ChevronLeft, Eye } from "react-feather";
 import Chip from "components/profiling/ChipSelectable";
 import apiClient from "api/base";
 import {
   RiCheckboxMultipleLine,
   RiCheckboxMultipleBlankLine,
 } from "react-icons/ri";
+import {history} from "../../../history"
+import { BiPencil } from "react-icons/bi";
 
 function CategoryEmptyPlaceholder(props) {
   return (
@@ -66,11 +68,27 @@ class CategoryListItem extends Component {
 
 class CategoryDetailed extends Component {
   render() {
+    
+    
     return (
       <Card>
         <CardHeader>
           <CardTitle>{this.props.category.name}</CardTitle>
           <div className="actions">
+                <Button.Ripple
+                className="rounded-circle btn-icon mr-1"
+                size="sm"
+                color="secondary"
+                id="editCategory"
+                onClick={() => history.push('/inventory/categories/edit/'+this.props.category.id)}
+              >
+                <BiPencil />
+              </Button.Ripple>
+              <UncontrolledTooltip placement="top" target="editCategory">
+                Update Category
+              </UncontrolledTooltip>
+          
+
             <Button.Ripple
               className="rounded-circle btn-icon mr-1"
               id="addAllSubCategories"
@@ -252,7 +270,7 @@ export default class Categories extends Component {
         sub_categories: this.state.selectedSubcategories,
       })
       .then((response) => {
-        this.props.forceStepRefresh();
+        this.props.forceStepRefresh ? this.props.forceStepRefresh():this.props.setAddCategory(false)
       });
   };
 
@@ -260,6 +278,7 @@ export default class Categories extends Component {
     let selectedSubcategories = this.state.selectedSubcategories;
     let selectedCategories = this.state.selectedCategories;
     let categories = this.state.categories;
+
 
     return (
       <div>
@@ -294,6 +313,7 @@ export default class Categories extends Component {
                     )?.[0];
                     return (
                       <CategoryDetailed
+                        user={this.props.user}
                         category={category}
                         selectedSubcategories={selectedSubcategories}
                         toggleSubcategory={this.toggleSubcategory}

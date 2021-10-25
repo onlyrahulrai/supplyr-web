@@ -77,7 +77,7 @@ export default function Salesperson() {
             <Col md="4">
                 <h3>Add New Salesperson</h3>
                 <Row className='align-items-center'>
-                    <Col md="9">
+                    <Col md="8">
                         <SimpleInputField
                             label="Enter Email"
                             placeholder="Email with which salesperson is registered"
@@ -86,7 +86,7 @@ export default function Salesperson() {
                             error={formError}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col md="4">
                         <Button
                             block
                             color='primary'

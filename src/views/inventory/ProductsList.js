@@ -104,6 +104,7 @@ class SubcategorySelector extends Component {
   render() {
     const displayedCategories =
       this.state.displayedSubCategories?.groupBy("category") || {};
+    console.log("Headers Items: ",this.props.modalTitle)
     return (
       <div className={this.props.className + " d-inline-block"}>
         <ButtonGroup>
@@ -285,7 +286,7 @@ class UsersList extends Component {
         headerName: "Product Title",
         field: "title",
         // filter: true,
-        width: 450,
+        width: 350,
         cellRendererFramework: (params) => {
           return (
             <div
@@ -312,7 +313,7 @@ class UsersList extends Component {
         headerName: "Quantity",
         field: "quantity",
         // filter: true,
-        width: 250,
+        width: 200,
         cellRendererFramework: (params) => {
           let compare_value = params.value;
           let display_value = params.value;
@@ -342,7 +343,7 @@ class UsersList extends Component {
         headerName: "Sale Price",
         field: "price",
         // filter: true,
-        width: 250,
+        width: 200,
         cellRendererFramework: (params) => {
           let display_value = priceFormatter(params.value);
           if (
@@ -469,6 +470,7 @@ class UsersList extends Component {
   };
 
   bulkUpdate = (operation, data) => {
+    console.log("hello world!  from bulk update category:----->",operation,data)
     const selectedNodes = this.gridApi.getSelectedNodes();
     const product_ids = selectedNodes.map((node) => node.data.id);
     return apiClient

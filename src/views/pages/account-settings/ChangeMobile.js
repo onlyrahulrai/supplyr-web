@@ -100,6 +100,7 @@ const ChangeMobile = (props) => {
   const handleAlertBox = () => {
     setHandleAlert(false);
     removeResponse();
+    setOtp("")
   };
 
   return (
@@ -124,8 +125,10 @@ const ChangeMobile = (props) => {
             value={newMobile}
             onChange={onNewMobileChange}
             disabled={successMessage && successMessage.success}
+            required
+            invalid={error}
           />
-          <FormFeedback valid={error}>
+          <FormFeedback >
             <p>
               {successMessage &&
                 !successMessage.success &&
