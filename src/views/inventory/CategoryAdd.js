@@ -158,6 +158,7 @@ const CategoryAdd = (props) => {
           "response Data >>>>>>>>>>>>>>>>>--------------->>>>>>>>>>>",
           response.data
         );
+        setIsLoading(false)
         const category = response.data;
         setBasicData((state) => ({
           ...state,
@@ -198,6 +199,7 @@ const CategoryAdd = (props) => {
 
   const submitForm = (e) => {
     e.preventDefault();
+    setIsLoading(true)
     let url = "/inventory/categories/";
     let _formData = new FormData();
     _formData.append("id", basicData.id);
@@ -222,6 +224,7 @@ const CategoryAdd = (props) => {
         },
       })
       .then((response) => {
+        setIsLoading(false)
         Swal.fire("Category Saved !", "success");
         history.push("/inventory/categories/list");
       });
@@ -713,6 +716,7 @@ const CategoryAdd = (props) => {
                       onClick={() =>
                         console.log("Form submitted successfully!")
                       }
+                      disabled={isLoading}
                       color="primary"
                       outline
                       type="submit"
