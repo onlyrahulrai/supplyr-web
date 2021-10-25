@@ -99,7 +99,7 @@ const CategoryList = (props) => {
 
                 {
                   categories.length === 0 && (
-                    <h4 className="text-center mb-0">Their is no category to Shown.</h4>
+                    <h4 className="text-center mb-0">Their is no category to be Shown.</h4>
                   )
                 }
 
