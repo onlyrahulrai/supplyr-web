@@ -210,20 +210,22 @@ const MobileEditForm = ({ onClose, onSuccess }) => {
   );
 };
 
-const OTPVerificationForm = ({ otpId }) => {
+const OTPVerificationForm = (props) => {
   const [otpValue, setOtpValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  console.log("props>> ",props)
   const onClickSubmit = () => {
     if (otpValue) {
       setIsLoading(true);
       apiClient
         .post("/verify-mobile-verification-otp/", {
-          otp_id: otpId,
+          otp_id: props.otpId,
           code: otpValue,
         })
         .then((response) => {
           if (response.data?.success) {
+            props.forceStepRefresh()
             Toast.fire({
               icon: "success",
               title: "Mobile Number Verified Successfully",
@@ -268,7 +270,7 @@ const OTPVerificationForm = ({ otpId }) => {
   );
 };
 
-const Verification = () => {
+const Verification = (props) => {
   const userInfo = useSelector((state) => state.auth.userInfo);
   const [isSendingVerificationMail, setIsSendingVerificationMail] =
     useState(false);
@@ -278,9 +280,14 @@ const Verification = () => {
   const [emailEditable, setEmailEditable] = useState(false);
   const [mobileEditable, setMobileEditable] = useState(false);
 
+  const countdown = (otpResendCountdown) => {
+    return otpResendCountdown > 0 &&
+    setTimeout(() => setOtpResendCountdown(otpResendCountdown - 1), 1000);
+  }
+
   useEffect(() => {
-    otpResendCountdown > 0 &&
-      setTimeout(() => setOtpResendCountdown(otpResendCountdown - 1), 1000);
+    const otpCountdown = countdown(otpResendCountdown)
+    return otpCountdown
   }, [otpResendCountdown]);
 
   const resendVerificationMail = () => {
@@ -333,6 +340,7 @@ const Verification = () => {
         setOtpStatus("unsent");
       });
   };
+
 
   return (
     <div className="mt-3 col-xl-6 col-lg-8 col-md-10 col-12 mx-auto">
@@ -445,7 +453,7 @@ const Verification = () => {
                   )}
                   {["sent", "resending"].includes(otpStatus) && (
                     <>
-                      <OTPVerificationForm otpId={otpId} />
+                      <OTPVerificationForm otpId={otpId} forceStepRefresh={props.forceStepRefresh}/>
                       <div className="text-right">
                         {otpResendCountdown > 0 && (
                           <div className="small text-secondary">

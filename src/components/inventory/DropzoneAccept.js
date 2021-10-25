@@ -1,25 +1,27 @@
-import { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react"
 import { Card, CardHeader, CardBody, CardTitle } from "reactstrap"
 import { useDropzone } from "react-dropzone"
-import "assets/scss/plugins/extensions/dropzone.scss"
 
-function BasicDropzone(props) {
+function DropzoneAccepted(props) {
   const [files, setFiles] = useState([])
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: "image/*",
+  
+  const {
+    acceptedFiles,
+    // rejectedFiles,
+    getRootProps,
+    getInputProps
+  } = useDropzone({
+    accept: "image/jpeg, image/png",
     onDrop: acceptedFiles => {
       setFiles(
-        acceptedFiles.map(file => {
-            console.log(files)
-            return Object.assign(file, {
+        acceptedFiles.map(file =>
+          Object.assign(file, {
             preview: URL.createObjectURL(file)
           })
-        }
         )
       )
     }
   })
-
   const thumbs = files.map(file => (
     <div className="dz-thumb" key={file.name}>
       <div className="dz-thumb-inner">
@@ -27,7 +29,6 @@ function BasicDropzone(props) {
       </div>
     </div>
   ))
-
   useEffect(
     () => () => {
       // Make sure to revoke the data uris to avoid memory leaks
@@ -36,32 +37,42 @@ function BasicDropzone(props) {
     [files]
   )
 
+  const acceptedFilesItems = acceptedFiles.map(file => (
+    <aside className="thumb-container mb-1">{thumbs}</aside>
+  ))
+
+  // const rejectedFilesItems = rejectedFiles.map(file => (
+  //   <div key={file.path}>
+  //     {file.path} - {file.size} bytes
+  //   </div>
+  // ))
+
   return (
-    <section>
+    <section className="pb-1">
       <div {...getRootProps({ className: "dropzone" })}>
         <input {...getInputProps()} />
         <p className="mx-1">
-          Select files of drag and drop in this area
+          <em>(Only *.jpeg and *.png images will be accepted)</em>
         </p>
       </div>
-      <aside className="thumb-container">{thumbs}</aside>
+      <aside>{acceptedFilesItems}</aside>
     </section>
   )
 }
 
-class DropzoneBasic extends Component {
+class DropzoneAccept extends React.Component {
   render() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Product Images</CardTitle>
+          <CardTitle>Specific File Types</CardTitle>
         </CardHeader>
         <CardBody>
-          <BasicDropzone />
+          <DropzoneAccepted />
         </CardBody>
       </Card>
     )
   }
 }
 
-export default DropzoneBasic
+export default DropzoneAccept

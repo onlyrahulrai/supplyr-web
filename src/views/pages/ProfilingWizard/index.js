@@ -39,7 +39,7 @@ class ProfilingWizard extends Component {
     steps: [
       {
         title: <UserCheck />,
-        content: <Verification />,
+        content: <Verification  forceStepRefresh={this.forceStepRefresh} />,
       },
       {
         title: <FileText />,
