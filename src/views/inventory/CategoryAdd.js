@@ -158,7 +158,7 @@ const CategoryAdd = (props) => {
           "response Data >>>>>>>>>>>>>>>>>--------------->>>>>>>>>>>",
           response.data
         );
-        setIsLoading(false)
+        setIsLoading(false);
         const category = response.data;
         setBasicData((state) => ({
           ...state,
@@ -199,7 +199,7 @@ const CategoryAdd = (props) => {
 
   const submitForm = (e) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     let url = "/inventory/categories/";
     let _formData = new FormData();
     _formData.append("id", basicData.id);
@@ -224,7 +224,7 @@ const CategoryAdd = (props) => {
         },
       })
       .then((response) => {
-        setIsLoading(false)
+        setIsLoading(false);
         Swal.fire("Category Saved !", "success");
         history.push("/inventory/categories/list");
       });
@@ -501,7 +501,7 @@ const CategoryAdd = (props) => {
                           </Col>
                         </Row>
                         {basicData.rules.map((rule, index) => (
-                          <div key={rule.id}>
+                          <div key={Math.round(Math.random() * 123456)}>
                             <Row
                               style={{ alignItems: "center" }}
                               className="mt-2"
@@ -530,6 +530,13 @@ const CategoryAdd = (props) => {
                                         option.disabled
                                       }
                                       menuPlacement="top"
+                                      menuPortalTarget={document.body}
+                                      styles={{
+                                        menuPortal: (base) => ({
+                                          ...base,
+                                          zIndex: 9999,
+                                        }),
+                                      }}
                                     />
                                   }
                                 />
@@ -573,7 +580,7 @@ const CategoryAdd = (props) => {
                                   onChange={(e) => {
                                     let _rules = basicData.rules;
                                     _rules[index].attribute_value =
-                                      e.target.value;
+                                      e.target.value.toLowerCase();
                                     setBasicFieldData("rules", _rules);
                                   }}
                                   requiredIndicator
@@ -582,7 +589,7 @@ const CategoryAdd = (props) => {
                                   icon={<X size={15} />}
                                   name="compareValue"
                                   value={
-                                  basicData.rules[index].attribute_value || ""
+                                    basicData.rules[index].attribute_value || ""
                                   }
                                   styles={{
                                     width: `${
@@ -590,13 +597,16 @@ const CategoryAdd = (props) => {
                                         ? "90%"
                                         : "100%"
                                     }`,
+                                    textTransform: "capitalize",
+                                    marginBottom: 0,
                                   }}
                                   onClick={() => removeConditions(index)}
                                 />
                               </Col>
 
                               <Col md="12">
-                                {(rule.attribute_name === "weight" && rule.attribute_value )? (
+                                {rule.attribute_name === "weight" &&
+                                rule.attribute_value ? (
                                   <Row className="mb-1 align-items-center ">
                                     <Col md="auto">
                                       <span>Select weight unit: </span>
@@ -606,7 +616,10 @@ const CategoryAdd = (props) => {
                                         <Radio
                                           label="Kilogram"
                                           color="primary"
-                                          defaultChecked={rule.attribute_unit === "kg" || false}
+                                          defaultChecked={
+                                            rule.attribute_unit === "kg" ||
+                                            false
+                                          }
                                           name="rulesweightoptions"
                                           value={
                                             basicData.attribute_unit === "kg"
@@ -625,7 +638,10 @@ const CategoryAdd = (props) => {
                                         <Radio
                                           label="Gram"
                                           color="primary"
-                                          defaultChecked={rule.attribute_unit === "gm" || false }
+                                          defaultChecked={
+                                            rule.attribute_unit === "gm" ||
+                                            false
+                                          }
                                           name="rulesweightoptions"
                                           value={
                                             rule.attribute_unit === "gm"
@@ -644,7 +660,10 @@ const CategoryAdd = (props) => {
                                         <Radio
                                           label="Milligram"
                                           color="primary"
-                                          defaultChecked={rule.attribute_unit === "mg" || false }
+                                          defaultChecked={
+                                            rule.attribute_unit === "mg" ||
+                                            false
+                                          }
                                           name="rulesweightoptions"
                                           value={
                                             rule.attribute_unit === "mg"
@@ -669,7 +688,7 @@ const CategoryAdd = (props) => {
                           </div>
                         ))}
                         <Button
-                          className="d-flex align-items-center"
+                          className="d-flex align-items-center mt-1"
                           color="secondary"
                           outline
                           size="sm"
