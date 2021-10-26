@@ -88,7 +88,11 @@ class Approval extends Component {
           <Card>
             <CardHeader className="mx-auto flex-column mt-5">
               <Clock size="50" className="mb-3" />
-              <h6>{this.props.user.user_profile_review}</h6>
+              <h6 className="text-gray">You request could not be approved due to the following reason</h6>
+              <div className='alert alert-danger mt-2'>
+                <h6>{this.props.user.user_profile_review}</h6>
+              </div>
+              <h6 className='text-center my-2 mx-4'>Please correct the above mentioned issues with your application and apply for approval again.</h6>
             </CardHeader>
 
             <CardBody className="text-center pt-0 mt-1">
@@ -111,7 +115,10 @@ class Approval extends Component {
           <Card>
             <CardHeader className="mx-auto flex-column mt-5">
               <Clock size="50" className="mb-3" />
-              <h6>{this.props.user.user_profile_review}</h6>
+              <h6>Sorry, Your application is permanently rejected.</h6>
+              <div className='alert alert-danger mt-2'>
+                <h6>Reason: {this.props.user.user_profile_review}</h6>
+              </div>
             </CardHeader>
 
             <CardBody className="text-center pt-0"></CardBody>
