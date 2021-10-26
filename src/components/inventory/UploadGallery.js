@@ -116,13 +116,7 @@ function App(props) {
     );
   }
   
-  const style = {
-    title: {
-      textAlign: "center",
-      fontFamily: "Helvetica",
-      marginTop: 50
-    }
-  };
+ 
 
   
 export default App

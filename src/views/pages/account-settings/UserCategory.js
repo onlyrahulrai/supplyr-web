@@ -1,6 +1,5 @@
-import Chip from "components/@vuexy/chips/ChipComponent";
 import React, { lazy, useState } from "react";
-import { Edit, Plus, X } from "react-feather";
+import { Plus, X } from "react-feather";
 import { connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 import {
@@ -61,7 +60,7 @@ function CategoryItem({ category,selected_sub_categories }) {
 
 
 const UserCategory = (props) => {
-  const sub_categories = props.user.profile.sub_categories;
+  // const sub_categories = props.user.profile.sub_categories;
   const categories_data = props.user.profiling_data.categories_data;
   const categories = props.user.profiling_data.categories_data.categories;
   const selected_sub_categories =  props.user.profiling_data.categories_data.selected_sub_categories
@@ -71,11 +70,11 @@ const UserCategory = (props) => {
   const history = useHistory()
 
 
-  var obj = sub_categories.reduce((a, c) => {
-    if (a[c.category] && c.category !== "(Category)") a[c.category].push(c);
-    else a[c.category] = [c];
-    return a;
-  }, {});
+  // var obj = sub_categories.reduce((a, c) => {
+  //   if (a[c.category] && c.category !== "(Category)") a[c.category].push(c);
+  //   else a[c.category] = [c];
+  //   return a;
+  // }, {});
 
 
   let selectedCategories = [];

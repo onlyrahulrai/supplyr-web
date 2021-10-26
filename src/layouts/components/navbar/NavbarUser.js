@@ -1,25 +1,17 @@
 import { PureComponent } from "react";
 import {
-  NavItem,
-  NavLink,
   UncontrolledDropdown,
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
-  Media,
-  Badge
 } from "reactstrap"
-import PerfectScrollbar from "react-perfect-scrollbar"
-import axios from "axios"
 import * as Icon from "react-feather"
-import classnames from "classnames"
-import Autocomplete from "../../../components/@vuexy/autoComplete/AutoCompleteComponent"
 import { history } from "../../../history"
 
 
 const UserDropdown = props => {
   return (
-    <DropdownMenu right>
+    <DropdownMenu right className="seller-navbar-user">
 
       {/* <DropdownItem divider /> */}
       <DropdownItem

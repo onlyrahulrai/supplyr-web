@@ -4,6 +4,9 @@
   "private": true,
   "dependencies": {
     "@auth0/auth0-spa-js": "^1.13.4",
+    "@emotion/react": "^11.5.0",
+    "@emotion/styled": "^11.3.0",
+    "@mui/material": "^5.0.4",
     "ag-grid-community": "^24.1.0",
     "ag-grid-react": "24.1.1",
     "apexcharts": "3.27.1",
@@ -78,6 +81,7 @@
     "sweetalert2": "11.0.17",
     "sweetalert2-react-content": "4.0.1",
     "swiper": "6.7.0",
+    "uuid": "^8.3.2",
     "xlsx": "^0.17.0",
     "yarn": "^1.22.10",
     "yup": "^0.32.1"

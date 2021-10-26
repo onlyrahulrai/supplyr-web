@@ -2,16 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   FormGroup,
-  Row,
-  Col,
   Input,
   Label,
   Form,
-  Alert,
   FormFeedback,
   InputGroup,
   InputGroupAddon,
-  Spinner,
 } from "reactstrap";
 import { AuthenticationApi } from "api/endpoints";
 import SweetAlert from "react-bootstrap-sweetalert";

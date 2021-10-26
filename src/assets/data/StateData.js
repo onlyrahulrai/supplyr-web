@@ -31,7 +31,7 @@ export const StateData = {
     "RJ":"Rajasthan",
     "SK":"Sikkim",
     "TN":"Tamil Nadu",
-    "TS":"Telangana",
+    "TG":"Telangana",
     "TR":"Tripura",
     "UP":"Uttar Pradesh",
     "UK":"Uttarakhand",

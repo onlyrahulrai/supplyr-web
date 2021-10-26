@@ -92,14 +92,18 @@ const CategoryList = (props) => {
         <Col sm="12">
           <Card>
             <CardBody>
-              {isLoading && <Spinner />}
+              {isLoading && (
+                <div className=" py-5 text-center" style={{margin:"10rem 0"}}>
+                  <Spinner />
+                </div>
+              )}
               {!isLoading && loadingError && (
                 <NetworkError error={loadingError} />
               )}
 
                 {
-                  categories.length === 0 && (
-                    <h4 className="text-center mb-0">Their is no category to be Shown.</h4>
+                  !isLoading && categories.length === 0 && (
+                    <h4 className="text-center mb-0">Their are no categories to be shown.</h4>
                   )
                 }
 

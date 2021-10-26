@@ -5,23 +5,7 @@ import {
   CardBody,
   Row,
   Col,
-  Form,
-  FormGroup,
-  Input,
-  Label,
-  Alert,
 } from "reactstrap";
-import { connect } from "react-redux";
-import {
-  Mail,
-  Lock,
-  Check,
-  Facebook,
-  Twitter,
-  GitHub,
-  AlertCircle,
-} from "react-feather";
-import { history } from "../../history";
 import { Link } from "react-router-dom";
 
 import welcomeImg from "../../assets/img/pages/welcome.jpg";

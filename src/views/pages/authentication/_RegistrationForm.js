@@ -1,16 +1,25 @@
 import { Component } from "react";
-import { Form, FormGroup, Input, Label, Button, FormFeedback, Alert, Col, Row } from "reactstrap"
-import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy"
-import { Check, AlertCircle } from "react-feather"
-import { connect } from "react-redux"
-import { signupWithJWT } from "../../../redux/actions/auth/registerActions"
-import { history } from "../../../history"
+import {
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  FormFeedback,
+  Alert,
+  Col,
+  Row,
+} from "reactstrap";
+import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy";
+import { Check, AlertCircle } from "react-feather";
+import { connect } from "react-redux";
+import { signupWithJWT } from "../../../redux/actions/auth/registerActions";
+import { Link } from "react-router-dom";
 
 class CustomFormFeedback extends Component {
   render() {
-    return this.props.text
-      ? (<FormFeedback>{this.props.text}</FormFeedback>)
-      : null
+    return this.props.text ? (
+      <FormFeedback>{this.props.text}</FormFeedback>
+    ) : null;
   }
 }
 
@@ -23,51 +32,53 @@ class RegisterJWT extends Component {
     password2: "",
     mobile_number: "",
     errors: {},
-    checked:true,
+    checked: true,
     isSubmitting: false,
-  }
+  };
 
   handleError = (e) => {
-    window.er = e
-    let errors = e.response?.data
+    window.er = e;
+    let errors = e.response?.data;
     if (!errors) {
       errors = {
-        "non_field_errors": e.message
-      }
+        non_field_errors: e.message,
+      };
     }
-    this.setState({ 
+    this.setState({
       errors: errors,
       isSubmitting: false,
-    })
-  }
+    });
+  };
 
-  handleRegister = e => {
+  handleRegister = (e) => {
     e.preventDefault();
-    if(!this.state.checked){
+    if (!this.state.checked) {
       this.setState({
-        errors:{
-          "non_field_errors": "Please select the terms and conditions"
-        }
-      })
-    }else{
-      this.setState({ 
+        errors: {
+          non_field_errors: "Please select the terms and conditions",
+        },
+      });
+    } else {
+      this.setState({
         errors: {},
         isSubmitting: true,
-      })
-      this.props.signupWithJWT(this.state, this.handleError)
+      });
+      this.props.signupWithJWT(this.state, this.handleError);
     }
-  }
+  };
 
   render() {
     return (
-      
       <Form action="/" onSubmit={this.handleRegister}>
-        <Alert color="danger" isOpen={Boolean(this.state.errors?.non_field_errors)}>
+        <Alert
+          color="danger"
+          isOpen={Boolean(this.state.errors?.non_field_errors)}
+        >
           <AlertCircle size={15} />
           {this.state.errors.non_field_errors}
         </Alert>
         <br />
-        
+
         <Row>
           <Col>
             <FormGroup className="form-label-group">
@@ -76,7 +87,7 @@ class RegisterJWT extends Component {
                 placeholder="First Name"
                 required
                 value={this.state.firstName}
-                onChange={e => this.setState({ firstName: e.target.value })}
+                onChange={(e) => this.setState({ firstName: e.target.value })}
               />
               <Label>Name</Label>
             </FormGroup>
@@ -88,7 +99,7 @@ class RegisterJWT extends Component {
                 placeholder="Last Name"
                 required
                 value={this.state.lastName}
-                onChange={e => this.setState({ lastName: e.target.value })}
+                onChange={(e) => this.setState({ lastName: e.target.value })}
               />
               <Label>Name</Label>
             </FormGroup>
@@ -102,7 +113,7 @@ class RegisterJWT extends Component {
             placeholder="10 Digit Mobile Number"
             required
             value={this.state.mobile_number}
-            onChange={e => this.setState({ mobile_number: e.target.value })}
+            onChange={(e) => this.setState({ mobile_number: e.target.value })}
           />
           <Label>Phone/Mobile Number</Label>
           <CustomFormFeedback text={this.state?.errors?.mobile_number} />
@@ -115,7 +126,7 @@ class RegisterJWT extends Component {
             placeholder="Email"
             required
             value={this.state.email}
-            onChange={e => this.setState({ email: e.target.value })}
+            onChange={(e) => this.setState({ email: e.target.value })}
           />
           <Label>Email</Label>
           <CustomFormFeedback text={this.state?.errors?.email} />
@@ -128,7 +139,7 @@ class RegisterJWT extends Component {
             placeholder="Password"
             required
             value={this.state.password1}
-            onChange={e => this.setState({ password1: e.target.value })}
+            onChange={(e) => this.setState({ password1: e.target.value })}
           />
           <Label>Password</Label>
           <CustomFormFeedback text={this.state?.errors?.password1} />
@@ -140,7 +151,7 @@ class RegisterJWT extends Component {
             placeholder="Confirm Password"
             required
             value={this.state.password2}
-            onChange={e => this.setState({ password2: e.target.value })}
+            onChange={(e) => this.setState({ password2: e.target.value })}
           />
           <Label>Confirm Password</Label>
           <CustomFormFeedback text={this.state?.errors?.password2} />
@@ -152,25 +163,27 @@ class RegisterJWT extends Component {
             icon={<Check className="vx-icon" size={16} />}
             label=" I accept the terms & conditions."
             defaultChecked={this.state.checked}
-            onChange={(e) => this.setState({"checked":e.target.value})}
+            onChange={(e) => this.setState({ checked: e.target.value })}
           />
         </FormGroup>
         <div className="d-flex justify-content-between">
-          <Button.Ripple
-            color="primary"
-            outline
-            onClick={() => {
-              history.push("/login")
-            }}
+          <button
+            class="btn btn-primary btn-block waves-effect waves-float waves-light"
+            disabled={this.state.isSubmitting}
+            type="submit"
           >
-            Login
-          </Button.Ripple>
-          <Button.Ripple color="primary" type="submit" disabled={this.state.isSubmitting}>
             Register
-          </Button.Ripple>
+          </button>
+          
+        </div>
+        <div className="divider">
+          <div className="divider-text">OR</div>
+        </div>
+        <div className="text-center">
+          Already have an account? <Link to="login">Sign In</Link>
         </div>
       </Form>
-    )
+    );
   }
 }
 // const mapStateToProps = state => {
@@ -178,4 +191,4 @@ class RegisterJWT extends Component {
 //     values: state.auth.register
 //   }
 // }
-export default connect(null, { signupWithJWT })(RegisterJWT)
+export default connect(null, { signupWithJWT })(RegisterJWT);

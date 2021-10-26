@@ -1,4 +1,4 @@
-import { Component, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardHeader,
@@ -12,7 +12,7 @@ import {
   FormGroup,
   Label,
 } from "reactstrap";
-import { Check, Edit, Edit3, Info, Repeat, Send } from "react-feather";
+import { Check, Edit3, Info, Repeat, Send, X } from "react-feather";
 import { useSelector } from "react-redux";
 import apiClient from "api/base";
 import { Toast } from "utility/sweetalert";
@@ -129,11 +129,16 @@ const EmailEditForm = ({ onClose, onSuccess }) => {
           </FormGroup>
         </Col>
         <Col sm={3}>
-          <Button type="submit" color="primary" disabled={isSubmitting}>
+          <Button type="submit" color="primary"  className="rounded-full" style={{padding:"0.6rem"}} disabled={isSubmitting}>
+            <div className="d-flex align-items-center">
             {isSubmitting && (
-              <Spinner color="white" size="sm" style={{ marginRight: 5 }} />
+              <span style={{padding:"0.6rem 0"}}>
+                <Spinner color="white" size="sm" style={{ marginRight: 5 }} />
+              </span>
             )}
-            Save
+            <Check size="15" />
+            </div>
+            
           </Button>
         </Col>
         <Col sm={3}>
@@ -143,8 +148,10 @@ const EmailEditForm = ({ onClose, onSuccess }) => {
             outline
             onClick={onClose}
             disabled={isSubmitting}
+            className="rounded-full"
+            style={{padding:"0.6rem"}}
           >
-            Cancel
+            <X size="15" />
           </Button>
         </Col>
       </Row>
@@ -182,8 +189,8 @@ const MobileEditForm = ({ onClose, onSuccess }) => {
   return (
     <form onSubmit={onSubmit}>
       <Row>
-        <Col sm={6}>
-          <FormGroup className="form-label-group">
+        <Col sm={6} className="d-flex align-items-center">
+          <FormGroup className="form-label-group mb-1">
             <Input
               // type="email"
               placeholder="New Mobile Number"
@@ -195,16 +202,54 @@ const MobileEditForm = ({ onClose, onSuccess }) => {
             <Label for="ph">New Mobile Number</Label>
           </FormGroup>
         </Col>
+
+
         <Col sm={3}>
-          <Button type="submit" color="primary">
-            Save
+          <Button type="submit" color="primary"  className="rounded-full" style={{padding:"0.6rem"}} disabled={isSubmitting}>
+            <div className="d-flex align-items-center">
+            <span style={{padding:"0.6rem 0"}}>
+            {isSubmitting && (
+              <Spinner color="white" size="sm" style={{ marginRight: 5 }} />
+            )}
+            </span>
+            
+            <span>
+            <Check size="15" />
+            </span>
+            </div>
           </Button>
         </Col>
         <Col sm={3}>
-          <Button type="submit" color="secondary" outline onClick={onClose}>
-            Cancel
+          <Button
+            type="submit"
+            color="secondary"
+            outline
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="rounded-full"
+            style={{padding:"0.6rem"}}
+          >
+            <X size="15" />
           </Button>
         </Col>
+
+
+        {/* <Col sm={5} className="d-flex align-items-center justify-content-around">
+          <div
+            className="shadow rounded-full bg-priamry border-primary text-primary"
+            style={{ padding: "0.5rem" }}
+            onClick={onSubmit}
+          >
+            <Check size="15" />
+          </div>
+          <div
+            className="shadow rounded-full bg-priamry border-danger text-danger"
+            style={{ padding: "0.5rem" }}
+            onClick={onClose}
+          >
+            <X size="15" />
+          </div>
+        </Col> */}
       </Row>
     </form>
   );
@@ -214,7 +259,7 @@ const OTPVerificationForm = (props) => {
   const [otpValue, setOtpValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  console.log("props>> ",props)
+  console.log("props>> ", props);
   const onClickSubmit = () => {
     if (otpValue) {
       setIsLoading(true);
@@ -225,7 +270,7 @@ const OTPVerificationForm = (props) => {
         })
         .then((response) => {
           if (response.data?.success) {
-            props.forceStepRefresh()
+            props.forceStepRefresh();
             Toast.fire({
               icon: "success",
               title: "Mobile Number Verified Successfully",
@@ -247,7 +292,7 @@ const OTPVerificationForm = (props) => {
 
   return (
     <Row>
-      <Col sm={7}>
+      <Col sm={7} className="pl-0 pr-0">
         <FloatingInputField
           label="Enter OTP"
           type="number"
@@ -258,8 +303,8 @@ const OTPVerificationForm = (props) => {
           error={errorMessage}
         />
       </Col>
-      <Col sm={5}>
-        <Button color="primary" disabled={isLoading} onClick={onClickSubmit}>
+      <Col sm={5} className="pl-0 pr-0">
+        <Button color="primary" disabled={isLoading} onClick={onClickSubmit} style={{paddingLeft:"8px",paddingRight:"8px"}}>
           {isLoading && (
             <Spinner color="white" size="sm" style={{ marginRight: 5 }} />
           )}
@@ -281,13 +326,15 @@ const Verification = (props) => {
   const [mobileEditable, setMobileEditable] = useState(false);
 
   const countdown = (otpResendCountdown) => {
-    return otpResendCountdown > 0 &&
-    setTimeout(() => setOtpResendCountdown(otpResendCountdown - 1), 1000);
-  }
+    return (
+      otpResendCountdown > 0 &&
+      setTimeout(() => setOtpResendCountdown(otpResendCountdown - 1), 1000)
+    );
+  };
 
   useEffect(() => {
-    const otpCountdown = countdown(otpResendCountdown)
-    return otpCountdown
+    const otpCountdown = countdown(otpResendCountdown);
+    return otpCountdown;
   }, [otpResendCountdown]);
 
   const resendVerificationMail = () => {
@@ -340,7 +387,6 @@ const Verification = (props) => {
         setOtpStatus("unsent");
       });
   };
-
 
   return (
     <div className="mt-3 col-xl-6 col-lg-8 col-md-10 col-12 mx-auto">
@@ -425,6 +471,7 @@ const Verification = (props) => {
                       setMobileEditable(false);
                       setOtpStatus("unsent");
                     }}
+                    verified={userInfo.is_mobile_verified}
                   />
                 )}
                 {userInfo.is_mobile_verified ? (
@@ -453,7 +500,10 @@ const Verification = (props) => {
                   )}
                   {["sent", "resending"].includes(otpStatus) && (
                     <>
-                      <OTPVerificationForm otpId={otpId} forceStepRefresh={props.forceStepRefresh}/>
+                      <OTPVerificationForm
+                        otpId={otpId}
+                        forceStepRefresh={props.forceStepRefresh}
+                      />
                       <div className="text-right">
                         {otpResendCountdown > 0 && (
                           <div className="small text-secondary">

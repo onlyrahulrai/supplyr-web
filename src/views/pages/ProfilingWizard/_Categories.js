@@ -10,7 +10,7 @@ import {
   Button,
   UncontrolledTooltip,
 } from "reactstrap";
-import { Plus, X, Check, ChevronLeft, Eye } from "react-feather";
+import { Plus, X, Check, ChevronLeft } from "react-feather";
 import Chip from "components/profiling/ChipSelectable";
 import apiClient from "api/base";
 import {

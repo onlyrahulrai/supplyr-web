@@ -1,6 +1,5 @@
 import { Component } from "react";
 import {
-  Button,
   Card,
   CardBody,
   Row,
@@ -10,20 +9,18 @@ import {
   Input,
   Label,
   Alert,
-} from "reactstrap"
-import { connect } from "react-redux"
-import { Mail, Lock, Check, Facebook, Twitter, GitHub, AlertCircle } from "react-feather"
-import { history } from "../../../history"
-import { Link } from "react-router-dom"
-import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy"
-import googleSvg from "../../../assets/img/svg/google.svg"
+} from "reactstrap";
+import { connect } from "react-redux";
+import { Mail, Lock, AlertCircle } from "react-feather";
+import { Link } from "react-router-dom";
 
-import loginImg from "../../../assets/img/pages/login.png"
-import { loginWithJWT } from "../../../redux/actions/auth/loginActions"
-import "../../../assets/scss/pages/authentication.scss"
+import loginImg from "../../../assets/img/pages/login.png";
+import { loginWithJWT } from "../../../redux/actions/auth/loginActions";
+import "../../../assets/scss/pages/authentication.scss";
 
 function validateMobileOrEmail(text) {
-  const re = /^([_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5}))|(^\d{10}$)$/;
+  const re =
+    /^([_a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,5}))|(^\d{10}$)$/;
   return re.test(text);
 }
 
@@ -33,30 +30,33 @@ class Login extends Component {
     password: "",
     error_msg: "",
     is_submitting: false,
-    successMessage:localStorage.getItem("successMessage")
-  }
-  handleError = e => {
-    let error = e.response?.data?.non_field_errors || e.message
-    this.setState({ 
+    successMessage: localStorage.getItem("successMessage"),
+  };
+  handleError = (e) => {
+    let error = e.response?.data?.non_field_errors || e.message;
+    this.setState({
       error_msg: error || "Login Error! Please try again.",
       is_submitting: false,
-    })
-  }
-  handleLogin = e => {
-    e.preventDefault()
+    });
+  };
+  handleLogin = (e) => {
+    e.preventDefault();
     this.setState({
-      error_msg: "", 
-      is_submitting: true
-    })
-    this.props.loginWithJWT(this.state, this.handleError)
-  }
+      error_msg: "",
+      is_submitting: true,
+    });
+    this.props.loginWithJWT(this.state, this.handleError);
+  };
 
-  onEmailChange = e => {
-    this.setState({ email: e.target.value })
-    console.log(e.target.validity.valid)
-    e.target.setCustomValidity('')
-    !validateMobileOrEmail(e.target.value) && e.target.setCustomValidity('Enter valid 10-digit Mobile Number or Email Address')
-  }
+  onEmailChange = (e) => {
+    this.setState({ email: e.target.value });
+    console.log(e.target.validity.valid);
+    e.target.setCustomValidity("");
+    !validateMobileOrEmail(e.target.value) &&
+      e.target.setCustomValidity(
+        "Enter valid 10-digit Mobile Number or Email Address"
+      );
+  };
 
   render() {
     return (
@@ -78,78 +78,90 @@ class Login extends Component {
               </Col>
               <Col lg="6" md="12" className="p-0">
                 <Card className="rounded-0 mb-0 px-2">
-
-
-
                   <CardBody>
                     <h4>Login</h4>
                     <p>Welcome back, please login to your account.</p>
 
                     <br />
-                    <Alert color="danger" isOpen={Boolean(this.state.error_msg)}>
+                    <Alert
+                      color="danger"
+                      isOpen={Boolean(this.state.error_msg)}
+                    >
                       <AlertCircle size={15} />
                       {this.state.error_msg}
                     </Alert>
                     <br />
+
                     <Form action="/" onSubmit={this.handleLogin}>
-                      <FormGroup className="form-label-group position-relative has-icon-left">
-                        <Input
-                          type="text"
-                          placeholder="10-digit Mobile Number or Email"
-                          value={this.state.email}
-                          onChange={e => this.onEmailChange(e)}
-                          required
-                        />
-                        <div className="form-control-position">
-                          <Mail size={15} />
-                        </div>
-                        <Label>Mobile Number or Email</Label>
-                      </FormGroup>
-                      <FormGroup className="form-label-group position-relative has-icon-left">
-                        <Input
-                          type="password"
-                          placeholder="Password"
-                          value={this.state.password}
-                          onChange={e => this.setState({ password: e.target.value })}
-                          required
-                        />
-                        <div className="form-control-position">
-                          <Lock size={15} />
-                        </div>
-                        <Label>Password</Label>
-                      </FormGroup>
-                      <FormGroup className="d-flex justify-content-between align-items-center">
-                        {/* <Checkbox
+                      <Row>
+                        <Col sm="12">
+                          <Label>Mobile Number or Email</Label>
+                          <FormGroup className="form-label-group position-relative has-icon-left">
+                            <Input
+                              type="text"
+                              placeholder="10-digit Mobile Number or Email"
+                              value={this.state.email}
+                              onChange={(e) => this.onEmailChange(e)}
+                              required
+                            />
+                            <div className="form-control-position">
+                              <Mail size={15} />
+                            </div>
+                          </FormGroup>
+                        </Col>
+
+                        <Col sm="12">
+                          <div className="d-flex justify-content-between">
+                            <Label>Password</Label>
+                            <Link to="/forgot-password" style={{fontSize:"13px"}}>
+                              Forgot Password?
+                            </Link>
+                          </div>
+                          <FormGroup className="form-label-group position-relative has-icon-left">
+                            <Input
+                              type="password"
+                              placeholder="Password"
+                              value={this.state.password}
+                              onChange={(e) =>
+                                this.setState({ password: e.target.value })
+                              }
+                              required
+                            />
+                            <div className="form-control-position">
+                              <Lock size={15} />
+                            </div>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <div className="d-flex justify-content-between align-items-center">
+                        {/* <Button.Ripple
                           color="primary"
-                          icon={<Check className="vx-icon" size={16} />}
-                          label="Remember me"
-                          defaultChecked={false}
-                          onChange={this.handleRemember}
-                        /> */}
-                        <div className="float-right ">
-                          <Link to="/forgot-password">Forgot Password?</Link>
-                        </div>
-                      </FormGroup>
-                      <div className="d-flex justify-content-between">
-                        <Button.Ripple
-                          color="primary"
-                          outline
-                          onClick={() => {
-                            history.push("/register")
-                          }}
+                          type="submit"
+                          size="md"
+                          disabled={this.state.is_submitting}
                         >
-                          Register
-                         </Button.Ripple>
-                        <Button.Ripple color="primary" type="submit" disabled={this.state.is_submitting}>
                           Login
-                        </Button.Ripple>
+                        </Button.Ripple> */}
+
+                        <button
+                          class="btn btn-primary btn-block waves-effect waves-float waves-light"
+                          disabled={this.state.is_submitting}
+                          type="submit"
+                        >
+                          Login
+                        </button>
+                      </div>
+                      <div className="divider">
+                        <div className="divider-text">OR</div>
+                      </div>
+                      <div className="text-center">
+                        Need an account?&nbsp;
+                        <Link to="register">Sign Up</Link>
                       </div>
                     </Form>
-
                   </CardBody>
 
-
-{/* 
+                  {/* 
                   <div className="auth-footer">
                     <div className="divider">
                       <div className="divider-text">OR</div>
@@ -169,15 +181,14 @@ class Login extends Component {
                       </Button.Ripple>
                     </div>
                   </div> */}
-                  
                 </Card>
               </Col>
             </Row>
           </Card>
         </Col>
       </Row>
-    )
+    );
   }
 }
 // export default Login
-export default connect(null, { loginWithJWT })(Login)
+export default connect(null, { loginWithJWT })(Login);

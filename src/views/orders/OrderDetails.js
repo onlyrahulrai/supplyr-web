@@ -2,12 +2,8 @@ import "assets/scss/pages/app-ecommerce-shop.scss";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import {priceFormatter} from "utility/general"
+
 import {
-  Heart, Star,
-  X
-} from "react-feather";
-import {
-  Badge,
   Button, Card,
   CardBody,
   Col,

@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { Fragment, useState, useEffect } from "react";
-import { Card, CardBody, Row, Col, Button, Breadcrumb, BreadcrumbItem } from "reactstrap";
+import { Card, CardBody, Row, Col, Button,  } from "reactstrap";
 import { ShoppingCart, Edit3, PlusCircle, Trash } from "react-feather";
 // import "swiper/css/swiper.css";
 import "assets/scss/pages/app-ecommerce-shop.scss";
