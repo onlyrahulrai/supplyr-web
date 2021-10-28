@@ -15,15 +15,20 @@ import {
   Row,
   Table,
 } from "reactstrap";
-import { compareByData } from "assets/data/Rulesdata";
-import Swal from "sweetalert2";
+import {
+  categoryRulesObjects,
+  compareByData,
+  compareWithData,
+} from "assets/data/Rulesdata";
+import Radio from "../../components/@vuexy/radio/RadioVuexy";
 
-const AutomatedCategoryComponent = ({ state, dispatch }) => {
-  const [data, setData] = useState({
-    attribute_name: "",
-    comparison_type: "",
-    attribute_value: "",
-  });
+const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
+
+  useEffect(() => {
+    if(state.rules <= 0){
+      dispatch({type:"ADD_RULE_ACTION"})
+    }
+  },[])
 
   const handleAddRuleAction = () => {
     dispatch({ type: "ADD_RULE_ACTION" });
@@ -38,16 +43,17 @@ const AutomatedCategoryComponent = ({ state, dispatch }) => {
   };
 
   const handleSave = () => {
-    console.log("handle save is clieked")
+    console.log("handle save is clieked");
     if (
       state.editableRule.attribute_name &&
       state.editableRule.comparison_type &&
       state.editableRule.attribute_value
     ) {
-      if (!state.updateRule) {
-        dispatch({ type: "ADD_RULE"});
-      } else {
+      if (state.updateRule) {
         dispatch({ type: "UPDATE_RULE" });
+      } else {
+        console.log("category rule is clicked ")
+        dispatch({ type: "ADD_RULE" });
       }
     } else {
       console.log("all field is required");
@@ -62,127 +68,230 @@ const AutomatedCategoryComponent = ({ state, dispatch }) => {
 
   return (
     <React.Fragment>
-      {!state.isEditable && (
-        <div>
-          <Button.Ripple
-            type="button"
-            color="primary"
-            className="mb-1"
-            onClick={handleAddRuleAction}
-          >
-            New Rule
-          </Button.Ripple>
-          <Table responsive>
-            <thead>
-              <tr>
-                <th>Attribute Name</th>
-                <th>Compare By</th>
-                <th>Attribute Value</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {state.rules.map((rule, index) => (
-                <tr key={index}>
-                  <td>{rule.attribute_name}</td>
-                  <td>{rule.comparison_type}</td>
-                  <td>{rule.attribute_value}</td>
-                  <td>
-                    <div className="d-flex align-items-center justify-content-start">
-                      <span
-                        className="shadow rounded-full bg-primary text-white mr-1 cursor-pointer"
-                        style={{ padding: "0.85rem" }}
-                        onClick={() => handleUpdateRuleAction(index)}
-                      >
-                        <Edit size="15" />
-                      </span>
-                      <span
-                        className="shadow rounded-full bg-warning text-white cursor-pointer"
-                        style={{ padding: "0.85rem" }}
-                        onClick={() => handleDeleteRule(index)}
-                      >
-                        <Trash size="15" />
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      )}
-      {state.isEditable && (
-        <Card>
-          <CardHeader>
-            <div className="d-flex">
-              <span
-                className="mr-1 cursor-pointer"
-                onClick={() => dispatch({ type: "REMOVE_ISEDITABLE" })}
-              >
-                <ArrowLeft size="15" />
-              </span>
-
-              <span>Define Category Rule</span>
-            </div>
-          </CardHeader>
-          <CardBody>
+      {!isLoading && (
+        <>
+          {!state.isEditable && (
             <div>
-              <Row>
-                <Col sm="12">
-                  <FormGroup>
-                    <Label for="Rule Name">Attribute Name</Label>
-                    <Input
-                      type="text"
-                      name="attribute_name"
-                      value={state.editableRule.attribute_name}
-                      onChange={handleChange}
-                      placeholder="Attribute Name"
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm="12">
-                  <FormGroup>
-                    <Label for="Compare By">Compare By</Label>
-                    <Input
-                      type="text"
-                      name="comparison_type"
-                      id="compareBy"
-                      placeholder="Compare By"
-                      value={state.editableRule.comparison_type}
-                      onChange={handleChange}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm="12">
-                  <FormGroup>
-                    <Label for="Attribute Value">Attribute Value</Label>
-                    <Input
-                      type="text"
-                      name="attribute_value"
-                      id="attribute_value"
-                      placeholder="Attribute Value"
-                      value={state.editableRule.attribute_value}
-                      onChange={handleChange}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm="12">
-                  <FormGroup>
-                      <Button.Ripple
-                        color="primary"
-                        type="save"
-                        className="mr-1 mb-1"
-                        onClick={handleSave}
-                        type="button"
-                      >
-                        Save
-                      </Button.Ripple>
-                  </FormGroup>
-                </Col>
-              </Row>
+              <Button.Ripple
+                type="button"
+                color="primary"
+                className="mb-1"
+                onClick={handleAddRuleAction}
+              >
+                New Rule
+              </Button.Ripple>
+              <Table responsive>
+                <thead>
+                  <tr>
+                    <th>Attribute Name</th>
+                    <th>Compare By</th>
+                    <th>Attribute Value</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {state?.rules?.map((rule, index) => (
+                    <tr key={index}>
+                      <td>{categoryRulesObjects[rule.attribute_name]}</td>
+                      <td>{categoryRulesObjects[rule.comparison_type]}</td>
+                      <td>{rule.attribute_value}</td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-start">
+                          <span
+                            className="shadow rounded-full bg-primary text-white mr-1 cursor-pointer"
+                            style={{ padding: "0.85rem" }}
+                            onClick={() => handleUpdateRuleAction(index)}
+                          >
+                            <Edit size="15" />
+                          </span>
+                          <span
+                            className="shadow rounded-full bg-warning text-white cursor-pointer"
+                            style={{ padding: "0.85rem" }}
+                            onClick={() => handleDeleteRule(index)}
+                          >
+                            <Trash size="15" />
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             </div>
-          </CardBody>
-        </Card>
+          )}
+          {state.isEditable && (
+            <Card>
+              <CardHeader>
+                <div className="d-flex">
+                  <span
+                    className="mr-1 cursor-pointer"
+                    onClick={() => dispatch({ type: "REMOVE_ISEDITABLE" })}
+                  >
+                    <ArrowLeft size="15" />
+                  </span>
+
+                  <span>Define Category Rule</span>
+                </div>
+              </CardHeader>
+              <CardBody>
+                <div>
+                  <Row>
+                    <Col sm="12">
+                      <FormGroup>
+                        <Label for="Rule Name">Attribute Name</Label>
+                        <SimpleInputField
+                          requiredIndicator
+                          field={
+                            <Select
+                              options={compareByData}
+                              onChange={(value, action) => {
+                                const name = action.name;
+                                const val = value.value;
+                                dispatch({
+                                  type: "ON_CHANGE",
+                                  payload: { name: name, value: val },
+                                });
+                              }}
+                              requiredIndicator
+                              required
+                              defaultOptions
+                              name="attribute_name"
+                              defaultValue={compareByData.find(
+                                (item) =>
+                                  item.value ===
+                                  state.editableRule.attribute_name
+                              )}
+                              isOptionDisabled={(option) => option.disabled}
+                              menuPlacement="top"
+                              menuPortalTarget={document.body}
+                              styles={{
+                                menuPortal: (base) => ({
+                                  ...base,
+                                  zIndex: 9999,
+                                }),
+                              }}
+                            />
+                          }
+                        />
+                      </FormGroup>
+
+                      {state.editableRule.attribute_name === "weight" && (
+                        <FormGroup>
+                          <Label for="weight_unit">Select weight unit:</Label>
+                          <Radio
+                            label="Milligram"
+                            color="primary"
+                            onChange={handleChange}
+                            checked={state.editableRule.attribute_unit === "mg"}
+                            name="attribute_unit"
+                            value="mg"
+                          />
+                          <Radio
+                            label="Gram"
+                            color="primary"
+                            name="attribute_unit"
+                            checked={state.editableRule.attribute_unit === "gm"}
+                            value="gm"
+                            onChange={handleChange}
+                          />
+                          <Radio
+                            label="Kilogram"
+                            color="primary"
+                            name="attribute_unit"
+                            checked={state.editableRule.attribute_unit === "kg"}
+                            value="kg"
+                            onChange={handleChange}
+                          />
+                        </FormGroup>
+                      )}
+                    </Col>
+                    <Col sm="12">
+                      <FormGroup>
+                        <Label for="Compare By">Compare By</Label>
+                        <SimpleInputField
+                          requiredIndicator
+                          field={
+                            <Select
+                              options={compareWithData.filter((item) =>
+                                item.link.includes(
+                                  state.editableRule.attribute_name
+                                )
+                              )}
+                              onChange={(value, action) => {
+                                
+                                const name = action.name;
+                                const val = value.value;
+                                console.log("Camparison is changed >>>",name,val)
+                                dispatch({
+                                  type: "ON_CHANGE",
+                                  payload: { name: name, value: val },
+                                });
+                              }}
+                              requiredIndicator
+                              required
+                              defaultOptions
+                              name="comparison_type"
+                              defaultValue={compareWithData.find(
+                                (item) =>
+                                  item.value ===
+                                  state.editableRule.comparison_type
+                              )}
+                              isOptionDisabled={(option) => option.disabled}
+                              menuPlacement="auto"
+                              menuPortalTarget={document.body}
+                              styles={{
+                                menuPortal: (base) => ({
+                                  ...base,
+                                  zIndex: 9999,
+                                }),
+                              }}
+                            />
+                          }
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm="12">
+                      <FormGroup>
+                        <Label for="Attribute Value">Attribute Value</Label>
+                        <Input
+                          type={`${
+                            [
+                              "product_title",
+                              "product_category",
+                              "product_vendor",
+                              "product_tag",
+                            ].includes(state.editableRule.attribute_name)
+                              ? "text"
+                              : "number"
+                          }`}
+                          name="attribute_value"
+                          id="attribute_value"
+                          placeholder="Attribute Value"
+                          value={state.editableRule.attribute_value}
+                          onChange={handleChange}
+                          required={true}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col sm="12">
+                      <FormGroup>
+                        <Button.Ripple
+                          color="primary"
+                          type="save"
+                          className="mr-1 mb-1"
+                          onClick={handleSave}
+                          type="button"
+                        >
+                          Save
+                        </Button.Ripple>
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                </div>
+              </CardBody>
+            </Card>
+          )}
+        </>
       )}
     </React.Fragment>
   );
