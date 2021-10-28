@@ -25,7 +25,7 @@ import Radio from "../../components/@vuexy/radio/RadioVuexy";
 const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
 
   useEffect(() => {
-    if(state.rules <= 0){
+    if(state.rules.length === 0){
       dispatch({type:"ADD_RULE_ACTION"})
     }
   },[])
@@ -152,8 +152,6 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
                                   payload: { name: name, value: val },
                                 });
                               }}
-                              requiredIndicator
-                              required
                               defaultOptions
                               name="attribute_name"
                               defaultValue={compareByData.find(
@@ -269,7 +267,7 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
                           placeholder="Attribute Value"
                           value={state.editableRule.attribute_value}
                           onChange={handleChange}
-                          required={true}
+                          disabled={!state.editableRule.attribute_name}
                         />
                       </FormGroup>
                     </Col>

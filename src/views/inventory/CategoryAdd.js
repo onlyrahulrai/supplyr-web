@@ -28,6 +28,7 @@ import TextField from "@mui/material/TextField";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { v4 as uuidv4 } from "uuid";
 import AutomatedCategoryComponent from "components/inventory/AutomatedCategoryComponent";
+import { toast } from "react-toastify";
 
 const filter = createFilterOptions();
 
@@ -44,7 +45,7 @@ const reducer = (state, action) => {
         editableRule: {
           ...state.editableRule,
           [action.payload.name]: action.payload.value,
-          attribute_unit:action.payload.name ? "gm":""
+          attribute_unit: action.payload.name ? "gm" : "",
         },
       };
     case "ADD_RULE_ACTION":
@@ -56,7 +57,7 @@ const reducer = (state, action) => {
           attribute_name: "",
           comparison_type: "",
           attribute_value: "",
-          attribute_unit:""
+          attribute_unit: "",
         },
       };
     case "UPDATE_RULE_ACTION":
@@ -113,6 +114,7 @@ const CategoryAdd = (props) => {
   const isEditingExistingProduct = Boolean(props.match.params.categoryId);
   const [isCategoryDataLoaded, setIsCategoryDataLoaded] = useState(false);
   const operationalSubCategories = props.user.profile.sub_categories;
+  const [errors, setErrors] = useState({});
   const [state, dispatch] = useReducer(reducer, {
     rules: [
       {
@@ -189,48 +191,73 @@ const CategoryAdd = (props) => {
       };
     });
 
-  const removeConditions = (index) => {
-    let rulesCopy = [...basicData.rules];
-    rulesCopy.splice(index, 1);
-    setBasicFieldData("rules", rulesCopy);
-  };
-
   const submitForm = (e) => {
     e.preventDefault();
     // setIsLoading(true);
     let url = "/inventory/categories/";
 
-    let _formData = new FormData();
-    _formData.append("id", basicData.id);
-    _formData.append("name", basicData.name);
-    _formData.append("action", action);
-    _formData.append("condition", condition);
-    _formData.append("rules", JSON.stringify(state.rules));
-    _formData.append("description", basicData.description);
-    _formData.append("seller", props.user.username);
-    _formData.append("parent", basicData.parent ?? "");
-    uploadedImage && _formData.append("image", uploadedImage);
-    deleteImage && _formData.append("delete_image", deleteImage);
-    _formData.append("selectedProducts", JSON.stringify(productIds));
+    if (basicData.name && basicData.description) {
+      let _formData = new FormData();
+      _formData.append("id", basicData.id);
+      _formData.append("name", basicData.name);
+      _formData.append("action", action);
+      _formData.append("condition", condition);
+      _formData.append("rules", JSON.stringify(state.rules));
+      _formData.append("description", basicData.description);
+      _formData.append("seller", props.user.username);
+      _formData.append("parent", basicData.parent ?? "");
+      uploadedImage && _formData.append("image", uploadedImage);
+      deleteImage && _formData.append("delete_image", deleteImage);
+      _formData.append("selectedProducts", JSON.stringify(productIds));
 
-    if (categoryId) {
-      url += categoryId + "/";
+      if (categoryId) {
+        url += categoryId + "/";
+      }
+      apiClient
+        .post(url, _formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          console.log("response >>>> ", response.status);
+          setIsLoading(false);
+          Swal.fire("Category Saved !", "success");
+          history.push("/inventory/categories/list");
+        })
+        .catch((err) => {
+          Swal.fire(`Some error have been accured!`);
+        });
+    } else {
+      if (!basicData.name) {
+        setErrors((prevState) => {
+          return {
+            ...prevState,
+            name: "Category name field must be required",
+          };
+        });
+      }
+      if (!basicData.description) {
+        setErrors((prevState) => {
+          return {
+            ...prevState,
+            description: "Category description field must be required",
+          };
+        });
+      }
+      if (action === "automated" && state.rules.length === 0) {
+        setErrors((prevState) => {
+          return {
+            ...prevState,
+            rules: "Add information for at least one category rules",
+          };
+        });
+      }
+
+      if (errors) {
+        Swal.fire("Please fill all the required Fields");
+      }
     }
-    apiClient
-      .post(url, _formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((response) => {
-        console.log("response >>>> ", response.status);
-        setIsLoading(false);
-        Swal.fire("Category Saved !", "success");
-        history.push("/inventory/categories/list");
-      })
-      .catch((err) => {
-        Swal.fire(`Some error have been accured!`);
-      });
   };
 
   function onImageSelect(e) {
@@ -253,10 +280,10 @@ const CategoryAdd = (props) => {
     setDeleteImage(true);
   }
 
-  console.log("Basic Data rules >>>>> ", basicData.rules);
+  // console.log("Basic Data rules >>>>> ", basicData.rules);
 
-  // if (isLoading) return <Spinner />;
-  console.log("state value is ", state);
+  // // if (isLoading) return <Spinner />;
+  console.log("Errors value is ", errors);
 
   return (
     <>
@@ -290,18 +317,19 @@ const CategoryAdd = (props) => {
                   <hr />
                   <Row className="justify-content-center">
                     <Col md="10">
-                      <form>
+                      <form onSubmit={submitForm}>
                         <SimpleInputField
                           label="Category Name"
                           type="text"
                           name="name"
+                          error={errors?.title}
                           placeholder="Type category name.."
                           onChange={(e) =>
                             setBasicFieldData("name", e.target.value)
                           }
                           value={basicData.name || ""}
-                          requiredIndicator
-                          required
+                          // requiredIndicator
+                          // required
                         />
 
                         <h5>Category Image</h5>
@@ -361,15 +389,19 @@ const CategoryAdd = (props) => {
                         </FormGroup>
 
                         <FormGroup>
-                          <Label for="pname">
-                            <h5>Category Description</h5>
-                          </Label>
                           {isPageRenderReady && (
-                            <RichEditor
-                              onChange={(data) =>
-                                setBasicFieldData("description", data)
+                            <SimpleInputField
+                              label="Category Description"
+                              error={errors?.description}
+                              field={
+                                <RichEditor
+                                  onChange={(data) =>
+                                    setBasicFieldData("description", data)
+                                  }
+                                  defaultValue={basicData.description || ""}
+                                />
                               }
-                              defaultValue={basicData.description || ""}
+                              requiredIndicator
                             />
                           )}
                         </FormGroup>
@@ -510,11 +542,10 @@ const CategoryAdd = (props) => {
                         <hr />
                         <Button
                           className="ml-auto d-block mt-1"
-                          onClick={(e) => submitForm(e)}
                           disabled={isLoading}
                           color="primary"
                           outline
-                          type="button"
+                          type="submit"
                         >
                           {" "}
                           Save <Check size={19} />
