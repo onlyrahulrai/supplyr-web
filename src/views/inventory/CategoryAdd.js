@@ -1,5 +1,5 @@
 import { SimpleInputField } from "components/forms/fields";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { ArrowLeft, Check, Plus, X } from "react-feather";
 import {
   Badge,
@@ -27,10 +27,44 @@ import { compareByData, compareWithData } from "../../assets/data/Rulesdata";
 import TextField from "@mui/material/TextField";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { v4 as uuidv4 } from "uuid";
+import AutomatedCategoryComponent from "components/inventory/AutomatedCategoryComponent";
 
 const filter = createFilterOptions();
 
 // import { RuleValueComponent } from "components/inventory/RuleValueComponent";
+
+const reducer = (state,action) => {
+  switch(action.type){
+    case "REMOVE_ISEDITABLE":
+      return {...state,isEditable:false}
+    case "ON_CHANGE":
+      return {...state,isEditable:true,editableRule:{...state.editableRule,[action.payload.name]:action.payload.value}} 
+    case "ADD_RULE_ACTION":
+      return {...state,isEditable:true,editableRule:{
+        setFocus:1,
+        attribute_name: "",
+        comparison_type: "",
+        attribute_value: "",
+      },}
+    case "UPDATE_RULE_ACTION":
+      console.log(action.payload)
+      const rowData = state.rules.find((rule,index) => index === action.payload)
+      return {...state,isEditable:true,editableRule:rowData,updateRule:action.payload}
+    case "ADD_RULE":
+      return {...state,isEditable:false,rules:[...state.rules,state.editableRule]}
+    case "UPDATE_RULE":
+      let _rules = state.rules
+      _rules[state.updateRule] = state.editableRule
+      return {...state,isEditable:false,updateRule:null,rules:_rules}
+    case "DELETE_RULE":
+      const newRules = state.rules.filter((rule,index) => index !== action.payload)
+      return {...state,rules:newRules,isEditable:false}
+    case "INITIALIZE":
+      return {...state,rules:action.payload}
+    default:
+      return state
+  }
+}
 
 const CategoryAdd = (props) => {
   const [basicData, setBasicData] = useState({
@@ -46,6 +80,8 @@ const CategoryAdd = (props) => {
   const isEditingExistingProduct = Boolean(props.match.params.categoryId);
   const [isCategoryDataLoaded, setIsCategoryDataLoaded] = useState(false);
   const operationalSubCategories = props.user.profile.sub_categories;
+ const [categoryRules,setCategoryRules] = useState([])
+ const [state,dispatch] = useReducer(reducer,{rules:[{attribute_name:"Product title",comparison_type:"Is equal to",attribute_value:"128",id:12}]})
 
   function clearState() {
     if (props.match.params.categoryId) {
@@ -177,6 +213,7 @@ const CategoryAdd = (props) => {
   console.log("Basic Data rules >>>>> ", basicData.rules);
 
   // if (isLoading) return <Spinner />;
+  console.log("state value is ",state)
 
   return (
     <>
@@ -446,224 +483,8 @@ const CategoryAdd = (props) => {
                                 />
                               </Col>
                             </Row>
-                            {basicData.rules.map((rule, index) => (
-                              <div key={Math.round(Math.random() * 123456)}>
-                                <Row
-                                  style={{ alignItems: "center" }}
-                                  className="mt-2 rules"
-                                >
-                                  <Col md="4 m-auto">
-                                    <SimpleInputField
-                                      requiredIndicator
-                                      field={
-                                        <Select
-                                          options={compareByData}
-                                          onChange={(value, action) => {
-                                            let _rules = basicData.rules;
-                                            _rules[index].attribute_name =
-                                              value.value;
-                                            setBasicFieldData("rules", _rules);
-                                          }}
-                                          requiredIndicator
-                                          required
-                                          defaultOptions
-                                          name="compareBy"
-                                          defaultValue={compareByData.find(
-                                            (item) =>
-                                              item.value === rule.attribute_name
-                                          )}
-                                          isOptionDisabled={(option) =>
-                                            option.disabled
-                                          }
-                                          menuPlacement="top"
-                                          menuPortalTarget={document.body}
-                                          styles={{
-                                            menuPortal: (base) => ({
-                                              ...base,
-                                              zIndex: 9999,
-                                            }),
-                                          }}
-                                        />
-                                      }
-                                    />
-                                  </Col>
-                                  <Col md="4 m-auto ">
-                                    <SimpleInputField
-                                      requiredIndicator
-                                      field={
-                                        <Select
-                                          options={compareWithData.filter(
-                                            (item) =>
-                                              item.link.includes(
-                                                basicData.rules[index]
-                                                  .attribute_name
-                                              )
-                                          )}
-                                          onChange={(value, action) => {
-                                            let _rules = basicData.rules;
-                                            _rules[index].comparison_type =
-                                              value.value;
-                                            setBasicFieldData("rules", _rules);
-                                          }}
-                                          requiredIndicator
-                                          required
-                                          defaultOptions
-                                          name="compareWith"
-                                          defaultValue={compareWithData.find(
-                                            (item) =>
-                                              item.value ===
-                                              rule.comparison_type
-                                          )}
-                                          isOptionDisabled={(option) =>
-                                            option.disabled
-                                          }
-                                          menuPlacement="auto"
-                                        />
-                                      }
-                                    />
-                                  </Col>
-
-                                  <Col md="4">
-                                    <SimpleInputField
-                                      type={`${["compare_at_price","weight","inventory_stock"].includes(basicData.rules[index].attribute_name) ? "number" : "text"}`}
-                                      onChange={(e) => {
-                                        let _rules = basicData.rules;
-                                        _rules[index].attribute_value =
-                                          e.target.value
-                                        setBasicFieldData("rules", _rules);
-                                      }}
-                                      requiredIndicator
-                                      required={true}
-                                      iconRight={basicData.rules.length > 1}
-                                      icon={<X size={15} />}
-                                      name="compareValue"
-                                      value={
-                                        basicData.rules[index].attribute_value
-                                      }
-                                      styles={{
-                                        width: `${
-                                          basicData.rules.length > 1
-                                            ? "80%"
-                                            : "100%"
-                                        }`,
-                                        textTransform: "capitalize",
-                                        marginBottom: 0,
-                                      }}
-                                      onClick={() => removeConditions(index)}
-                                    />
-                                  </Col>
-
-                                  <Col md="12">
-                                    {rule.attribute_name === "weight" &&
-                                    rule.attribute_value ? (
-                                      <Row className="mb-1 mt-1 align-items-center ">
-                                        <Col md="auto">
-                                          <span>Select weight unit: </span>
-                                        </Col>
-                                        <Col md="auto rulesweightoptions mt--1">
-                                          <div className="d-inline-block mr-1">
-                                            <Radio
-                                              label="Kilogram"
-                                              color="primary"
-                                              defaultChecked={
-                                                rule.attribute_unit === "kg" ||
-                                                false
-                                              }
-                                              name="rulesweightoptions"
-                                              value={
-                                                basicData.attribute_unit ===
-                                                "kg"
-                                                  ? basicData.attribute_unit
-                                                  : "kg"
-                                              }
-                                              onChange={(e) => {
-                                                let _rules = basicData.rules;
-                                                _rules[index].attribute_unit =
-                                                  e.target.value;
-                                                setBasicFieldData(
-                                                  "rules",
-                                                  _rules
-                                                );
-                                              }}
-                                            />
-                                          </div>
-                                          <div className="d-inline-block mr-1">
-                                            <Radio
-                                              label="Gram"
-                                              color="primary"
-                                              defaultChecked={
-                                                rule.attribute_unit === "gm" ||
-                                                false
-                                              }
-                                              name="rulesweightoptions"
-                                              value={
-                                                rule.attribute_unit === "gm"
-                                                  ? rule.attribute_unit
-                                                  : "gm"
-                                              }
-                                              onChange={(e) => {
-                                                let _rules = basicData.rules;
-                                                _rules[index].attribute_unit =
-                                                  e.target.value;
-                                                setBasicFieldData(
-                                                  "rules",
-                                                  _rules
-                                                );
-                                              }}
-                                            />
-                                          </div>
-                                          <div className="d-inline-block mr-1">
-                                            <Radio
-                                              label="Milligram"
-                                              color="primary"
-                                              defaultChecked={
-                                                rule.attribute_unit === "mg" ||
-                                                false
-                                              }
-                                              name="rulesweightoptions"
-                                              value={
-                                                rule.attribute_unit === "mg"
-                                                  ? rule.attribute_unit
-                                                  : "mg"
-                                              }
-                                              onChange={(e) => {
-                                                let _rules = basicData.rules;
-                                                _rules[index].attribute_unit =
-                                                  e.target.value;
-                                                setBasicFieldData(
-                                                  "rules",
-                                                  _rules
-                                                );
-                                                console.log("Rules Changed with this value >>> ",basicData.rules)
-                                              }}
-                                            />
-                                          </div>
-                                        </Col>
-                                      </Row>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </Col>
-                                </Row>
-                              </div>
-                            ))}
-                            <Button
-                              className="d-flex align-items-center mt-1"
-                              color="secondary"
-                              outline
-                              size="sm"
-                              type="button"
-                              onClick={() =>
-                                setBasicFieldData("rules", [
-                                  ...basicData.rules,
-                                  { setFocus: 1 },
-                                ])
-                              }
-                            >
-                              {" "}
-                              <Plus size={19} className="mr-1" /> Add another
-                              condition
-                            </Button>
+                            <hr />
+                            <AutomatedCategoryComponent state={state} dispatch={dispatch} />
                           </div>
                         ) : (
                           ""
