@@ -21,6 +21,7 @@ import {
   compareWithData,
 } from "assets/data/Rulesdata";
 import Radio from "../../components/@vuexy/radio/RadioVuexy";
+import Swal from "sweetalert2";
 
 const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
 
@@ -56,7 +57,7 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
         dispatch({ type: "ADD_RULE" });
       }
     } else {
-      console.log("all field is required");
+      Swal.fire(`Please fill the all the rule fields`)
     }
   };
 
@@ -141,6 +142,7 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
                         <Label for="Rule Name">Attribute Name</Label>
                         <SimpleInputField
                           requiredIndicator
+                          error="Hello world"
                           field={
                             <Select
                               options={compareByData}

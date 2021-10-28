@@ -29,6 +29,7 @@ import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import { v4 as uuidv4 } from "uuid";
 import AutomatedCategoryComponent from "components/inventory/AutomatedCategoryComponent";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const filter = createFilterOptions();
 
@@ -197,6 +198,9 @@ const CategoryAdd = (props) => {
     let url = "/inventory/categories/";
 
     if (basicData.name && basicData.description) {
+      if(action === "automated" && !state.rules.length){
+        Swal.fire("Please add at least one category Rule")
+      }else{
       let _formData = new FormData();
       _formData.append("id", basicData.id);
       _formData.append("name", basicData.name);
@@ -228,34 +232,9 @@ const CategoryAdd = (props) => {
         .catch((err) => {
           Swal.fire(`Some error have been accured!`);
         });
-    } else {
-      if (!basicData.name) {
-        setErrors((prevState) => {
-          return {
-            ...prevState,
-            name: "Category name field must be required",
-          };
-        });
-      }
-      if (!basicData.description) {
-        setErrors((prevState) => {
-          return {
-            ...prevState,
-            description: "Category description field must be required",
-          };
-        });
-      }
-      if (action === "automated" && state.rules.length === 0) {
-        setErrors((prevState) => {
-          return {
-            ...prevState,
-            rules: "Add information for at least one category rules",
-          };
-        });
-      }
-
-      if (errors) {
-        Swal.fire("Please fill all the required Fields");
+    }} else {
+      if(!basicData.name && !basicData.description ){
+        Swal.fire(`Please Fill the category name and description field`);
       }
     }
   };
@@ -283,7 +262,7 @@ const CategoryAdd = (props) => {
   // console.log("Basic Data rules >>>>> ", basicData.rules);
 
   // // if (isLoading) return <Spinner />;
-  console.log("Errors value is ", errors);
+  
 
   return (
     <>
@@ -322,14 +301,11 @@ const CategoryAdd = (props) => {
                           label="Category Name"
                           type="text"
                           name="name"
-                          error={errors?.title}
                           placeholder="Type category name.."
                           onChange={(e) =>
                             setBasicFieldData("name", e.target.value)
                           }
                           value={basicData.name || ""}
-                          // requiredIndicator
-                          // required
                         />
 
                         <h5>Category Image</h5>
@@ -392,7 +368,6 @@ const CategoryAdd = (props) => {
                           {isPageRenderReady && (
                             <SimpleInputField
                               label="Category Description"
-                              error={errors?.description}
                               field={
                                 <RichEditor
                                   onChange={(data) =>
@@ -401,7 +376,6 @@ const CategoryAdd = (props) => {
                                   defaultValue={basicData.description || ""}
                                 />
                               }
-                              requiredIndicator
                             />
                           )}
                         </FormGroup>
