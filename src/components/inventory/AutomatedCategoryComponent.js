@@ -99,14 +99,14 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
                       <td>
                         <div className="d-flex align-items-center justify-content-start">
                           <span
-                            className="shadow rounded-full bg-primary text-white mr-1 cursor-pointer"
+                            className="shadow rounded-full d-flex bg-primary text-white mr-1 cursor-pointer"
                             style={{ padding: "0.85rem" }}
                             onClick={() => handleUpdateRuleAction(index)}
                           >
                             <Edit size="15" />
                           </span>
                           <span
-                            className="shadow rounded-full bg-warning text-white cursor-pointer"
+                            className="shadow rounded-full d-flex bg-warning text-white cursor-pointer"
                             style={{ padding: "0.85rem" }}
                             onClick={() => handleDeleteRule(index)}
                           >
