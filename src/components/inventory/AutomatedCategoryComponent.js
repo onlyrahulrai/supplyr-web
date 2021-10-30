@@ -57,7 +57,7 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
         dispatch({ type: "ADD_RULE" });
       }
     } else {
-      Swal.fire(`Please fill the all the rule fields`)
+      Swal.fire(`<span>Please fill the all the rule fields</span>`)
     }
   };
 
@@ -71,8 +71,9 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
     <React.Fragment>
       {!isLoading && (
         <>
+          <div>
           {!state.isEditable && (
-            <div>
+            
               <Button.Ripple
                 type="button"
                 color="primary"
@@ -81,46 +82,9 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
               >
                 New Rule
               </Button.Ripple>
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>Attribute Name</th>
-                    <th>Compare By</th>
-                    <th>Attribute Value</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {state?.rules?.map((rule, index) => (
-                    <tr key={index}>
-                      <td>{categoryRulesObjects[rule.attribute_name]}</td>
-                      <td>{categoryRulesObjects[rule.comparison_type]}</td>
-                      <td>{rule.attribute_value}</td>
-                      <td>
-                        <div className="d-flex align-items-center justify-content-start">
-                          <span
-                            className="shadow rounded-full d-flex bg-primary text-white mr-1 cursor-pointer"
-                            style={{ padding: "0.85rem" }}
-                            onClick={() => handleUpdateRuleAction(index)}
-                          >
-                            <Edit size="15" />
-                          </span>
-                          <span
-                            className="shadow rounded-full d-flex bg-warning text-white cursor-pointer"
-                            style={{ padding: "0.85rem" }}
-                            onClick={() => handleDeleteRule(index)}
-                          >
-                            <Trash size="15" />
-                          </span>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
           )}
-          {state.isEditable && (
+
+{state.isEditable && (
             <Card>
               <CardHeader>
                 <div className="d-flex">
@@ -291,6 +255,48 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
               </CardBody>
             </Card>
           )}
+
+          { state.rules.length > 0 && (
+              <Table responsive>
+                <thead>
+                  <tr>
+                    <th>Attribute Name</th>
+                    <th>Compare By</th>
+                    <th>Attribute Value</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {state?.rules?.map((rule, index) => (
+                    <tr key={index}>
+                      <td>{categoryRulesObjects[rule.attribute_name]}</td>
+                      <td>{categoryRulesObjects[rule.comparison_type]}</td>
+                      <td>{rule.attribute_value}</td>
+                      <td>
+                        <div className="d-flex align-items-center justify-content-start">
+                          <span
+                            className="shadow rounded-full bg-primary  d-flex text-white mr-1 cursor-pointer"
+                            style={{ padding: "0.85rem" }}
+                            onClick={() => handleUpdateRuleAction(index)}
+                          >
+                            <Edit size="15" />
+                          </span>
+                          <span
+                            className="shadow rounded-full bg-warning d-flex text-white cursor-pointer"
+                            style={{ padding: "0.85rem" }}
+                            onClick={() => handleDeleteRule(index)}
+                          >
+                            <Trash size="15" />
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
+          )}
+          </div>
+          
         </>
       )}
     </React.Fragment>

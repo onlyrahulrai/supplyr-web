@@ -115,7 +115,7 @@ const CategoryAdd = (props) => {
   const isEditingExistingProduct = Boolean(props.match.params.categoryId);
   const [isCategoryDataLoaded, setIsCategoryDataLoaded] = useState(false);
   const operationalSubCategories = props.user.profile.sub_categories;
-  const [errors, setErrors] = useState({});
+  const [haveSubCategory, setHaveSubCategory] = useState(false);
   const [state, dispatch] = useReducer(reducer, {
     rules: [
       {
@@ -159,6 +159,7 @@ const CategoryAdd = (props) => {
       setCategoryId(_categoryId);
       apiClient.get("/inventory/categories/" + _categoryId).then((response) => {
         const category = response.data;
+        console.log("category data >>> ",category)
         setBasicData((state) => ({
           ...state,
           id: category.id,
@@ -167,6 +168,9 @@ const CategoryAdd = (props) => {
           description: category.description,
           parent: category.parent,
         }));
+        if(category.sub_categories.length > 0){
+          setHaveSubCategory(true)
+        }
         setAction(category.action);
         dispatch({ type: "INITIALIZE", payload: category.rules });
         console.log("rules data >>> ", category.rules);
@@ -259,7 +263,7 @@ const CategoryAdd = (props) => {
     setDeleteImage(true);
   }
 
-  // console.log("Basic Data rules >>>>> ", basicData.rules);
+  console.log("Sub Category status >>>>> ", !haveSubCategory);
 
   // // if (isLoading) return <Spinner />;
   
@@ -380,9 +384,7 @@ const CategoryAdd = (props) => {
                           )}
                         </FormGroup>
 
-                        {basicData.parent === null ? (
-                          ""
-                        ) : (
+                        {(!(basicData.parent === null) || !haveSubCategory)  && (
                           <SimpleInputField
                             label="Select parent category (Optional)"
                             field={
