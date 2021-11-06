@@ -63,6 +63,8 @@ const Logout = lazy(() =>
     import("./views/pages/authentication/Logout")
 )
 
+const BuyerDiscounts = lazy(() => import("views/buyer-discounts/BuyerDiscounts"))
+
 const Salespersons = lazy(() =>
     import("./views/management/Salespersons")
 )
@@ -289,6 +291,10 @@ class AppRouter extends React.Component {
                     <AppRoute
                         path="/orders"
                         component={OrdersList}
+                    />
+                    <AppRoute 
+                        path="/buyer-discounts"
+                        component={BuyerDiscounts}
                     />
                     <AppRoute
                         path="/management/salespersons"
