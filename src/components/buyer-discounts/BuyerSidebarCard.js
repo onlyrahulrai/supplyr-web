@@ -5,7 +5,7 @@ const BuyerSidebarCard = ({title,discount,noOfProducts,buyer}) => {
   return (
     <Card className="cursor-pointer">
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="text-capitalize">{title}</CardTitle>
       </CardHeader>
       <CardBody>
         <h6>{buyer}</h6>

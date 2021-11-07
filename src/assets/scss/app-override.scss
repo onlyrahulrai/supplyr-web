@@ -88,8 +88,12 @@
   overflow-y: scroll;
 }
 
-.h-100 {
-  height: calc(100vh - 5.4rem) !important;
+.h-75 {
+  height: calc(75vh - 5.4rem) !important;
+}
+
+.h-63 {
+  height: calc(63vh - 5.4rem) !important;
 }
 
 .state-orders-count .table-responsive::-webkit-scrollbar-track {
@@ -133,3 +137,4 @@
 .buyer-discount-sidebar-main::-webkit-scrollbar-thumb:hover  {
   background: #666;
 }
+
