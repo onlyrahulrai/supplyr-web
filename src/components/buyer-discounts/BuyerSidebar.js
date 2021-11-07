@@ -107,7 +107,6 @@ class BuyerSidebar extends React.Component {
           ref={this.myRef}
         >
           {this.state.buyers?.map((buyer, index) => (
-            <>
             <BuyerSidebarCard
               key={index}
               title={buyer.buyer.business_name}
@@ -115,7 +114,6 @@ class BuyerSidebar extends React.Component {
               noOfProducts={5}
               buyer={`${this.capitalizeString(buyer.buyer.buyer_name)} (${buyer.buyer.email})`}
             />
-            </>
           ))}
           <div className="d-flex align-items-center pb-5 justify-content-center">
             {this.state.hasMore ? (
