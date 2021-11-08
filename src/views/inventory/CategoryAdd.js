@@ -20,7 +20,7 @@ import RichEditor from "./_RichEditor";
 import Select from "react-select/";
 import Radio from "../../components/@vuexy/radio/RadioVuexy";
 import apiClient from "api/base";
-import Swal from "sweetalert2";
+import _Swal from "sweetalert2";
 import { getApiURL } from "api/utils";
 import ManualConditionsComponent from "components/inventory/ManualConditionsComponent";
 
@@ -28,9 +28,10 @@ import AutomatedCategoryComponent from "components/inventory/AutomatedCategoryCo
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
-
 // import { RuleValueComponent } from "components/inventory/RuleValueComponent";
+import withReactContent from "sweetalert2-react-content";
+
+const Swal = withReactContent(_Swal);
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -156,7 +157,7 @@ const CategoryAdd = (props) => {
       setCategoryId(_categoryId);
       apiClient.get("/inventory/categories/" + _categoryId).then((response) => {
         const category = response.data;
-        console.log("category data >>> ",category)
+        console.log("category data >>> ", category);
         setBasicData((state) => ({
           ...state,
           id: category.id,
@@ -165,8 +166,8 @@ const CategoryAdd = (props) => {
           description: category.description,
           parent: category.parent,
         }));
-        if(category.sub_categories.length > 0){
-          setHaveSubCategory(true)
+        if (category.sub_categories.length > 0) {
+          setHaveSubCategory(true);
         }
         setAction(category.action);
         dispatch({ type: "INITIALIZE", payload: category.rules });
@@ -193,15 +194,54 @@ const CategoryAdd = (props) => {
       };
     });
 
+  const validateForm = () => {
+    let errors = [];
+    if (!basicData.name) {
+      errors.push("Category name is required!");
+    }
+    if (!basicData.description) {
+      errors.push("Category description is required!");
+    }
+    if (action === "automated" && !state.rules.length) {
+      errors.push("Please add at least one category Rule");
+    }
+
+
+    if (errors.length > 0) {
+      Swal.fire(<div>
+        <h1>Error !</h1>
+        <h4 className="mb-1">Please correct the following errors</h4>
+        {errors.map((error) => {
+          return <h6 className="text-danger">{error} </h6>;
+        })}
+      </div>);
+
+      return false;
+    } else return true;
+  };
+
   const submitForm = (e) => {
     e.preventDefault();
     // setIsLoading(true);
     let url = "/inventory/categories/";
 
-    if (basicData.name && basicData.description) {
-      if(action === "automated" && !state.rules.length){
-        Swal.fire("Please add at least one category Rule")
-      }else{
+    let is_valid = validateForm();
+
+    if (is_valid) {
+      Swal.fire({
+        title: (
+          <div className="mt-3 mb-1">
+            <h2 className="text-success">All done !!</h2>
+            <h3 className="text-secondary">
+              <Spinner color="secondary" className="mr-1" />
+              Saving your product
+            </h3>
+          </div>
+        ),
+        buttons: false,
+        closeOnClickOutside: false,
+        icon: "success",
+      });
       let _formData = new FormData();
       _formData.append("id", basicData.id);
       _formData.append("name", basicData.name);
@@ -227,16 +267,16 @@ const CategoryAdd = (props) => {
         .then((response) => {
           console.log("response >>>> ", response.status);
           setIsLoading(false);
-          Swal.fire("Category Saved !", "success");
+          if(response.status >= 200 && response.status <=299){
+            Swal.fire("Category Saved !", "success");
           history.push("/inventory/categories/list");
+          }else{
+            throw new Error(response.statusText)
+          }
         })
         .catch((err) => {
           Swal.fire(`Some error have been accured!`);
         });
-    }} else {
-      if(!basicData.name && !basicData.description ){
-        Swal.fire(`Please Fill the category name and description field`);
-      }
     }
   };
 
@@ -263,7 +303,6 @@ const CategoryAdd = (props) => {
   console.log("Sub Category status >>>>> ", !haveSubCategory);
 
   // // if (isLoading) return <Spinner />;
-  
 
   return (
     <>
@@ -381,7 +420,7 @@ const CategoryAdd = (props) => {
                           )}
                         </FormGroup>
 
-                        {(!(basicData.parent === null) || !haveSubCategory)  && (
+                        {(!(basicData.parent === null) || !haveSubCategory) && (
                           <SimpleInputField
                             label="Select parent category (Optional)"
                             field={
