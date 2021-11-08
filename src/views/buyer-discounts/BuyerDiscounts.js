@@ -13,6 +13,7 @@ class BuyerDiscounts extends React.Component {
     this.state = {
       sidebarDocked: mql.matches,
       sidebarOpen: false,
+      buyer:null,
     };
 
     this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -39,7 +40,17 @@ class BuyerDiscounts extends React.Component {
     this.onSetSidebarOpen(false);
   };
 
+
+  handleClick = (buyer) => {
+    this.setState({buyer:buyer})
+  }
+
+  updateBuyer = (buyer) => {
+    this.setState({buyer:buyer})
+  }
+
   render() {
+    console.log(this.state.buyer)
     return (
         <div className={`email-application position-relative`}>
           <div
@@ -53,6 +64,8 @@ class BuyerDiscounts extends React.Component {
                 <Sidebar
                   sidebar={<BuyerSidebar 
                     onSetOpen={this.onSetSidebarOpen}
+                    onClick={this.handleClick}
+                    buyer={this.state.buyer}
                   />}
                   open={this.state.sidebarOpen}
                   docked={this.state.sidebarDocked}
@@ -69,6 +82,8 @@ class BuyerDiscounts extends React.Component {
             </ContextLayout.Consumer>
             <BuyerDiscountMain 
               mainSidebar={this.onSetSidebarOpen}
+              buyer={this.state.buyer}
+              updateBuyer={this.updateBuyer}
             />
           </div>
     );

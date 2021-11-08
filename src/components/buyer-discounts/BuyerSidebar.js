@@ -1,9 +1,10 @@
 import apiClient from "api/base";
-import React, { useState } from "react";
+import React from "react";
 import { Search } from "react-feather";
-import { Button, Form, FormGroup, Input } from "reactstrap";
+import {  Form, FormGroup, Input } from "reactstrap";
+import { capitalizeString } from "utility/general";
 import BuyerSidebarCard from "./BuyerSidebarCard";
-import { useDebouncedCallback } from 'use-debounce';
+
 
 const debounce = (callback,delay) => {
   let timer;
@@ -77,9 +78,11 @@ class BuyerSidebar extends React.Component {
   }
 
 
-  capitalizeString = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1)
+  handleClick = () => {
+    
   }
+
+  
 
   render() {
     console.log("buyers >>> ", this.state.buyers);
@@ -102,7 +105,7 @@ class BuyerSidebar extends React.Component {
           </Form>
         </div>
         <div
-          className="overflow-scroll-y buyer-discount-sidebar-users h-75 px-1 mt-1"
+          className="overflow-scroll-y buyer-discount-sidebar-users h-76 px-1 mt-1"
           onScroll={this.handleScroll}
           ref={this.myRef}
         >
@@ -112,7 +115,9 @@ class BuyerSidebar extends React.Component {
               title={buyer.buyer.business_name}
               discount="10"
               noOfProducts={5}
-              buyer={`${this.capitalizeString(buyer.buyer.buyer_name)} (${buyer.buyer.email})`}
+              buyerName={`${capitalizeString(buyer.buyer.buyer_name)} (${buyer.buyer.email})`}
+              onClick={() => this.props.onClick(buyer)}
+              buyer={this.props.buyer}
             />
           ))}
           <div className="d-flex align-items-center pb-5 justify-content-center">

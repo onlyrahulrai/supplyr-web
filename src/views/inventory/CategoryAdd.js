@@ -23,15 +23,12 @@ import apiClient from "api/base";
 import Swal from "sweetalert2";
 import { getApiURL } from "api/utils";
 import ManualConditionsComponent from "components/inventory/ManualConditionsComponent";
-import { compareByData, compareWithData } from "../../assets/data/Rulesdata";
-import TextField from "@mui/material/TextField";
-import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
-import { v4 as uuidv4 } from "uuid";
+
 import AutomatedCategoryComponent from "components/inventory/AutomatedCategoryComponent";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const filter = createFilterOptions();
+
 
 // import { RuleValueComponent } from "components/inventory/RuleValueComponent";
 

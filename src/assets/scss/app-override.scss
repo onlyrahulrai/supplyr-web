@@ -88,8 +88,8 @@
   overflow-y: scroll;
 }
 
-.h-75 {
-  height: calc(75vh - 5.4rem) !important;
+.h-76 {
+  height: calc(76vh - 5.4rem) !important;
 }
 
 .h-63 {
@@ -138,3 +138,10 @@
   background: #666;
 }
 
+.email-application .email-app-sidebar{
+  height: calc(100vh - 12rem) !important;
+}
+
+.h-100-percent {
+  height:100% ;
+}
