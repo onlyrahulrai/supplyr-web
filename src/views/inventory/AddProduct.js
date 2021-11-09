@@ -1228,15 +1228,12 @@ function AddProduct(props) {
                   onChange={(e) =>
                     setBasicFieldData("weight_value", e.target.value)
                   }
-                  requiredIndicator
-                  required
                   value={basicData.weight_value || ""}
                 />
               </Col>
               <Col md="6 m-auto">
                 <SimpleInputField
                   label="Select Product Weight Unit"
-                  requiredIndicator
                   field={
                     <Select
                       options={weightUnit}
@@ -1244,7 +1241,6 @@ function AddProduct(props) {
                       onChange={(weightUnit) =>
                         setBasicFieldData("weight_unit", weightUnit.value)
                       }
-                      requiredIndicator
                       defaultOptions
                       value={
                         weightUnit.find(
