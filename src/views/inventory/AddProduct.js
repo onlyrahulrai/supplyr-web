@@ -86,6 +86,8 @@ function VariantFields(props) {
     });
   };
 
+  console.log(variantData);
+
   return (
     <>
       <Row>
@@ -133,6 +135,81 @@ function VariantFields(props) {
         value={variantData.quantity ?? ""}
         min="0"
       />
+
+      <Row>
+        <Col md="12">
+          <Label for="pname">
+            <h6>Do You want to allow inventory tracking?</h6>
+          </Label>
+        </Col>
+        <Col md="12" className="pl-4 mb-2">
+          <div>
+            {console.log("variants allow inventory tracking",variantData?.allow_inventory_tracking,variantData?.allow_overselling)}
+            <Radio
+              label="Yes"
+              value="yes"
+              checked={variantData?.allow_inventory_tracking === "yes"}
+              onChange={(e) =>
+                props.onChange("allow_inventory_tracking", e.target.value)
+              }
+              name="exampleRadio1"
+            />
+            <div className="ml-2">
+              <span>
+                You can trace your inventory weather it's empty or not
+              </span>
+            </div>
+          </div>
+          <div>
+            <Radio
+              label="No"
+              value="no"
+              checked={variantData?.allow_inventory_tracking === "no"}
+              onChange={(e) =>
+                props.onChange("allow_inventory_tracking", e.target.value)
+              }
+              name="exampleRadio1"
+            />
+            <div className="ml-2">
+              <span>you can't track your inventory.</span>
+            </div>
+          </div>
+
+          {variantData?.allow_inventory_tracking === "yes" && (
+            <Row className="ml-2 mt-1">
+              <Col md="auto mr-auto">
+                <Label for="pname">
+                  <h6>Do You want to allow overselling?</h6>
+                </Label>
+              </Col>
+              <Col md="auto">
+                <div className="d-inline-block mr-1">
+                  <Radio
+                    label="Yes"
+                    value="yes"
+                    checked={variantData?.allow_overselling === "yes"}
+                    name="allow_overselling"
+                    onChange={(e) =>
+                      props.onChange("allow_overselling",e.target.value)
+                    }
+                  />
+                </div>
+                <div className="d-inline-block mr-1">
+                  <Radio
+                    label="No"
+                    value="no"
+                    checked={variantData?.allow_overselling === "no"}
+                    name="allow_overselling"
+                    onChange={(e) =>
+                      props.onChange("allow_overselling", e.target.value)
+                    }
+                  />
+                </div>
+              </Col>
+            </Row>
+          )}
+        </Col>
+      </Row>
       <Row>
         <Col>
           <SimpleInputField
@@ -898,7 +975,12 @@ function AddProduct(props) {
           vendors: response.data.vendors,
           country: response.data.country,
           weight_unit: response.data.weight_unit,
-          weight_value:  (response.data.weight_unit === "kg") ? parseFloat(response.data.weight_value) / 1000 : (response.data.weight_unit === "mg") ?  parseFloat(response.data.weight_value) * 1000 : response.data.weight_value ,
+          weight_value:
+            response.data.weight_unit === "kg"
+              ? parseFloat(response.data.weight_value) / 1000
+              : response.data.weight_unit === "mg"
+              ? parseFloat(response.data.weight_value) * 1000
+              : response.data.weight_value,
           sub_categories: response.data.sub_categories.map((sc) => sc.id),
         };
         setBasicData(initialBasicFieldsData);
@@ -1001,6 +1083,7 @@ function AddProduct(props) {
         closeOnClickOutside: false,
         icon: "success",
       });
+      console.log("form data >>>> ",formData)
       const url = "inventory/add-product/";
       apiClient
         .post(url, formData)
@@ -1040,7 +1123,7 @@ function AddProduct(props) {
     new: true,
   });
 
-  console.log("Basic Data------>>>>>>>",basicData)
+  console.log("Basic Data------>>>>>>>", basicData);
 
   return (
     <>
@@ -1297,7 +1380,7 @@ function AddProduct(props) {
                       value="no"
                       checked={isMultiVariant === "no"}
                       onChange={(e) => setIsMultiVariant(e.currentTarget.value)}
-                      name="exampleRadio"
+                      name="variants"
                     />
                   </div>
                   <div className="d-inline-block mr-1">
@@ -1306,7 +1389,7 @@ function AddProduct(props) {
                       value="yes"
                       checked={isMultiVariant === "yes"}
                       onChange={(e) => setIsMultiVariant(e.currentTarget.value)}
-                      name="exampleRadio"
+                      name="variants"
                     />
                   </div>
                 </Col>
