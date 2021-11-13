@@ -137,80 +137,6 @@ function VariantFields(props) {
       />
 
       <Row>
-        <Col md="12">
-          <Label for="pname">
-            <h6>Do You want to allow inventory tracking?</h6>
-          </Label>
-        </Col>
-        <Col md="12" className="pl-4 mb-2">
-          <div>
-            {console.log("variants allow inventory tracking",variantData?.allow_inventory_tracking,variantData?.allow_overselling)}
-            <Radio
-              label="Yes"
-              value="yes"
-              checked={variantData?.allow_inventory_tracking === "yes"}
-              onChange={(e) =>
-                props.onChange("allow_inventory_tracking", e.target.value)
-              }
-              name="exampleRadio1"
-            />
-            <div className="ml-2">
-              <span>
-                You can trace your inventory weather it's empty or not
-              </span>
-            </div>
-          </div>
-          <div>
-            <Radio
-              label="No"
-              value="no"
-              checked={variantData?.allow_inventory_tracking === "no"}
-              onChange={(e) =>
-                props.onChange("allow_inventory_tracking", e.target.value)
-              }
-              name="exampleRadio1"
-            />
-            <div className="ml-2">
-              <span>you can't track your inventory.</span>
-            </div>
-          </div>
-
-          {variantData?.allow_inventory_tracking === "yes" && (
-            <Row className="ml-2 mt-1">
-              <Col md="auto mr-auto">
-                <Label for="pname">
-                  <h6>Do You want to allow overselling?</h6>
-                </Label>
-              </Col>
-              <Col md="auto">
-                <div className="d-inline-block mr-1">
-                  <Radio
-                    label="Yes"
-                    value="yes"
-                    checked={variantData?.allow_overselling === "yes"}
-                    name="allow_overselling"
-                    onChange={(e) =>
-                      props.onChange("allow_overselling",e.target.value)
-                    }
-                  />
-                </div>
-                <div className="d-inline-block mr-1">
-                  <Radio
-                    label="No"
-                    value="no"
-                    checked={variantData?.allow_overselling === "no"}
-                    name="allow_overselling"
-                    onChange={(e) =>
-                      props.onChange("allow_overselling", e.target.value)
-                    }
-                  />
-                </div>
-              </Col>
-            </Row>
-          )}
-        </Col>
-      </Row>
-      <Row>
         <Col>
           <SimpleInputField
             label="Minimum Order Quantity"
@@ -952,6 +878,8 @@ function AddProduct(props) {
   const [tags, setTags] = useState([...props.profile.tags]);
   const [vendors, setVendors] = useState([...props.profile.vendors]);
   const [country, setCountry] = useState([...CountryData]);
+  const [allowInventoryTracking, setAllowInventoryTracking] = useState("no");
+  const [allowOverselling, setAllowOverselling] = useState("no");
 
   const weightUnit = [
     { value: "mg", label: "Milligram" },
@@ -984,6 +912,8 @@ function AddProduct(props) {
           sub_categories: response.data.sub_categories.map((sc) => sc.id),
         };
         setBasicData(initialBasicFieldsData);
+        setAllowOverselling(response.data.allow_overselling ? "yes" : "no")
+        setAllowInventoryTracking(response.data.allow_inventory_tracking ? "yes" : "no")
         setIsMultiVariant(response.data.variants_data.multiple ? "yes" : "no");
         setIsProductDataLoaded(true);
       });
@@ -1003,6 +933,8 @@ function AddProduct(props) {
     ...basicData,
     images: productImages.map((image) => image.db_id),
     variants_data: variantsDataContainer,
+    allow_inventory_tracking:allowInventoryTracking === "yes" ? true : false,
+    allow_overselling:allowOverselling === "yes" ? true : false,
   };
 
   function validateForm() {
@@ -1083,7 +1015,7 @@ function AddProduct(props) {
         closeOnClickOutside: false,
         icon: "success",
       });
-      console.log("form data >>>> ",formData)
+      console.log("form data >>>> ", formData);
       const url = "inventory/add-product/";
       apiClient
         .post(url, formData)
@@ -1356,6 +1288,73 @@ function AddProduct(props) {
                 />
               }
             />
+
+            <Row>
+              <Col md="12">
+                <Label for="pname">
+                  <h6>Do You want to allow inventory tracking?</h6>
+                </Label>
+              </Col>
+              <Col md="12" className="pl-4 mb-2">
+                <div>
+                  <Radio
+                    label="Yes"
+                    value="yes"
+                    checked={allowInventoryTracking === "yes"}
+                    onChange={(e) => setAllowInventoryTracking(e.target.value)}
+                    name="exampleRadio1"
+                  />
+                  <div className="ml-2">
+                    <span>
+                      you can allow users to add products under the quantity or
+                      above the quantity.
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <Radio
+                    label="No"
+                    value="no"
+                    checked={allowInventoryTracking === "no"}
+                    onChange={(e) => setAllowInventoryTracking(e.target.value)}
+                    name="exampleRadio1"
+                  />
+                  <div className="ml-2">
+                    <span>you can't track your inventory.</span>
+                  </div>
+                </div>
+
+                {allowInventoryTracking === "yes" && (
+                  <Row className="ml-2 mt-1">
+                    <Col md="auto mr-auto">
+                      <Label for="pname">
+                        <h6>Do You want to allow overselling?</h6>
+                      </Label>
+                    </Col>
+                    <Col md="auto">
+                      <div className="d-inline-block mr-1">
+                        <Radio
+                          label="Yes"
+                          value="yes"
+                          checked={allowOverselling === "yes"}
+                          name="allow_overselling"
+                          onChange={(e) => setAllowOverselling(e.target.value)}
+                        />
+                      </div>
+                      <div className="d-inline-block mr-1">
+                        <Radio
+                          label="No"
+                          value="no"
+                          checked={allowOverselling === "no"}
+                          name="allow_overselling"
+                          onChange={(e) => setAllowOverselling(e.target.value)}
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                )}
+              </Col>
+            </Row>
 
             <UploadGallery
               onChange={(images) => {
