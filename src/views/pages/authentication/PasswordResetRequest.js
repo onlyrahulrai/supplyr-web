@@ -59,12 +59,9 @@ export default function PasswordReset(props) {
             setSuccessMessage(response.data);
           })
           .catch((error) => {
-            let message = error.response?.data?.email ?? error.message;
-            message = message
-              ? message
-              : error.response?.data?.token
-              ? "Link Expired"
-              : setError(message);
+            setIsLoading(false)
+            setError(error.response.data)
+            console.log("hello response >>>>>>> ",error.response)
           })
       : AuthenticationApi.requestPasswordReset({
           mobile_number: value,
@@ -159,9 +156,9 @@ export default function PasswordReset(props) {
                   </p>
 
                   <CardBody className="pt-1">
-                    <Alert color="danger" isOpen={!!error}>
+                    <Alert color="danger" isOpen={error && true}>
                       <AlertCircle size={15} />
-                      <span>{error}</span>
+                      <span>{error?.email}</span>
                     </Alert>
                     <br />
                     <Form onSubmit={onSubmit}>
