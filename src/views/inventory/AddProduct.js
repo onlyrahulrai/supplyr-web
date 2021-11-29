@@ -1031,6 +1031,7 @@ function AddProduct(props) {
   }
 
   function getRenderedSubcategory(subCategory) {
+    console.log("sub category >>>>> ",subCategory)
     const label = (
       <div>
         <div

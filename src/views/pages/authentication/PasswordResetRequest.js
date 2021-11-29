@@ -60,7 +60,7 @@ export default function PasswordReset(props) {
           })
           .catch((error) => {
             setIsLoading(false)
-            setError(error.response.data)
+            setError(error.response.data ? error.response.data : "Internal server error!!")
             console.log("hello response >>>>>>> ",error.response)
           })
       : AuthenticationApi.requestPasswordReset({

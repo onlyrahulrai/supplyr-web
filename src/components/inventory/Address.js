@@ -9,8 +9,8 @@ export default function Address(props) {
                 </h5>
             </div>
             {
-                [line1, line2, `${city} (PIN ${pin})`, state, `Phone: ${phone}`].map((line, i) => (
-                    <><span key={i}>{line}</span> <br/> </>
+                [line1, line2, `${city} (PIN ${pin})`, state, `Phone: ${phone || "+91 99999 99999"}`].map((line, index) => (
+                    <div key={index}><span>{line}</span> <br/> </div>
                 ))
             }
         </div>
