@@ -64,7 +64,9 @@ export default function PasswordReset(props) {
               ? message
               : error.response?.data?.token
               ? "Link Expired"
-              : setError(message);
+              : "Unknown Error";
+            setError(message)
+            setIsLoading(false)
           })
       : AuthenticationApi.requestPasswordReset({
           mobile_number: value,
@@ -81,7 +83,9 @@ export default function PasswordReset(props) {
               ? message
               : error.response?.data?.token
               ? "Link Expired"
-              : setError(message);
+              : "Unknown Error";
+            setError(message)
+            setIsLoading(false)
           });
   };
 

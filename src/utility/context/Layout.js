@@ -88,7 +88,7 @@ class Layout extends Component {
           state: this.state,
           fullLayout: layouts["full"],
           VerticalLayout: layouts["vertical"],
-          noLayout: layouts["nona"]
+          noLayout: layouts["nona"],
           // horizontalLayout: layouts["horizontal"],
           // switchLayout: layout => {
           //   this.setState({ activeLayout: layout })

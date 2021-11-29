@@ -4,6 +4,7 @@ import {HiOutlineFolderAdd, HiOutlineFolder} from "react-icons/hi"
 import {MdPlaylistAddCheck, MdInput} from "react-icons/md"
 import {FiSettings} from "react-icons/fi"
 import { RiFoldersLine } from "react-icons/ri"
+import {AiOutlineUserSwitch} from "react-icons/ai"
 
 const navigationConfig = [
   {
@@ -55,6 +56,14 @@ const navigationConfig = [
     icon: <MdInput size={20} />,
     // permissions: ["admin", "editor"],
     navLink: "/orders"
+  },
+
+  {
+    id:"buyer_discount",
+    title:"Buyer Discount",
+    type:"item",
+    icon:<AiOutlineUserSwitch  size={20} />,
+    navLink:"/buyer-discounts"
   },
 
   {

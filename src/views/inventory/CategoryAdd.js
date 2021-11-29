@@ -1,5 +1,5 @@
 import { SimpleInputField } from "components/forms/fields";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import { ArrowLeft, Check, Plus, X } from "react-feather";
 import {
   Badge,
@@ -20,22 +20,89 @@ import RichEditor from "./_RichEditor";
 import Select from "react-select/";
 import Radio from "../../components/@vuexy/radio/RadioVuexy";
 import apiClient from "api/base";
-import Swal from "sweetalert2";
+import _Swal from "sweetalert2";
 import { getApiURL } from "api/utils";
 import ManualConditionsComponent from "components/inventory/ManualConditionsComponent";
-import { compareByData, compareWithData } from "../../assets/data/Rulesdata";
-import TextField from "@mui/material/TextField";
-import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
-import { v4 as uuidv4 } from "uuid";
 
-const filter = createFilterOptions();
+import AutomatedCategoryComponent from "components/inventory/AutomatedCategoryComponent";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 // import { RuleValueComponent } from "components/inventory/RuleValueComponent";
+import withReactContent from "sweetalert2-react-content";
+
+const Swal = withReactContent(_Swal);
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "REMOVE_ISEDITABLE":
+      return { ...state, isEditable: false };
+    case "ON_CHANGE":
+      return {
+        ...state,
+        isEditable: true,
+        editableRule: {
+          ...state.editableRule,
+          [action.payload.name]: action.payload.value,
+          attribute_unit: action.payload.name ? "gm" : "",
+        },
+      };
+    case "ADD_RULE_ACTION":
+      return {
+        ...state,
+        isEditable: true,
+        editableRule: {
+          setFocus: 1,
+          attribute_name: "",
+          comparison_type: "",
+          attribute_value: "",
+          attribute_unit: "",
+        },
+      };
+    case "UPDATE_RULE_ACTION":
+      console.log(action.payload);
+      const rowData = state.rules.find(
+        (rule, index) => index === action.payload
+      );
+      return {
+        ...state,
+        isEditable: true,
+        editableRule: rowData,
+        id: action.payload,
+        updateRule: true,
+      };
+    case "ADD_RULE":
+      return {
+        ...state,
+        isEditable: false,
+        rules: [...state.rules, state.editableRule],
+      };
+    case "UPDATE_RULE":
+      console.log("rules id >>>>> ", state.id);
+      let _rules = state.rules;
+      _rules[state.id] = state.editableRule;
+      return {
+        ...state,
+        isEditable: false,
+        id: null,
+        rules: _rules,
+        updateRule: false,
+      };
+    case "DELETE_RULE":
+      const newRules = state.rules.filter(
+        (rule, index) => index !== action.payload
+      );
+      return { ...state, rules: newRules, isEditable: false };
+    case "INITIALIZE":
+      return { ...state, rules: action.payload };
+    default:
+      return state;
+  }
+};
 
 const CategoryAdd = (props) => {
   const [basicData, setBasicData] = useState({
     rules: [{ setFocus: 1 }],
-    images: [],
   });
   const [categoryId, setCategoryId] = useState("");
   const [productIds, setProductIds] = useState([]);
@@ -46,6 +113,19 @@ const CategoryAdd = (props) => {
   const isEditingExistingProduct = Boolean(props.match.params.categoryId);
   const [isCategoryDataLoaded, setIsCategoryDataLoaded] = useState(false);
   const operationalSubCategories = props.user.profile.sub_categories;
+  const [haveSubCategory, setHaveSubCategory] = useState(false);
+  const [state, dispatch] = useReducer(reducer, {
+    rules: [
+      {
+        attribute_name: "Product title",
+        comparison_type: "Is equal to",
+        attribute_value: "128",
+        id: 12,
+      },
+    ],
+  });
+  const [action, setAction] = useState("automated");
+  const [condition, setCondition] = useState("all");
 
   function clearState() {
     if (props.match.params.categoryId) {
@@ -53,6 +133,7 @@ const CategoryAdd = (props) => {
       setDisplayImage(undefined);
       setIsCategoryDataLoaded(false);
     } else {
+      dispatch({ type: "INITIALIZE", payload: [] });
       setBasicData({ name: "", rules: [{ setFocus: 1 }] });
       setCategoryId("");
       setDisplayImage(undefined);
@@ -75,21 +156,25 @@ const CategoryAdd = (props) => {
       setIsLoading(true);
       setCategoryId(_categoryId);
       apiClient.get("/inventory/categories/" + _categoryId).then((response) => {
-        setIsLoading(false);
         const category = response.data;
+        console.log("category data >>> ", category);
         setBasicData((state) => ({
           ...state,
           id: category.id,
           name: category.name,
-          action: category.action,
           condition: category.condition,
-          rules: category.rules,
           description: category.description,
           parent: category.parent,
         }));
-        console.log("rules data >>> ",category.rules)
+        if (category.sub_categories.length > 0) {
+          setHaveSubCategory(true);
+        }
+        setAction(category.action);
+        dispatch({ type: "INITIALIZE", payload: category.rules });
+        console.log("rules data >>> ", category.rules);
         response.data.image && setDisplayImage(getApiURL(response.data.image));
         setIsCategoryDataLoaded(true);
+        setIsLoading(false);
       });
     }
   }, [props.match.params.categoryId]);
@@ -109,10 +194,30 @@ const CategoryAdd = (props) => {
       };
     });
 
-  const removeConditions = (index) => {
-    let rulesCopy = [...basicData.rules];
-    rulesCopy.splice(index, 1);
-    setBasicFieldData("rules", rulesCopy);
+  const validateForm = () => {
+    let errors = [];
+    if (!basicData.name) {
+      errors.push("Category name is required!");
+    }
+    if (!basicData.description) {
+      errors.push("Category description is required!");
+    }
+    if (action === "automated" && !state.rules.length) {
+      errors.push("Please add at least one category Rule");
+    }
+
+
+    if (errors.length > 0) {
+      Swal.fire(<div>
+        <h1>Error !</h1>
+        <h4 className="mb-1">Please correct the following errors</h4>
+        {errors.map((error) => {
+          return <h6 className="text-danger">{error} </h6>;
+        })}
+      </div>);
+
+      return false;
+    } else return true;
   };
 
   const submitForm = (e) => {
@@ -120,38 +225,59 @@ const CategoryAdd = (props) => {
     // setIsLoading(true);
     let url = "/inventory/categories/";
 
-    
-    let _formData = new FormData();
-    _formData.append("id", basicData.id);
-    _formData.append("name", basicData.name);
-    _formData.append("action", basicData.action);
-    _formData.append("condition", basicData.condition);
-    _formData.append("rules", JSON.stringify(basicData.rules));
-    _formData.append("description", basicData.description);
-    _formData.append("seller", props.user.username);
-    _formData.append("parent", basicData.parent ?? "");
-    uploadedImage && _formData.append("image", uploadedImage);
-    deleteImage && _formData.append("delete_image", deleteImage);
-    _formData.append("selectedProducts", JSON.stringify(productIds));
+    let is_valid = validateForm();
 
-    if (categoryId) {
-      url += categoryId + "/";
+    if (is_valid) {
+      Swal.fire({
+        title: (
+          <div className="mt-3 mb-1">
+            <h2 className="text-success">All done !!</h2>
+            <h3 className="text-secondary">
+              <Spinner color="secondary" className="mr-1" />
+              Saving your product
+            </h3>
+          </div>
+        ),
+        buttons: false,
+        closeOnClickOutside: false,
+        icon: "success",
+      });
+      let _formData = new FormData();
+      _formData.append("id", basicData.id);
+      _formData.append("name", basicData.name);
+      _formData.append("action", action);
+      _formData.append("condition", condition);
+      _formData.append("rules", JSON.stringify(state.rules));
+      _formData.append("description", basicData.description);
+      _formData.append("seller", props.user.username);
+      _formData.append("parent", basicData.parent ?? "");
+      uploadedImage && _formData.append("image", uploadedImage);
+      deleteImage && _formData.append("delete_image", deleteImage);
+      _formData.append("selectedProducts", JSON.stringify(productIds));
+
+      if (categoryId) {
+        url += categoryId + "/";
+      }
+      apiClient
+        .post(url, _formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          console.log("response >>>> ", response.status);
+          setIsLoading(false);
+          if(response.status >= 200 && response.status <=299){
+            Swal.fire("Category Saved !", "success");
+          history.push("/inventory/categories/list");
+          }else{
+            throw new Error(response.statusText)
+          }
+        })
+        .catch((err) => {
+          Swal.fire(`Some error have been accured!`);
+        });
     }
-    apiClient
-      .post(url, _formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((response) => {
-        console.log("response >>>> ",response.status)
-        setIsLoading(false);
-        Swal.fire("Category Saved !", "success");
-        history.push("/inventory/categories/list");
-      })
-      .catch((err) => {
-        Swal.fire(`Some error have been accured!`);
-      })
   };
 
   function onImageSelect(e) {
@@ -174,9 +300,9 @@ const CategoryAdd = (props) => {
     setDeleteImage(true);
   }
 
-  console.log("Basic Data rules >>>>> ", basicData.rules);
+  console.log("Sub Category status >>>>> ", !haveSubCategory);
 
-  // if (isLoading) return <Spinner />;
+  // // if (isLoading) return <Spinner />;
 
   return (
     <>
@@ -210,7 +336,7 @@ const CategoryAdd = (props) => {
                   <hr />
                   <Row className="justify-content-center">
                     <Col md="10">
-                      <form>
+                      <form onSubmit={submitForm}>
                         <SimpleInputField
                           label="Category Name"
                           type="text"
@@ -220,8 +346,6 @@ const CategoryAdd = (props) => {
                             setBasicFieldData("name", e.target.value)
                           }
                           value={basicData.name || ""}
-                          requiredIndicator
-                          required
                         />
 
                         <h5>Category Image</h5>
@@ -281,22 +405,22 @@ const CategoryAdd = (props) => {
                         </FormGroup>
 
                         <FormGroup>
-                          <Label for="pname">
-                            <h5>Category Description</h5>
-                          </Label>
                           {isPageRenderReady && (
-                            <RichEditor
-                              onChange={(data) =>
-                                setBasicFieldData("description", data)
+                            <SimpleInputField
+                              label="Category Description"
+                              field={
+                                <RichEditor
+                                  onChange={(data) =>
+                                    setBasicFieldData("description", data)
+                                  }
+                                  defaultValue={basicData.description || ""}
+                                />
                               }
-                              defaultValue={basicData.description || ""}
                             />
                           )}
                         </FormGroup>
 
-                        {basicData.parent === null ? (
-                          ""
-                        ) : (
+                        {(!(basicData.parent === null) || !haveSubCategory) && (
                           <SimpleInputField
                             label="Select parent category (Optional)"
                             field={
@@ -317,7 +441,7 @@ const CategoryAdd = (props) => {
                           />
                         )}
 
-                        <div className="d-flex justify-content-between flex-column">
+                        <div className="d-flex justify-content-between flex-column  mt-1">
                           <span className="text-bold-600 text-dark">
                             Collection type
                           </span>
@@ -325,7 +449,7 @@ const CategoryAdd = (props) => {
                           <p>
                             {categoryId ? (
                               <Badge color="primary text-capitalize mt-1 mb-1">
-                                {basicData.action}
+                                {action}
                               </Badge>
                             ) : (
                               ""
@@ -333,23 +457,14 @@ const CategoryAdd = (props) => {
                           </p>
                         </div>
 
-                        {!categoryId ? (
+                        {!categoryId && (
                           <div className="mt-1">
                             <Radio
                               label="Manual"
-                              defaultChecked={
-                                basicData.action === "manual" ? true : false
-                              }
+                              checked={action === "manual"}
                               name="action"
-                              value={
-                                basicData.action === "manual"
-                                  ? basicData.action
-                                  : "manual"
-                              }
-                              onChange={(e) =>
-                                setBasicFieldData("action", e.target.value)
-                              }
-                              required={true}
+                              value="manual"
+                              onChange={(e) => setAction(e.target.value)}
                             />
                             <div className="ml-2">
                               <span>
@@ -357,28 +472,13 @@ const CategoryAdd = (props) => {
                                 more about manual collections
                               </span>
                             </div>
-                          </div>
-                        ) : (
-                          ""
-                        )}
 
-                        {!categoryId ? (
-                          <div className="mt-1 mb-1">
                             <Radio
                               label="Automated"
-                              defaultChecked={
-                                basicData.action === "automated" ? true : false
-                              }
+                              checked={action === "automated"}
                               name="action"
-                              value={
-                                basicData.action === "automated"
-                                  ? basicData.action
-                                  : "automated"
-                              }
-                              onChange={(e) =>
-                                setBasicFieldData("action", e.target.value)
-                              }
-                              required={true}
+                              value="automated"
+                              onChange={(e) => setAction(e.target.value)}
                             />
                             <div className="ml-2 ">
                               <span>
@@ -389,12 +489,10 @@ const CategoryAdd = (props) => {
                               </span>
                             </div>
                           </div>
-                        ) : (
-                          ""
                         )}
 
-                        {basicData.action === "automated" ? (
-                          <div>
+                        {action === "automated" && (
+                          <div className="mt-1">
                             <span className="text-bold-600 text-dark">
                               Conditions
                             </span>
@@ -406,270 +504,32 @@ const CategoryAdd = (props) => {
                               <Col md="auto">
                                 <Radio
                                   label="All conditions"
-                                  defaultChecked={
-                                    basicData.condition === "all" ?? false
-                                  }
+                                  checked={condition === "all"}
                                   name="conditions"
-                                  value={
-                                    basicData.condition === "all"
-                                      ? basicData.condition
-                                      : "all"
-                                  }
-                                  onChange={(e) =>
-                                    setBasicFieldData(
-                                      "condition",
-                                      e.target.value
-                                    )
-                                  }
-                                  required={true}
+                                  value="all"
+                                  onChange={(e) => setCondition(e.target.value)}
                                 />
                               </Col>
                               <Col md="auto">
                                 <Radio
                                   label="Any conditions"
-                                  defaultChecked={
-                                    basicData.condition === "any" ?? false
-                                  }
+                                  checked={condition === "any"}
                                   name="conditions"
-                                  value={
-                                    basicData.condition === "any"
-                                      ? basicData.condition
-                                      : "any"
-                                  }
-                                  onChange={(e) =>
-                                    setBasicFieldData(
-                                      "condition",
-                                      e.target.value
-                                    )
-                                  }
-                                  required={true}
+                                  value="any"
+                                  onChange={(e) => setCondition(e.target.value)}
                                 />
                               </Col>
                             </Row>
-                            {basicData.rules.map((rule, index) => (
-                              <div key={Math.round(Math.random() * 123456)}>
-                                <Row
-                                  style={{ alignItems: "center" }}
-                                  className="mt-2 rules"
-                                >
-                                  <Col md="4 m-auto">
-                                    <SimpleInputField
-                                      requiredIndicator
-                                      field={
-                                        <Select
-                                          options={compareByData}
-                                          onChange={(value, action) => {
-                                            let _rules = basicData.rules;
-                                            _rules[index].attribute_name =
-                                              value.value;
-                                            setBasicFieldData("rules", _rules);
-                                          }}
-                                          requiredIndicator
-                                          required
-                                          defaultOptions
-                                          name="compareBy"
-                                          defaultValue={compareByData.find(
-                                            (item) =>
-                                              item.value === rule.attribute_name
-                                          )}
-                                          isOptionDisabled={(option) =>
-                                            option.disabled
-                                          }
-                                          menuPlacement="top"
-                                          menuPortalTarget={document.body}
-                                          styles={{
-                                            menuPortal: (base) => ({
-                                              ...base,
-                                              zIndex: 9999,
-                                            }),
-                                          }}
-                                        />
-                                      }
-                                    />
-                                  </Col>
-                                  <Col md="4 m-auto ">
-                                    <SimpleInputField
-                                      requiredIndicator
-                                      field={
-                                        <Select
-                                          options={compareWithData.filter(
-                                            (item) =>
-                                              item.link.includes(
-                                                basicData.rules[index]
-                                                  .attribute_name
-                                              )
-                                          )}
-                                          onChange={(value, action) => {
-                                            let _rules = basicData.rules;
-                                            _rules[index].comparison_type =
-                                              value.value;
-                                            setBasicFieldData("rules", _rules);
-                                          }}
-                                          requiredIndicator
-                                          required
-                                          defaultOptions
-                                          name="compareWith"
-                                          defaultValue={compareWithData.find(
-                                            (item) =>
-                                              item.value ===
-                                              rule.comparison_type
-                                          )}
-                                          isOptionDisabled={(option) =>
-                                            option.disabled
-                                          }
-                                          menuPlacement="auto"
-                                        />
-                                      }
-                                    />
-                                  </Col>
-
-                                  <Col md="4">
-                                    <SimpleInputField
-                                      type={`${["compare_at_price","weight","inventory_stock"].includes(basicData.rules[index].attribute_name) ? "number" : "text"}`}
-                                      onChange={(e) => {
-                                        let _rules = basicData.rules;
-                                        _rules[index].attribute_value =
-                                          e.target.value
-                                        setBasicFieldData("rules", _rules);
-                                      }}
-                                      requiredIndicator
-                                      required={true}
-                                      iconRight={basicData.rules.length > 1}
-                                      icon={<X size={15} />}
-                                      name="compareValue"
-                                      value={
-                                        basicData.rules[index].attribute_value
-                                      }
-                                      styles={{
-                                        width: `${
-                                          basicData.rules.length > 1
-                                            ? "80%"
-                                            : "100%"
-                                        }`,
-                                        textTransform: "capitalize",
-                                        marginBottom: 0,
-                                      }}
-                                      onClick={() => removeConditions(index)}
-                                    />
-                                  </Col>
-
-                                  <Col md="12">
-                                    {rule.attribute_name === "weight" &&
-                                    rule.attribute_value ? (
-                                      <Row className="mb-1 mt-1 align-items-center ">
-                                        <Col md="auto">
-                                          <span>Select weight unit: </span>
-                                        </Col>
-                                        <Col md="auto rulesweightoptions mt--1">
-                                          <div className="d-inline-block mr-1">
-                                            <Radio
-                                              label="Kilogram"
-                                              color="primary"
-                                              defaultChecked={
-                                                rule.attribute_unit === "kg" ||
-                                                false
-                                              }
-                                              name="rulesweightoptions"
-                                              value={
-                                                basicData.attribute_unit ===
-                                                "kg"
-                                                  ? basicData.attribute_unit
-                                                  : "kg"
-                                              }
-                                              onChange={(e) => {
-                                                let _rules = basicData.rules;
-                                                _rules[index].attribute_unit =
-                                                  e.target.value;
-                                                setBasicFieldData(
-                                                  "rules",
-                                                  _rules
-                                                );
-                                              }}
-                                            />
-                                          </div>
-                                          <div className="d-inline-block mr-1">
-                                            <Radio
-                                              label="Gram"
-                                              color="primary"
-                                              defaultChecked={
-                                                rule.attribute_unit === "gm" ||
-                                                false
-                                              }
-                                              name="rulesweightoptions"
-                                              value={
-                                                rule.attribute_unit === "gm"
-                                                  ? rule.attribute_unit
-                                                  : "gm"
-                                              }
-                                              onChange={(e) => {
-                                                let _rules = basicData.rules;
-                                                _rules[index].attribute_unit =
-                                                  e.target.value;
-                                                setBasicFieldData(
-                                                  "rules",
-                                                  _rules
-                                                );
-                                              }}
-                                            />
-                                          </div>
-                                          <div className="d-inline-block mr-1">
-                                            <Radio
-                                              label="Milligram"
-                                              color="primary"
-                                              defaultChecked={
-                                                rule.attribute_unit === "mg" ||
-                                                false
-                                              }
-                                              name="rulesweightoptions"
-                                              value={
-                                                rule.attribute_unit === "mg"
-                                                  ? rule.attribute_unit
-                                                  : "mg"
-                                              }
-                                              onChange={(e) => {
-                                                let _rules = basicData.rules;
-                                                _rules[index].attribute_unit =
-                                                  e.target.value;
-                                                setBasicFieldData(
-                                                  "rules",
-                                                  _rules
-                                                );
-                                                console.log("Rules Changed with this value >>> ",basicData.rules)
-                                              }}
-                                            />
-                                          </div>
-                                        </Col>
-                                      </Row>
-                                    ) : (
-                                      ""
-                                    )}
-                                  </Col>
-                                </Row>
-                              </div>
-                            ))}
-                            <Button
-                              className="d-flex align-items-center mt-1"
-                              color="secondary"
-                              outline
-                              size="sm"
-                              type="button"
-                              onClick={() =>
-                                setBasicFieldData("rules", [
-                                  ...basicData.rules,
-                                  { setFocus: 1 },
-                                ])
-                              }
-                            >
-                              {" "}
-                              <Plus size={19} className="mr-1" /> Add another
-                              condition
-                            </Button>
+                            <hr />
+                            <AutomatedCategoryComponent
+                              isLoading={isLoading}
+                              state={state}
+                              dispatch={dispatch}
+                            />
                           </div>
-                        ) : (
-                          ""
                         )}
 
-                        {basicData.action === "manual" ? (
+                        {action === "manual" && (
                           <div>
                             <span className="text-bold-600 text-dark">
                               Actions
@@ -689,18 +549,15 @@ const CategoryAdd = (props) => {
                               categoryId={categoryId}
                             />
                           </div>
-                        ) : (
-                          ""
                         )}
 
                         <hr />
                         <Button
                           className="ml-auto d-block mt-1"
-                          onClick={(e) => submitForm(e)}
                           disabled={isLoading}
                           color="primary"
                           outline
-                          type="button"
+                          type="submit"
                         >
                           {" "}
                           Save <Check size={19} />

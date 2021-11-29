@@ -86,6 +86,8 @@ function VariantFields(props) {
     });
   };
 
+  console.log(variantData);
+
   return (
     <>
       <Row>
@@ -133,6 +135,7 @@ function VariantFields(props) {
         value={variantData.quantity ?? ""}
         min="0"
       />
+
       <Row>
         <Col>
           <SimpleInputField
@@ -875,6 +878,8 @@ function AddProduct(props) {
   const [tags, setTags] = useState([...props.profile.tags]);
   const [vendors, setVendors] = useState([...props.profile.vendors]);
   const [country, setCountry] = useState([...CountryData]);
+  const [allowInventoryTracking, setAllowInventoryTracking] = useState("no");
+  const [allowOverselling, setAllowOverselling] = useState("no");
 
   const weightUnit = [
     { value: "mg", label: "Milligram" },
@@ -898,10 +903,17 @@ function AddProduct(props) {
           vendors: response.data.vendors,
           country: response.data.country,
           weight_unit: response.data.weight_unit,
-          weight_value:  (response.data.weight_unit === "kg") ? parseFloat(response.data.weight_value) / 1000 : (response.data.weight_unit === "mg") ?  parseFloat(response.data.weight_value) * 1000 : response.data.weight_value ,
+          weight_value:
+            response.data.weight_unit === "kg"
+              ? parseFloat(response.data.weight_value) / 1000
+              : response.data.weight_unit === "mg"
+              ? parseFloat(response.data.weight_value) * 1000
+              : response.data.weight_value,
           sub_categories: response.data.sub_categories.map((sc) => sc.id),
         };
         setBasicData(initialBasicFieldsData);
+        setAllowOverselling(response.data.allow_overselling ? "yes" : "no")
+        setAllowInventoryTracking(response.data.allow_inventory_tracking ? "yes" : "no")
         setIsMultiVariant(response.data.variants_data.multiple ? "yes" : "no");
         setIsProductDataLoaded(true);
       });
@@ -921,6 +933,8 @@ function AddProduct(props) {
     ...basicData,
     images: productImages.map((image) => image.db_id),
     variants_data: variantsDataContainer,
+    allow_inventory_tracking:allowInventoryTracking === "yes" ? true : false,
+    allow_overselling:allowOverselling === "yes" ? true : false,
   };
 
   function validateForm() {
@@ -1001,6 +1015,7 @@ function AddProduct(props) {
         closeOnClickOutside: false,
         icon: "success",
       });
+      console.log("form data >>>> ", formData);
       const url = "inventory/add-product/";
       apiClient
         .post(url, formData)
@@ -1040,7 +1055,7 @@ function AddProduct(props) {
     new: true,
   });
 
-  console.log("Basic Data------>>>>>>>",basicData)
+  console.log("Basic Data------>>>>>>>", basicData);
 
   return (
     <>
@@ -1228,15 +1243,12 @@ function AddProduct(props) {
                   onChange={(e) =>
                     setBasicFieldData("weight_value", e.target.value)
                   }
-                  requiredIndicator
-                  required
                   value={basicData.weight_value || ""}
                 />
               </Col>
               <Col md="6 m-auto">
                 <SimpleInputField
                   label="Select Product Weight Unit"
-                  requiredIndicator
                   field={
                     <Select
                       options={weightUnit}
@@ -1244,7 +1256,6 @@ function AddProduct(props) {
                       onChange={(weightUnit) =>
                         setBasicFieldData("weight_unit", weightUnit.value)
                       }
-                      requiredIndicator
                       defaultOptions
                       value={
                         weightUnit.find(
@@ -1278,6 +1289,73 @@ function AddProduct(props) {
               }
             />
 
+            <Row>
+              <Col md="12">
+                <Label for="pname">
+                  <h6>Do You want to allow inventory tracking?</h6>
+                </Label>
+              </Col>
+              <Col md="12" className="pl-4 mb-2">
+                <div>
+                  <Radio
+                    label="Yes"
+                    value="yes"
+                    checked={allowInventoryTracking === "yes"}
+                    onChange={(e) => setAllowInventoryTracking(e.target.value)}
+                    name="exampleRadio1"
+                  />
+                  <div className="ml-2">
+                    <span>
+                      you can allow users to add products under the quantity or
+                      above the quantity.
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <Radio
+                    label="No"
+                    value="no"
+                    checked={allowInventoryTracking === "no"}
+                    onChange={(e) => setAllowInventoryTracking(e.target.value)}
+                    name="exampleRadio1"
+                  />
+                  <div className="ml-2">
+                    <span>you can't track your inventory.</span>
+                  </div>
+                </div>
+
+                {allowInventoryTracking === "yes" && (
+                  <Row className="ml-2 mt-1">
+                    <Col md="auto mr-auto">
+                      <Label for="pname">
+                        <h6>Do You want to allow overselling?</h6>
+                      </Label>
+                    </Col>
+                    <Col md="auto">
+                      <div className="d-inline-block mr-1">
+                        <Radio
+                          label="Yes"
+                          value="yes"
+                          checked={allowOverselling === "yes"}
+                          name="allow_overselling"
+                          onChange={(e) => setAllowOverselling(e.target.value)}
+                        />
+                      </div>
+                      <div className="d-inline-block mr-1">
+                        <Radio
+                          label="No"
+                          value="no"
+                          checked={allowOverselling === "no"}
+                          name="allow_overselling"
+                          onChange={(e) => setAllowOverselling(e.target.value)}
+                        />
+                      </div>
+                    </Col>
+                  </Row>
+                )}
+              </Col>
+            </Row>
+
             <UploadGallery
               onChange={(images) => {
                 setProductImages(images);
@@ -1301,7 +1379,7 @@ function AddProduct(props) {
                       value="no"
                       checked={isMultiVariant === "no"}
                       onChange={(e) => setIsMultiVariant(e.currentTarget.value)}
-                      name="exampleRadio"
+                      name="variants"
                     />
                   </div>
                   <div className="d-inline-block mr-1">
@@ -1310,7 +1388,7 @@ function AddProduct(props) {
                       value="yes"
                       checked={isMultiVariant === "yes"}
                       onChange={(e) => setIsMultiVariant(e.currentTarget.value)}
-                      name="exampleRadio"
+                      name="variants"
                     />
                   </div>
                 </Col>

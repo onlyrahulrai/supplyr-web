@@ -14,3 +14,8 @@ export const numberFormatter = (n) => {
   }
 
 export const priceFormatter = _price => <span>&#8377; {numberFormatter(_price)}</span>
+
+
+export const capitalizeString = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}

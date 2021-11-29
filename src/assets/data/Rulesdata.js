@@ -81,4 +81,21 @@ export const compareWithData = [
       ],
     },
   ];
+
+export const categoryRulesObjects = {
+  product_title:"Product title",
+  product_category:"Product Category",
+  product_vendor:"Product Vendor",
+  product_tag: "Product Tag",
+  compare_at_price: "Compare at price",
+  weight:"Weight",
+  inventory_stock:"Inventory Stock",
+  is_equal_to:"Is equal to",
+  is_not_equal_to:"Is not equal to",
+  is_greater_than:"Is greater than",
+  is_less_than: "Is less than",
+  starts_with:"Starts with",
+  ends_with:"Ends with",
+  contains: "Contains",
+}
  
