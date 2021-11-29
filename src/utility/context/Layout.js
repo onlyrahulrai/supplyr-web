@@ -89,13 +89,13 @@ class Layout extends Component {
           fullLayout: layouts["full"],
           VerticalLayout: layouts["vertical"],
           noLayout: layouts["nona"],
-          horizontalLayout: layouts["horizontal"],
-          switchLayout: layout => {
-            this.setState({ activeLayout: layout })
-          },
-          switchDir: dir => {
-            this.setState({ direction: dir })
-          }
+          // horizontalLayout: layouts["horizontal"],
+          // switchLayout: layout => {
+          //   this.setState({ activeLayout: layout })
+          // },
+          // switchDir: dir => {
+          //   this.setState({ direction: dir })
+          // }
         }}
       >
         {children}
