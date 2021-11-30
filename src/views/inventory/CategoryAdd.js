@@ -44,7 +44,7 @@ const reducer = (state, action) => {
         editableRule: {
           ...state.editableRule,
           [action.payload.name]: action.payload.value,
-          attribute_unit: action.payload.name ? "gm" : "",
+          // attribute_unit: action.payload.name === "weight" ? action.payload.value : "gm",
         },
       };
     case "ADD_RULE_ACTION":
@@ -162,7 +162,6 @@ const CategoryAdd = (props) => {
           ...state,
           id: category.id,
           name: category.name,
-          condition: category.condition,
           description: category.description,
           parent: category.parent,
         }));
@@ -170,6 +169,7 @@ const CategoryAdd = (props) => {
           setHaveSubCategory(true);
         }
         setAction(category.action);
+        setCondition( category.condition)
         dispatch({ type: "INITIALIZE", payload: category.rules });
         console.log("rules data >>> ", category.rules);
         response.data.image && setDisplayImage(getApiURL(response.data.image));
@@ -511,8 +511,9 @@ const CategoryAdd = (props) => {
                                 />
                               </Col>
                               <Col md="auto">
+                         
                                 <Radio
-                                  label="Any conditions"
+                                  label="Any condition"
                                   checked={condition === "any"}
                                   name="conditions"
                                   value="any"

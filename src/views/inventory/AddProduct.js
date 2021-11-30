@@ -100,6 +100,8 @@ function VariantFields(props) {
             onChange={(e) => props.onChange("price", e.target.value)}
             value={variantData.price ?? ""}
             min="0"
+            requiredIndicator
+            required={props.singleVariant}
           />
         </Col>
         <Col>
@@ -938,11 +940,20 @@ function AddProduct(props) {
   };
 
   function validateForm() {
+    console.log("basic data >>>> ",basicData)
     let variantsData = variantsDataContainer;
     let errors = [];
+    
     if (!basicData.sub_categories?.length) {
       errors.push("Please add at least one category");
     }
+    if(!basicData.vendors){
+      errors.push("Please select/create a vendor");
+    }
+    if(!basicData.tags?.length){
+      errors.push("Please add a tag");
+    }
+    
     if (variantsData.multiple === undefined) {
       errors.push("Add variant information");
     }
@@ -1199,7 +1210,7 @@ function AddProduct(props) {
             />
 
             <SimpleInputField
-              label="Select/Create Product Vendor(s)"
+              label="Select/Create Product Vendor"
               requiredIndicator
               field={
                 <CreatableSelect
