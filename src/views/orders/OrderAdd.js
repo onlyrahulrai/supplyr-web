@@ -67,7 +67,7 @@ const OrderAdd = (props) => {
   const [state, dispatch] = useReducer(reducer, [1]);
 
   const [buyerAddress, setBuyerAddress] = useState(null);
-  const [product,setProduct] = useState(null)
+  const [product, setProduct] = useState(null);
 
   useEffect(() => {
     if (buyerSlug) {
@@ -106,8 +106,6 @@ const OrderAdd = (props) => {
   const handleSubmit = () => {
     setAddNewProductBtn(false);
   };
-
-  
 
   return (
     <>
@@ -294,7 +292,7 @@ const OrderAdd = (props) => {
               </Card>
             </div>
 
-            <div className="checkout-options">
+            <div className="checkout-options order-sidebar">
               <Card>
                 <CardBody>
                   <Row className="mb-1">
@@ -349,30 +347,157 @@ const OrderAdd = (props) => {
                   <Modal
                     isOpen={modal}
                     toggle={toggleModal}
-                    className="modal-dialog-centered select-buyer-address"
+                    className="modal-dialog-centered select-buyer-address modal-lg"
                   >
                     <ModalHeader toggle={toggleModal}>
                       Select Buyer Address:
                     </ModalHeader>
                     <ModalBody>
-                      <SimpleInputField
-                        label="Select Buyer address"
-                        requiredIndicator
-                        field={
-                          <Select
-                            options={buyerData?.address}
-                            formatOptionLabel={formatOptionLabel}
-                            value={buyerAddress}
-                            onChange={(value) => setBuyerAddress(value)}
-                          />
-                        }
-                      />
+                      <Row>
+                        <Col md="6" >
+                          <Card className="bg-primary text-white">
+                            <CardBody>
+                              <div>
+                                <strong>Address:</strong>
+                                {"   "}
+                                <span>Chandpur harvansh</span>
+                              </div>
+                              <div>
+                                <strong>City:</strong> <span>Ayodhya</span>
+                              </div>
+                              <div>
+                                <strong>Line 1:</strong>
+                                {"   "}
+                                <span>Sultan Pur Road</span>
+                              </div>
+                              <div>
+                                <strong>Line 2:</strong>
+                                {"   "}
+                                <span>Ayodhya Road</span>
+                              </div>
+
+                              <div>
+                                <strong>State:</strong>
+                                {"   "}
+                                <span>Uttar Pradesh</span>
+                              </div>
+                              <div>
+                                <strong>Pin Code:</strong> {"   "}
+                                <span>224001</span>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                        <Col md="6">
+                          <Card>
+                            <CardBody>
+                              <div>
+                                <strong>Address:</strong>
+                                {"   "}
+                                <span>Hansapur</span>
+                              </div>
+                              <div>
+                                <strong>City:</strong>{" "}
+                                <span>Ambedkar Nagar</span>
+                              </div>
+                              <div>
+                                <strong>Line 1:</strong>
+                                {"   "}
+                                <span>Ambedkar Nagar Road</span>
+                              </div>
+                              <div>
+                                <strong>Line 2:</strong>
+                                {"   "}
+                                <span>Sultan Pur Road</span>
+                              </div>
+
+                              <div>
+                                <strong>Pin Code:</strong> {"   "}
+                                <span>224122</span>
+                              </div>
+
+                              <div>
+                                <strong>State:</strong>
+                                {"   "}
+                                <span>Telangana</span>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                        <Col md="6">
+                          <Card>
+                            <CardBody>
+                              <div>
+                                <strong>Address:</strong>
+                                {"   "}
+                                <span>Sahabganj</span>
+                              </div>
+                              <div>
+                                <strong>City:</strong> <span>Prayag Raj</span>
+                              </div>
+                              <div>
+                                <strong>Line 1:</strong>
+                                {"   "}
+                                <span>Sultan pur Road</span>
+                              </div>
+                              <div>
+                                <strong>Line 2:</strong>
+                                {"   "}
+                                <span>Lucknow Road</span>
+                              </div>
+
+                              <div>
+                                <strong>Pin Code:</strong> {"   "}
+                                <span>224244</span>
+                              </div>
+
+                              <div>
+                                <strong>State:</strong>
+                                {"   "}
+                                <span>Kerala</span>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                        <Col md="6">
+                          <Card>
+                            <CardBody>
+                              <div>
+                                <strong>Address:</strong>
+                                {"   "}
+                                <span>Los Angeles</span>
+                              </div>
+                              <div>
+                                <strong>City:</strong> <span>California</span>
+                              </div>
+                              <div>
+                                <strong>Line 1:</strong>
+                                {"   "}
+                                <span>
+                                  Downtown cityscape. Road
+                                </span>
+                              </div>
+                              <div>
+                                <strong>Line 2:</strong>
+                                {"   "}
+                                <span>Norway Road</span>
+                              </div>
+
+                              <div>
+                                <strong>Pin Code:</strong> {"   "}
+                                <span>200987</span>
+                              </div>
+
+                              <div>
+                                <strong>State:</strong>
+                                {"   "}
+                                <span>USA</span>
+                              </div>
+                            </CardBody>
+                          </Card>
+                        </Col>
+                      </Row>
                     </ModalBody>
-                    <ModalFooter>
-                      <Button color="primary" outline onClick={toggleModal}>
-                        Save
-                      </Button>
-                    </ModalFooter>
                   </Modal>
                 </CardBody>
               </Card>
