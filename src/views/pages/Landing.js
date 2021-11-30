@@ -9,6 +9,7 @@ import {
 import { Link } from "react-router-dom";
 
 import welcomeImg from "../../assets/img/pages/welcome.jpg";
+import logo from "assets/img/logo/logo_md.png"
 
 import "../../assets/scss/pages/authentication.scss";
 
@@ -37,14 +38,14 @@ class LandingUpdate extends Component {
                 />
               </Col>
               <Col lg="6" md="12" className="p-0 d-flex align-items-center justify-content-center"  style={{height:"100%"}}>
-                <Card className="rounded-0 mb-0 ">
+                <Card className="rounded mb-0 ">
                   <CardBody>
-                    <h1 className="text-light  mt-2">SUPPLYR</h1>
-                    <h3 className="mt-2">Modernize Your Sales &amp; Purchases</h3>
+                    <img src={logo} class='img-fluid p-3' />
+                    <h3 className="text-center">Modernize Your Sales &amp; Purchases</h3>
                     <br />
-                    <div className="mb-2">
+                    <div className="mb-2 text-center">
                       <Link to="/login">
-                        <Button.Ripple outline color="light" size="md">
+                        <Button.Ripple outlsine color="danger" size="md">
                           PROCEED TO LOGIN
                         </Button.Ripple>
                       </Link>

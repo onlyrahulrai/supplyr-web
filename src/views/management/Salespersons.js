@@ -74,7 +74,7 @@ export default function Salesperson() {
 
     return (
         <Row>
-            <Col md="4">
+            <Col md="auto">
                 <h3>Add New Salesperson</h3>
                 <Row className='align-items-center'>
                     <Col md="8">
@@ -130,7 +130,7 @@ export default function Salesperson() {
                                         </div>
                                     </div>
                                     <div className="title-section">
-                                        <h2 className="text-bold-600 mt-1 mb-25">{salesperson.name ?? salesperson.email}</h2>
+                                        <h2 className="text-bold-600 mt-1 mb-25 mr-1">{salesperson.name ?? salesperson.email}</h2>
                                         <p className={"mb-0 " + (!salesperson.is_joined ? 'danger' : '')}>{salesperson.name ? salesperson.email : !salesperson.is_joined ? 'Not joined yet' : ''}</p>
                                     </div>
                                 </CardBody>

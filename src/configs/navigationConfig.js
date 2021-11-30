@@ -38,6 +38,32 @@ const navigationConfig = [
         // permissions: ["admin", "editor"],
         navLink: "/products/"
       },
+
+      {
+        id: "category_management",
+        title: "Categories",
+        type: "collapse",
+        icon: <HiOutlineFolder size={20} />,
+        permissions: ["general", "staff"],
+        children: [
+          {
+            id: "cetegories",
+            title: "Categories List",
+            type: "item",
+            icon: <RiFoldersLine size={20} />,
+            // permissions: ["admin", "staff"],
+            navLink: "/inventory/categories/list"
+          },
+          {
+            id: "add-cetegory",
+            title: "Add Category",
+            type: "item",
+            icon: <HiOutlineFolderAdd size={20} />,
+            // permissions: ["admin", "staff"],
+            navLink: "/inventory/categories/add"
+          },
+        ]
+      }
       // {
       //   id: "add-product",
       //   title: "Add New Product",
@@ -58,13 +84,13 @@ const navigationConfig = [
     navLink: "/orders"
   },
 
-  {
-    id:"buyer_discount",
-    title:"Buyer Discount",
-    type:"item",
-    icon:<AiOutlineUserSwitch  size={20} />,
-    navLink:"/buyer-discounts"
-  },
+  // {
+  //   id:"buyer_discount",
+  //   title:"Buyer Discount",
+  //   type:"item",
+  //   icon:<AiOutlineUserSwitch  size={20} />,
+  //   navLink:"/buyer-discounts"
+  // },
 
   {
     id: "management",
@@ -89,32 +115,6 @@ const navigationConfig = [
     groupTitle: "ADMIN",
     permissions: ["general", "staff"],
   },
-
-  {
-    id: "category_management",
-    title: "Categories",
-    type: "collapse",
-    icon: <HiOutlineFolder size={20} />,
-    permissions: ["general", "staff"],
-    children: [
-      {
-        id: "cetegories",
-        title: "Categories List",
-        type: "item",
-        icon: <RiFoldersLine size={20} />,
-        // permissions: ["admin", "staff"],
-        navLink: "/inventory/categories/list"
-      },
-      {
-        id: "add-cetegory",
-        title: "Add Category",
-        type: "item",
-        icon: <HiOutlineFolderAdd size={20} />,
-        // permissions: ["admin", "staff"],
-        navLink: "/inventory/categories/add"
-      },
-    ]
-  }
 ]
 
 export default navigationConfig

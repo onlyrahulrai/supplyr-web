@@ -92,6 +92,10 @@ const CategoryList = (props) => {
         <Col sm="12">
           <Card>
             <CardBody>
+              <h1 className="">
+                Categories
+              </h1>
+              <hr />
               {isLoading && (
                 <div className=" py-5 text-center" style={{margin:"10rem 0"}}>
                   <Spinner />

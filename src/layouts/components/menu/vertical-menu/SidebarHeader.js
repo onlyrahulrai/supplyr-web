@@ -2,6 +2,8 @@ import { Component } from "react";
 import { NavLink } from "react-router-dom"
 import { X, ArrowLeftCircle, ArrowRightCircle } from "react-feather"
 import classnames from "classnames"
+import logo from "assets/img/logo/logo_sm.png"
+
 class SidebarHeader extends Component {
   render() {
     let {
@@ -13,12 +15,14 @@ class SidebarHeader extends Component {
       menuShadow
     } = this.props
     return (
-      <div className="navbar-header">
+      <div className="navbar-header mb-3">
         <ul className="nav navbar-nav flex-row">
           <li className="nav-item mr-auto">
             <NavLink to="/" className="navbar-brand">
-              <div className="brand-logo" />
-              <h2 className="brand-text mb-0">supplyr</h2>
+              <div className="logo">
+                <img src={logo} alt="" className="img-fluid px-2" />
+              </div>
+              {/* <h2 className="brand-text mb-0">Amojo</h2> */}
             </NavLink>
           </li>
           <li className="nav-item nav-toggle">
