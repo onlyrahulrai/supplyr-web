@@ -1317,8 +1317,7 @@ function AddProduct(props) {
                   />
                   <div className="ml-2">
                     <span>
-                      you can allow users to add products under the quantity or
-                      above the quantity.
+                      Keep track and auto update your inventory when an order is placed
                     </span>
                   </div>
                 </div>
@@ -1331,13 +1330,13 @@ function AddProduct(props) {
                     name="exampleRadio1"
                   />
                   <div className="ml-2">
-                    <span>you can't track your inventory.</span>
+                    <span>Don't track your inventory</span>
                   </div>
                 </div>
 
                 {allowInventoryTracking === "yes" && (
-                  <Row className="ml-2 mt-1">
-                    <Col md="auto mr-auto">
+                  <Row className="ml-0 mt-1">
+                    <Col md="auto mr-asuto">
                       <Label for="pname">
                         <h6>Do You want to allow overselling?</h6>
                       </Label>
