@@ -56,7 +56,7 @@ const reducer = (state, action) => {
           attribute_name: "",
           comparison_type: "",
           attribute_value: "",
-          attribute_unit: "",
+          attribute_unit: null,
         },
       };
     case "UPDATE_RULE_ACTION":
