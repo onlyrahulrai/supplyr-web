@@ -67,6 +67,8 @@ export default function PasswordReset(props) {
               : "Unknown Error";
             setError(message)
             setIsLoading(false)
+            setError(error.response.data ? error.response.data : "Internal server error!!")
+            console.log("hello response >>>>>>> ",error.response)
           })
       : AuthenticationApi.requestPasswordReset({
           mobile_number: value,
