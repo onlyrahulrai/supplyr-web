@@ -6,7 +6,7 @@ import NetworkError from "components/common/NetworkError";
 import Address from "components/inventory/Address";
 import { loadProductOptions } from "components/orders/loadOptions";
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, Edit3, Plus } from "react-feather";
+import { ArrowLeft, Edit3, Eye, Plus, Trash } from "react-feather";
 import { AsyncPaginate } from "react-select-async-paginate";
 import {
   Button,
@@ -86,6 +86,7 @@ const OrderAdd = (props) => {
         setOrderInfo((prevState) => ({
           buyer_id: fetchBuyerData?.data?.id,
           address: fetchBuyerData?.data?.address[0],
+          
         }));
         // console.log(fetchBuyerData.data)
         setFetchData({
@@ -106,6 +107,7 @@ const OrderAdd = (props) => {
           let _items = response.data.items.map((item) => ({
             quantity: item.quantity,
             variant: item.product_variant,
+            id: item.id,
           }));
           console.log("orders items ", _items);
           setItems(_items);
@@ -160,8 +162,12 @@ const OrderAdd = (props) => {
     if (is_valid) {
       if (item.set_focus !== undefined) {
         let _itemsCopy = [...items];
-        let { quantity, variant, set_focus } = item;
-        _itemsCopy[set_focus] = { quantity: quantity, variant: variant };
+        let { quantity, variant, set_focus, id } = item;
+        _itemsCopy[set_focus] = {
+          quantity: quantity,
+          variant: variant,
+          id: id,
+        };
         setItems(_itemsCopy);
       } else {
         setItems((prevState) => [...prevState, item]);
@@ -223,35 +229,37 @@ const OrderAdd = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-
     let is_valid = SubmitForm();
 
     if (is_valid) {
       let variantData = items?.map((item) => ({
         variant_id: item.variant.id,
         quantity: item.quantity,
+        id: item?.id ?? null,
       }));
 
-      console.log("variants data >>> ",variantData)
+      console.log("variants data >>> ", variantData);
 
       const requestData = {
-        id:orderId,
+        id: orderId,
         items: variantData,
         address: orderInfo?.address?.id,
         buyer_id: orderInfo?.buyer_id,
         discount: orderInfo?.discount || 0,
       };
 
-      let url = "/orders/"
+      let url = "/orders/";
 
-      if(orderId){
-        url += orderId + "/update/"
+      if (orderId) {
+        url += orderId + "/update/";
       }
-      
-      
 
-      apiClient.post(url,requestData)
-        .then((response) => {console.log("response data >>>>> ", response.data);history.push(`/orders/${response.data.id}`)})
+      apiClient
+        .post(url, requestData)
+        .then((response) => {
+          console.log("response data >>>>> ", response.data);
+          history.push(`/orders/${response.data.id}`);
+        })
         .catch((error) => console.log(error));
     }
   };
@@ -291,7 +299,7 @@ const OrderAdd = (props) => {
     );
   };
 
-  console.log("update item >>> ", item);
+  console.log("items  >>> ", items);
 
   return (
     <>
@@ -493,15 +501,8 @@ const OrderAdd = (props) => {
                     )}
 
                     {items?.map((item, index) => (
-                      <Card
-                        className="ecommerce-card"
-                        key={index}
-                        onClick={() => {
-                          handleSelectVariant(index);
-                          setItem({ ...item, set_focus: index });
-                        }}
-                      >
-                        {console.log("item data >>>> ", item)}
+                      <Card className="ecommerce-card" key={index}>
+                        {console.log("item data with >>>> ", item)}
                         <div
                           className="card-content"
                           style={{ gridTemplateColumns: "0.5fr 3fr 1fr" }}
@@ -515,9 +516,8 @@ const OrderAdd = (props) => {
                           </div>
                           <CardBody>
                             <div className="item-name">
-                              <a href="#">
-                                <h4>{item?.variant?.product?.title}</h4>
-                              </a>
+                              <h4>{item?.variant?.product?.title}</h4>
+
                               {/* {item.product_variant.product.has_multiple_variants && (
                           <p className="item-company">
                             <span className="company-name">
@@ -525,10 +525,34 @@ const OrderAdd = (props) => {
                             </span>
                           </p>
                         )} */}
-                              <div className="item-quantity">
-                                <p className="quantity-title">
-                                  Quantity: {item?.quantity}
-                                </p>
+                              <div className="d-flex justify-content-between">
+                                <div className="item-quantity">
+                                  <p className="quantity-title">
+                                    Quantity: {item?.quantity}
+                                  </p>
+                                </div>
+                                <div>
+                                  <Eye
+                                    size="20"
+                                    role="button"
+                                    className="mx-1 text-primary"
+                                    onClick={() => history.push(`/product/${item?.variant?.product?.slug}`)}
+                                  />
+                                  <Edit3
+                                    size="20"
+                                    role="button"
+                                    className="mx-1 text-info"
+                                    onClick={() => {
+                                      handleSelectVariant(index);
+                                      setItem({ ...item, set_focus: index });
+                                    }}
+                                  />
+                                  <Trash
+                                    size="20"
+                                    role="button"
+                                    className="mx-1 text-danger"
+                                  />
+                                </div>
                               </div>
                               {/* <p className="delivery-date">{}</p> */}
                               {/* <p className="offers">{10}%</p> */}
