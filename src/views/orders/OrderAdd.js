@@ -299,6 +299,12 @@ const OrderAdd = (props) => {
     );
   };
 
+  const handleClick = (index) => {
+    let itemsCopy = [...items]
+    itemsCopy.splice(index,1)
+    setItems(itemsCopy)
+  }
+
   console.log("items  >>> ", items);
 
   return (
@@ -551,6 +557,7 @@ const OrderAdd = (props) => {
                                     size="20"
                                     role="button"
                                     className="mx-1 text-danger"
+                                    onClick={() => handleClick(index)}
                                   />
                                 </div>
                               </div>
