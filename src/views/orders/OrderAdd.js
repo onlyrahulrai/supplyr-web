@@ -3,30 +3,25 @@ import "assets/scss/pages/app-ecommerce-shop.scss";
 import { getApiURL } from "api/utils";
 import BreadCrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import NetworkError from "components/common/NetworkError";
-import Address from "components/inventory/Address";
-import { loadProductOptions } from "components/orders/loadOptions";
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, Edit3, Eye, Plus, Trash } from "react-feather";
-import { AsyncPaginate } from "react-select-async-paginate";
+import { AlertTriangle, ArrowLeft, Edit3, Eye, Plus, Trash } from "react-feather";
 import {
   Button,
   Card,
   CardBody,
   CardHeader,
-  Col,
   Form,
+  FormFeedback,
   FormGroup,
   Input,
   Label,
-  Row,
   Spinner,
 } from "reactstrap";
-import { capitalizeString, priceFormatter } from "utility/general";
-import productImg1 from "../../assets/img/pages/eCommerce/1.png";
-import productImg2 from "../../assets/img/pages/eCommerce/2.png";
+import { priceFormatter } from "utility/general";
+
 
 import { history } from "../../history";
-import AddProductVariant from "components/orders/AddProductVariant";
+
 import SidebarComponent from "components/orders/SidebarComponent";
 import Select from "react-select";
 import _Swal from "sweetalert2";
@@ -475,7 +470,7 @@ const OrderAdd = (props) => {
                               type="number"
                               placeholder="1"
                               name="quantity"
-                              value={item?.quantity || ""}
+                              value={item?.quantity || selectedProduct?.minimum_order_quantity || ""}
                               bsSize="lg"
                               onChange={(e) =>
                                 setItem((prevState) => ({
@@ -483,11 +478,14 @@ const OrderAdd = (props) => {
                                   quantity: parseInt(e.target.value),
                                 }))
                               }
-                              // invalid
+                              disabled={!selectedProduct}
+                              invalid={item?.quantity < selectedProduct?.minimum_order_quantity}
                             />
-                            {/* <FormFeedback invalid>
-                           Sweet! that name is available
-                         </FormFeedback> */}
+                            <FormFeedback invalid={item?.quantity < selectedProduct?.minimum_order_quantity}>
+                              <div className="text-danger">
+                                <AlertTriangle size={14}  /> Minimun Quantity: {selectedProduct?.minimum_order_quantity}
+                              </div>
+                         </FormFeedback>
                           </FormGroup>
 
                           <Button.Ripple
