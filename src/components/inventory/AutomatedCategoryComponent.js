@@ -48,7 +48,7 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
 
   const validateForm = () => {
     let errors = [];
-    const { attribute_name, comparison_type, attribute_value } =
+    const { attribute_name, comparison_type, attribute_value,attribute_unit } =
       state.editableRule;
 
     if (!attribute_name) {
@@ -62,6 +62,12 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
      if (!comparison_type) {
       errors.push("Comparison type is required!");
     } 
+
+    if (attribute_name === "weight"){
+      if(!attribute_unit){
+        errors.push("Attribute unit is required!");
+      }
+    }
     
 
     if (errors.length > 0) {
@@ -95,7 +101,10 @@ const AutomatedCategoryComponent = ({ state, dispatch, isLoading }) => {
     const name = e.target.name;
     const value = e.target.value;
     dispatch({ type: "ON_CHANGE", payload: { name: name, value: value } });
+    console.log("handle change clicked >>>> ",name,value)
   };
+
+  console.log("updated state >>>>> ",state)
 
   return (
     <React.Fragment>

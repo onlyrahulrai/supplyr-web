@@ -24,6 +24,8 @@ const UserDropdown = props => {
       </DropdownItem>
 
       <DropdownItem
+        tag="a"
+        href="#"
         onClick={e => {e.preventDefault(); history.push("/account-settings/")}}
       >
         <Icon.Settings size={14} className="mr-50" />

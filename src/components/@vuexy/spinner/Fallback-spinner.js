@@ -1,5 +1,5 @@
 import { Component } from "react";
-import logo from "../../../assets/img/logo/logo.png"
+import logo from "../../../assets/img/logo/logo_plain_md.png"
 import "../../../assets/scss/components/app-loader.scss"
 class SpinnerComponent extends Component {
   render() {

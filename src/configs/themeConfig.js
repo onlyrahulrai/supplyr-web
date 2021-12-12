@@ -10,7 +10,7 @@ const themeConfig = {
   footerType: "static", // options[String]: static(default) / sticky / hidden
   disableCustomizer: true, // options[Boolean]: true, false(default)
   hideScrollToTop: false, // options[Boolean]: true, false(default)
-  menuTheme: "primary", // options[String]: primary / success / danger / info / warning / dark
+  menuTheme: "danger", // options[String]: primary / success / danger / info / warning / dark
   direction: "ltr" // options[String] : ltr / rtl
 }
 

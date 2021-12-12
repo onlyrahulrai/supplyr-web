@@ -651,7 +651,7 @@ class UsersList extends Component {
                         }}
                       />
                     </Col>
-                    <Col lg="auto">
+                    {/* <Col lg="auto">
                       <Button color="primary" 
                         onClick={(e) => {
                           e.preventDefault()
@@ -660,18 +660,18 @@ class UsersList extends Component {
                       >
                         <BiImport />
                       </Button>
-                    </Col>
-                    <Col lg="3">
+                    </Col> */}
+                    <Col lg="auto">
                       <Button
-                        color="primary"
+                        color="danger"
                         onClick={(e) => {
                           e.preventDefault();
                           history.push("/products/add/");
                         }}
                         style={{padding:"0.9rem 1rem"}}
                       >
-                        <PlusCircle size="20" className="mr-1" /> Add New
-                        Product
+                        <PlusCircle size="20" className="mr-1" />
+                        Add New Product
                       </Button>
                     </Col>
                   </Row>

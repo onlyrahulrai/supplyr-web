@@ -107,7 +107,7 @@ class VuexyWizard extends Component {
       
         <Card>
           <CardBody>
-            <h3>Welcome to Supplyr</h3>
+            <h3>Welcome to Amojo</h3>
             <p>
               Please fill some quick details. It only takes around 2 minutes
             </p>

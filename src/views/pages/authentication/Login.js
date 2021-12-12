@@ -79,7 +79,7 @@ class Login extends Component {
               <Col lg="6" md="12" className="p-0">
                 <Card className="rounded-0 mb-0 px-2">
                   <CardBody>
-                    <h4>Login</h4>
+                    <h4>Login to Amojo</h4>
                     <p>Welcome back, please login to your account.</p>
 
                     <br />

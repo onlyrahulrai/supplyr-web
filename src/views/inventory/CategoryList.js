@@ -1,8 +1,8 @@
 import apiClient from "api/base";
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
-import { Card, CardBody, Col, Row, Spinner, Table } from "reactstrap";
-import { Delete, Edit2 } from "react-feather";
+import { Card, CardBody, Col, Row, Spinner, Table, Button } from "reactstrap";
+import { Delete, Edit2, PlusCircle } from "react-feather";
 import Swal from "sweetalert2";
 import { history } from "../../history";
 import NetworkError from "components/common/NetworkError";
@@ -92,6 +92,20 @@ const CategoryList = (props) => {
         <Col sm="12">
           <Card>
             <CardBody>
+              <Row>
+                <Col>
+                  <h1 className="">
+                    Categories
+                  </h1>
+                </Col>
+                <Col className="text-right">
+                <Button.Ripple className="mr-1 mb-1" color="danger" onClick={e => history.push('/inventory/categories/add')}>
+                  <PlusCircle size={15} />
+                  <span className="align-middle ml-50">Add New Category</span>
+                </Button.Ripple>
+                </Col>
+              </Row>
+              <hr />
               {isLoading && (
                 <div className=" py-5 text-center" style={{margin:"10rem 0"}}>
                   <Spinner />

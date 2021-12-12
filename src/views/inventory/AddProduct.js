@@ -100,6 +100,8 @@ function VariantFields(props) {
             onChange={(e) => props.onChange("price", e.target.value)}
             value={variantData.price ?? ""}
             min="0"
+            requiredIndicator
+            required={props.singleVariant}
           />
         </Col>
         <Col>
@@ -938,11 +940,14 @@ function AddProduct(props) {
   };
 
   function validateForm() {
+    console.log("basic data >>>> ",basicData)
     let variantsData = variantsDataContainer;
     let errors = [];
+    
     if (!basicData.sub_categories?.length) {
       errors.push("Please add at least one category");
     }
+    
     if (variantsData.multiple === undefined) {
       errors.push("Add variant information");
     }
@@ -1147,7 +1152,6 @@ function AddProduct(props) {
 
             <SimpleInputField
               label="Select/Create Product Tag(s)"
-              requiredIndicator
               field={
                 <CreatableSelect
                   isMulti
@@ -1199,8 +1203,7 @@ function AddProduct(props) {
             />
 
             <SimpleInputField
-              label="Select/Create Product Vendor(s)"
-              requiredIndicator
+              label="Select/Create Product Vendor"
               field={
                 <CreatableSelect
                   onChange={(value) => setBasicFieldData("vendors", value)}
@@ -1226,7 +1229,7 @@ function AddProduct(props) {
                   formatOptionLabel={({ value, label, customAbbreviation }) => (
                     <div style={{ display: "flex" }}>
                       <div>
-                        {label.charAt(0).toUpperCase() + label.slice(1)}
+                        {label?.charAt(0).toUpperCase() + label?.slice(1)}
                       </div>
                     </div>
                   )}
@@ -1306,8 +1309,7 @@ function AddProduct(props) {
                   />
                   <div className="ml-2">
                     <span>
-                      you can allow users to add products under the quantity or
-                      above the quantity.
+                      Keep track and auto update your inventory when an order is placed
                     </span>
                   </div>
                 </div>
@@ -1320,13 +1322,13 @@ function AddProduct(props) {
                     name="exampleRadio1"
                   />
                   <div className="ml-2">
-                    <span>you can't track your inventory.</span>
+                    <span>Don't track your inventory</span>
                   </div>
                 </div>
 
                 {allowInventoryTracking === "yes" && (
-                  <Row className="ml-2 mt-1">
-                    <Col md="auto mr-auto">
+                  <Row className="ml-0 mt-1">
+                    <Col md="auto mr-asuto">
                       <Label for="pname">
                         <h6>Do You want to allow overselling?</h6>
                       </Label>
