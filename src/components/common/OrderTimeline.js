@@ -10,18 +10,18 @@ const orderStatusDisplayMapping = {
 
 export default function Timeline({data}) {
     return (
-        <div class="timeline">
+        <div className="timeline">
             <ul>
-            {data.map(({time, date, status, created_by_user, created_by_entity}) => {
+            {data.map(({time, date, status, created_by_user, created_by_entity},index) => {
                 return (
-                    <li>
-                        <div class="bullet grey"></div>
-                        <div class="time">
+                    <li key={index}>
+                        <div className="bullet grey"></div>
+                        <div className="time">
                             <b>{time}</b>
                             <br/>
                             {date}
                         </div>
-                        <div class="desc">
+                        <div className="desc">
                         <h3>{orderStatusDisplayMapping[status].text}</h3>
                         <h4>by <i>{created_by_user}</i> {created_by_user && 'from'} <i>{created_by_entity}</i></h4>
                         </div>

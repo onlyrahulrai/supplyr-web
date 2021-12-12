@@ -947,6 +947,10 @@ function AddProduct(props) {
     if (!basicData.sub_categories?.length) {
       errors.push("Please add at least one category");
     }
+
+    if(basicData?.weight_value && basicData?.weight_value !== "0.00"){
+      errors.push("Please select the weight unit field!");
+    }
     
     if (variantsData.multiple === undefined) {
       errors.push("Add variant information");
@@ -1036,6 +1040,7 @@ function AddProduct(props) {
   }
 
   function getRenderedSubcategory(subCategory) {
+    console.log("sub category >>>>> ",subCategory)
     const label = (
       <div>
         <div
@@ -1060,7 +1065,7 @@ function AddProduct(props) {
     new: true,
   });
 
-  console.log("Basic Data------>>>>>>>", basicData);
+  console.log("Basic Data------>>>>>>>",basicData.weight_value ? true : false);
 
   return (
     <>
