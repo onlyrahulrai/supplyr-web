@@ -373,11 +373,13 @@ const OrderAdd = (props) => {
                                   setItem((prevState) => ({
                                     ...prevState,
                                     variant: product.variants_data,
+                                    quantity: product.variants_data.minimum_order_quantity,
                                   }));
                                 } else {
                                   setItem((prevState) => ({
                                     ...prevState,
                                     variant: product.variants_data[0],
+                                    quantity:product.variants_data[0].minimum_order_quantity
                                   }));
                                 }
                                 setSelectedProduct(product);
@@ -470,7 +472,7 @@ const OrderAdd = (props) => {
                               type="number"
                               placeholder="1"
                               name="quantity"
-                              value={item?.quantity || selectedProduct?.minimum_order_quantity || ""}
+                              value={item?.quantity || ""}
                               bsSize="lg"
                               onChange={(e) =>
                                 setItem((prevState) => ({
@@ -479,13 +481,13 @@ const OrderAdd = (props) => {
                                 }))
                               }
                               disabled={!selectedProduct}
-                              invalid={item?.quantity < selectedProduct?.minimum_order_quantity}
+                              // invalid={(item?.quantity < selectedProduct?.minimum_order_quantity)}
                             />
-                            <FormFeedback invalid={item?.quantity < selectedProduct?.minimum_order_quantity}>
+                            {/* <FormFeedback invalid={(item?.quantity < selectedProduct?.minimum_order_quantity)}>
                               <div className="text-danger">
                                 <AlertTriangle size={14}  /> Minimun Quantity: {selectedProduct?.minimum_order_quantity}
                               </div>
-                         </FormFeedback>
+                         </FormFeedback> */}
                           </FormGroup>
 
                           <Button.Ripple

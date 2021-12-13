@@ -32,6 +32,8 @@ const OrderDetails = lazy(() => import("views/orders/OrderDetails"));
 
 const OrderAdd = lazy(() => import("views/orders/OrderAdd"));
 
+const Invoice = lazy(() => import("./views/invoice"))
+
 const Logout = lazy(() => import("./views/pages/authentication/Logout"));
 
 const BuyerDiscounts = lazy(() =>
@@ -218,6 +220,7 @@ class AppRouter extends React.Component {
           <AppRoute path="/orders/:buyerId/update/:orderId" component={OrderAdd} />
           <AppRoute path="/orders/:orderId" component={OrderDetails} />
           <AppRoute path="/orders" component={OrdersList} />
+          <AppRoute path="/invoice" component={Invoice} />
 
           
           <AppRoute path="/buyer-discounts" component={BuyerDiscounts} />
