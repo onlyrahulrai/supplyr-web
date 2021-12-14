@@ -32,7 +32,7 @@ const OrderDetails = lazy(() => import("views/orders/OrderDetails"));
 
 const OrderAdd = lazy(() => import("views/orders/OrderAdd"));
 
-const Invoice = lazy(() => import("./views/invoice"))
+const Invoice = lazy(() => import("./views/invoice/Invoice"))
 
 const Logout = lazy(() => import("./views/pages/authentication/Logout"));
 
