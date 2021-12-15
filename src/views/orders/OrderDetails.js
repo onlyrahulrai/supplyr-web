@@ -316,17 +316,25 @@ export default function OrderDetails() {
           }
           <br />
 
+        
+              <Button.Ripple color="success" block className="btn-block mb-2" onClick={() => history.push(`/orders/${orderId}/invoice`)}>
+                Generate Invoice
+              </Button.Ripple>
+            
+
           {!isHiddenControlsVisible &&
           <Button.Ripple
             type="submit"
             block
             color="dark"
             outline
-            className="btn-block"
+            className="btn-block mb-2"
             onClick={() => setIsHiddenControlsVisible(true)}>
             More <BsFillCaretDownFill />
           </Button.Ripple>
           }
+
+            
 
           {isHiddenControlsVisible && 
             <Row>
@@ -337,7 +345,7 @@ export default function OrderDetails() {
               <Button.Ripple
                 color={_displayData.buttonClass}
                 block
-                className="btn-block"
+                className="btn-block mb-1"
                 onClick={e => onAction('change_status', status)}
               >
                 {_displayData.getIcon(18, 'white')}

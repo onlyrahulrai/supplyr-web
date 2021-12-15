@@ -218,9 +218,9 @@ class AppRouter extends React.Component {
 
           <AppRoute path="/orders/:buyerId/add" component={OrderAdd} />
           <AppRoute path="/orders/:buyerId/update/:orderId" component={OrderAdd} />
+          <AppRoute path="/orders/:orderId/invoice" component={Invoice} />
           <AppRoute path="/orders/:orderId" component={OrderDetails} />
           <AppRoute path="/orders" component={OrdersList} />
-          <AppRoute path="/invoice" component={Invoice} />
 
           
           <AppRoute path="/buyer-discounts" component={BuyerDiscounts} />

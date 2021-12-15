@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import {
   Card,
   CardBody,
@@ -9,17 +9,69 @@ import {
   InputGroup,
   Input,
   InputGroupAddon,
-  Button
+  Button,
+  Spinner
 } from "reactstrap"
 import Breadcrumbs from "components/@vuexy/breadCrumbs/BreadCrumb"
-import logo from "../../assets/img/logo/logo.png"
-import { Mail, Phone, FileText, Download } from "react-feather"
+import { FileText, Download } from "react-feather"
 
 import "../../assets/scss/pages/invoice.scss"
+import { OrdersApi } from "api/endpoints"
+import NetworkError from "components/common/NetworkError"
+import { capitalizeString, priceFormatter } from "utility/general"
+import { ToWords } from 'to-words';
 
-class Invoice extends React.Component {
-  render() {
+const Invoice =  (props) => {
+    const orderId = props.match.params.orderId;
+    const [isLoading,setIsLoading] = useState(true)
+    const [orderData,setOrderData] = useState(null)
+    const [loadingError,setLoadingError] = useState(null)
+    console.log(`Order Id is >>>>> ${orderId}`)
+
+    const fetchOrder = useCallback(async () => {
+        await OrdersApi.retrieve(orderId)
+            .then((response) => {
+                console.log(response.data)
+                setOrderData(response.data)
+                setIsLoading(false)
+            })
+            .catch((error) => {
+                console.log(error.message)
+                setLoadingError(error.message)
+            })
+    },[orderId])
+
+
+    useEffect(() => {
+        if(orderId){
+            fetchOrder()
+        }
+    },[orderId,fetchOrder])
+
+    const totals = orderData?.items.reduce((sum,item) => {
+        const actualPrice  = parseFloat(item.price) * item.quantity
+        const salePrice = parseFloat(item.actual_price) * item.quantity
+
+        const _sum = {
+            actualPrice: sum.actualPrice + actualPrice,
+            salePrice: sum.salePrice + salePrice,
+        };
+
+        return _sum 
+    },{
+        actualPrice: 0,
+        salePrice: 0,
+    })
+
+    const toWords = new ToWords();
+
+    console.log(orderData,totals)
+
     return (
+        <>
+        {isLoading && <Spinner />}
+        {!isLoading && loadingError && <NetworkError error={loadingError} />}
+        {!isLoading && (
       <React.Fragment>
         <Breadcrumbs
           breadCrumbTitle="Invoice"
@@ -65,17 +117,17 @@ class Invoice extends React.Component {
                                     <small><strong>Exporter:</strong></small> <br />
                                 
                                     <div>
-                                        <span><strong>M/S. PAT GLOBAL INC.</strong></span>
+                                        <span><strong>{capitalizeString(orderData.buyer_name)}</strong></span>
                                         <br />
-                                        <span><strong>NO.33 AND 34,, 8TH CROSS,</strong></span>
+                                        <span><strong>{orderData.address.name.toUpperCase()}</strong></span>
                                         <br />
-                                        <span><strong>MUTHURAYASWAMY LAYOUT,</strong></span>
+                                        <span><strong>{orderData.address.city.toUpperCase()}</strong></span>
                                         <br />
-                                        <span><strong>HULIMAVU,</strong></span>
+                                        <span><strong>{orderData.address.line1.toUpperCase()}</strong></span>
                                         <br />
-                                        <span><strong>BENGALURU</strong></span>
+                                        <span><strong>{orderData.address.line2.toUpperCase()}</strong></span>
                                         <br />
-                                        <span><strong>KARNATAKA -560076</strong></span>
+                                        <span><strong>{orderData.address.state.toUpperCase()}</strong></span>
                                     </div>
                                     </div>
                                 </Col>
@@ -101,7 +153,7 @@ class Invoice extends React.Component {
                                         <Col sm="12" className="px-0 p-1  border">
                                             <small><strong>Buyer's Order No.& Date</strong></small>
                                             <div>
-                                                <span><strong>NIL.,  DATED:--/--/----</strong></span>
+                                                <span><strong>{orderId},  DATED:{" "}{orderData.order_date}</strong></span>
                                             </div>
                                         </Col>
                                     </Row>
@@ -145,7 +197,8 @@ class Invoice extends React.Component {
                                         <div className="p-1 border-top-0">
                                             <small><strong>Country of final </strong></small> <br />
                                             <div>
-                                                <small><strong>Destination</strong></small> <br /><br /><br />
+                                                <small><strong>Destination</strong></small> <br />
+                                                <span><strong>{orderData.address.state.toUpperCase()}</strong></span><br />
                                             </div>
                                         </div>   
                                     </Col>
@@ -189,13 +242,14 @@ class Invoice extends React.Component {
                                         </Col>
                                         <Col sm="8" className="px-0">
                                             <div className="border p-1 border-top-0 border-bottom-0">
-                                                <small><strong>Final Destinat.</strong></small> <br /><br /><br />
+                                                <small><strong>Final Destinat.</strong></small> <br />
+                                                <span><strong>{`${orderData.address.name} (${orderData.address.state}) `}</strong></span><br />
                                             </div>
                                         </Col>
                                     </Row>
                                 </Col>
                                 <Col sm="5" className="border px-0">
-                                    <div className=" p-1 border-top-0" style={{minHeight:"180px"}}>
+                                    <div className=" p-1 border-top-0" style={{minHeight:"90px"}}>
                                         <small><strong>Terms of Delivery & Payment:</strong></small> <br /><br />
                                         <div>
                                             <strong className="pl-1">  C I F</strong> <br /><br />
@@ -203,9 +257,96 @@ class Invoice extends React.Component {
                                             <span><strong>120 DAYS FROM THE DATE OF B/L ON D/A</strong></span><br /><br />
                                         </div>
                                     </div>
+                                    <Table responsive className="table-hover-animation border-top">
+                                        <thead>
+                                            <tr>
+                                                <th>Status</th>
+                                                <th>Variable Name</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                orderData.status_variable_values.map((varibale) => (
+                                                    <tr>
+                                                        <td><small>{capitalizeString(varibale.status)}</small></td>
+                                                        <td><small>{varibale.variable_name}</small></td>
+                                                        <td><small>{varibale.value}</small></td>
+                                                    </tr>
+                                                ))
+                                            }
+                                            <tr>
+
+                                            </tr>
+                                        </tbody>
+                                    </Table>
                                 </Col>
                             </Row>
-                            <Row className="border  pt-0 pb-0 ml-0 mr-0" style={{minHeight:"300px"}}>
+
+                            <Table responsive className="table-hover-animation">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <small>
+                                                <strong>Marks & & </strong>
+                                            </small>
+                                            <div>
+                                                <span><strong>Nos.</strong></span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <small><strong>No. & Kind</strong></small>
+                                            <div>
+                                                <span><strong>of Packages</strong></span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <small><strong>Description</strong></small>
+                                            <div>
+                                                <span><strong>of goods</strong></span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <small><strong>Qty.</strong></small>
+                                            <div>
+                                                <span><strong>(SQM.)</strong></span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <small>
+                                                <strong>Rate/</strong>
+                                            </small>
+                                            <div>
+                                                <span><strong>SQM  (US $)</strong></span>
+                                            </div>
+                                        </th>
+                                        <th>
+                                            <small>
+                                                <strong>Amount </strong>
+                                            </small>
+                                            <div>
+                                                <span><strong>(in US $)</strong></span>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {
+                                        orderData.items.map((item,index) => (
+                                            <tr key={index}>
+                                                <td><strong>{index + 1}</strong></td>
+                                                <td colspan="2"><strong>{item.product_variant.product.title}</strong></td>
+                                                <td><strong>{item.quantity}</strong></td>
+                                                <td><strong>{priceFormatter(item.price)}</strong></td>
+                                                <td><strong>{priceFormatter(item.quantity * item.price)}</strong></td>
+                                            </tr>
+                                        ))
+                                    }
+                                </tbody>
+                            </Table>
+
+
+                            {/* <Row className="border  pt-0 pb-0 ml-0 mr-0">
                                 <Col sm="2">
                                     <small>
                                         <strong>Marks & & </strong>
@@ -220,7 +361,7 @@ class Invoice extends React.Component {
                                         <span><strong>of Packages</strong></span>
                                     </div>
                                 </Col>
-                                <Col sm="4">
+                                <Col sm="3">
                                     <small><strong>Description</strong></small>
                                     <div>
                                         <span><strong>of goods</strong></span>
@@ -249,12 +390,46 @@ class Invoice extends React.Component {
                                     </div>
                                 </Col>
                             </Row>
-                            <Row className="border border-bottom-0 ml-0 mr-0" style={{minHeight:"200px"}}>
+
+                            
+
+                            {
+                                orderData.items.map((item,index) => (
+                                    <Row key={index} className="border  pt-0 pb-0 ml-0 mr-0" >
+                                        <Col>
+                                            <span><strong>{index + 1}</strong></span>
+                                        </Col>
+                                        <Col sm="6">
+                                            <strong>{item.product_variant.product.title}</strong>
+                                        </Col>
+                                        <Col className="border">
+                                            <div>
+                                                <span><strong>{item.quantity}</strong></span>
+                                            </div>
+                                        </Col>
+                                        <Col className="border">
+                                            <div>
+                                                <span><strong>{priceFormatter(item.price)}</strong></span>
+                                            </div>
+                                        </Col>
+                                        <Col className="border">
+                                            <small>
+                                            <strong>{priceFormatter(item.quantity * item.price)} </strong>
+                                            </small>
+                                        </Col>
+                                    </Row>
+                                ))
+                            } */}
+                            
+
+                            <Row className="border border-bottom-0 ml-0 mr-0" style={{minHeight:"100px"}}>
                                 <Col sm="8">
-                                    <small><strong>Amount Chargeable (In Words)</strong></small>
+                                    <small><strong>Amount Chargeable (In Words)</strong></small><br />
+                                    <strong>- {toWords.convert(totals?.actualPrice)}</strong>
                                 </Col>
                                 <Col sm="4" className="border border-left-0">
-                                    <small><strong>Total:</strong></small>
+                                    <small><strong>Total:</strong></small><br />
+                                    <span><strong>{"  "}{priceFormatter( totals?.actualPrice)}</strong></span>
                                 </Col>
                             </Row>
                             <Row className="border-top-0 border ml-0 mr-0">
@@ -271,9 +446,9 @@ class Invoice extends React.Component {
             </Card>
           </Col>
         </Row>
-      </React.Fragment>
+      </React.Fragment>)}
+      </>
     )
-  }
 }
 
 export default Invoice

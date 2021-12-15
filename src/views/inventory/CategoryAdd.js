@@ -1,6 +1,6 @@
 import { SimpleInputField } from "components/forms/fields";
 import React, { useEffect, useReducer, useState } from "react";
-import { ArrowLeft, Check, Plus, X } from "react-feather";
+import { ArrowLeft, Check } from "react-feather";
 import {
   Badge,
   Button,
@@ -25,7 +25,6 @@ import { getApiURL } from "api/utils";
 import ManualConditionsComponent from "components/inventory/ManualConditionsComponent";
 
 import AutomatedCategoryComponent from "components/inventory/AutomatedCategoryComponent";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 // import { RuleValueComponent } from "components/inventory/RuleValueComponent";

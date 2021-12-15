@@ -9,13 +9,9 @@ import {
   Spinner,
   Modal,
   FormGroup,
-  Label,
-  Input,
   ModalFooter,
   ModalHeader,
   ModalBody,
-  Form,
-  FormFeedback,
 } from "reactstrap";
 import { AgGridReact } from "ag-grid-react";
 
@@ -66,7 +62,7 @@ class OrdersList extends Component {
         cellRendererFramework: (params) => {
           return (
             <div>
-              {console.log("buyers details :::: >>>> ",params.data.buyer_name)}
+              {console.log("buyers details :::: >>>> ",params.data)}
               <span>{params.value} </span>
               <Edit3
                 size={20}
@@ -74,7 +70,7 @@ class OrdersList extends Component {
                 title="Edit"
                 role="button"
                 className="pointer"
-                onClick={() => history.push(`orders/${params.data.buyer_name}/update/${params.value}`)}
+                onClick={() => history.push(`orders/${params.data.buyer_id}/update/${params.value}`)}
               />
             </div>
           );
