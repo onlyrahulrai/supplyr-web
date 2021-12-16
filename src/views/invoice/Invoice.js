@@ -258,20 +258,12 @@ const Invoice =  (props) => {
                                         </div>
                                     </div>
                                     <Table responsive className="table-hover-animation border-top">
-                                        <thead>
-                                            <tr>
-                                                <th>Status</th>
-                                                <th>Variable Name</th>
-                                                <th>Value</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
                                             {
                                                 orderData.status_variable_values.map((varibale) => (
                                                     <tr>
-                                                        <td><small>{capitalizeString(varibale.status)}</small></td>
-                                                        <td><small>{varibale.variable_name}</small></td>
-                                                        <td><small>{varibale.value}</small></td>
+                                                        <td><small><strong>{varibale.variable_name}</strong></small></td>
+                                                        <td><small><strong>{varibale.value}</strong></small></td>
                                                     </tr>
                                                 ))
                                             }
@@ -344,84 +336,6 @@ const Invoice =  (props) => {
                                     }
                                 </tbody>
                             </Table>
-
-
-                            {/* <Row className="border  pt-0 pb-0 ml-0 mr-0">
-                                <Col sm="2">
-                                    <small>
-                                        <strong>Marks & & </strong>
-                                    </small>
-                                    <div>
-                                        <span><strong>Nos.</strong></span>
-                                    </div>
-                                </Col>
-                                <Col sm="2">
-                                    <small><strong>No. & Kind</strong></small>
-                                    <div>
-                                        <span><strong>of Packages</strong></span>
-                                    </div>
-                                </Col>
-                                <Col sm="3">
-                                    <small><strong>Description</strong></small>
-                                    <div>
-                                        <span><strong>of goods</strong></span>
-                                    </div>
-                                </Col>
-                                <Col className="border">
-                                    <small><strong>Qty.</strong></small>
-                                    <div>
-                                        <span><strong>(SQM.)</strong></span>
-                                    </div>
-                                </Col>
-                                <Col className="border">
-                                    <small>
-                                    <strong>Rate/</strong>
-                                    </small>
-                                    <div>
-                                        <span><strong>SQM  (US $)</strong></span>
-                                    </div>
-                                </Col>
-                                <Col className="border">
-                                    <small>
-                                    <strong>Amount </strong>
-                                    </small>
-                                    <div>
-                                        <span><strong>(in US $)</strong></span>
-                                    </div>
-                                </Col>
-                            </Row>
-
-                            
-
-                            {
-                                orderData.items.map((item,index) => (
-                                    <Row key={index} className="border  pt-0 pb-0 ml-0 mr-0" >
-                                        <Col>
-                                            <span><strong>{index + 1}</strong></span>
-                                        </Col>
-                                        <Col sm="6">
-                                            <strong>{item.product_variant.product.title}</strong>
-                                        </Col>
-                                        <Col className="border">
-                                            <div>
-                                                <span><strong>{item.quantity}</strong></span>
-                                            </div>
-                                        </Col>
-                                        <Col className="border">
-                                            <div>
-                                                <span><strong>{priceFormatter(item.price)}</strong></span>
-                                            </div>
-                                        </Col>
-                                        <Col className="border">
-                                            <small>
-                                            <strong>{priceFormatter(item.quantity * item.price)} </strong>
-                                            </small>
-                                        </Col>
-                                    </Row>
-                                ))
-                            } */}
-                            
-
                             <Row className="border border-bottom-0 ml-0 mr-0" style={{minHeight:"100px"}}>
                                 <Col sm="8">
                                     <small><strong>Amount Chargeable (In Words)</strong></small><br />
