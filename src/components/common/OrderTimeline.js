@@ -3,8 +3,10 @@ import "assets/scss/components/timeline.scss"
 const orderStatusDisplayMapping = {
     'created': {text: <b>Order Placed</b>, color: 'blue'},
     'approved': {text: <>Order status changed to <b>APPROVED</b></>,},
+    'processed': {text: <>Order status changed to <b>PROCESSED</b></>,},
     'dispatched': {text: <>Order status changed to <b>DISPATCHED</b></>},
     'delivered': {text: <>Order marked as <b>DELIVERED</b></>, color: 'green'},
+    'awaiting_approval': {text: <>Order marked as <b>AWAITING APPROVED</b></>, color: 'gray'},
     'cancelled': {text: <>Order <b>CANCELLED</b></>, color: 'pink'},
     'awaiting_approval': {text: <>Order marked as <b>AWAITING APPROVED</b></>, color: 'gray'},
 }
