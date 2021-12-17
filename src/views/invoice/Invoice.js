@@ -18,7 +18,7 @@ import { FileText, Download } from "react-feather"
 import "../../assets/scss/pages/invoice.scss"
 import { OrdersApi } from "api/endpoints"
 import NetworkError from "components/common/NetworkError"
-import { capitalizeString, priceFormatter } from "utility/general"
+import { capitalizeString, priceFormatter, priceFormatterDollar } from "utility/general"
 import { ToWords } from 'to-words';
 
 const Invoice =  (props) => {
@@ -223,21 +223,20 @@ const Invoice =  (props) => {
                             <Row className="ml-0 mr-0">
                                 <Col sm="7" className="px-0">
                                     <Row className="ml-0 mr-0">
-                                        <Col sm="4" className="px-0">
-                                            <div className="border p-1 border-top-0">
-                                                <small><strong>Pre-Carriage by:</strong></small> <br /><br />
-                                                <div>
-                                                    <strong>ROAD/RAIL</strong><br />
-                                                </div>
-                                            </div>
-                                        </Col>
-                                        <Col sm="8" className="px-0">
-                                            <div className="border p-1 border-top-0">
-                                                <small><strong>Place of Receiptby Pre-carrier:</strong></small> <br /><br /><br />
-                                            </div>
-                                        </Col>
+                                        {
+                                            orderData.status_variable_values.map((varibale) => (
+                                                <Col sm="6" className="px-0">
+                                                    <div className="border p-1 border-top-0">
+                                                        <small><strong>{varibale.variable_name}</strong></small> <br /><br />
+                                                        <div>
+                                                            <strong>{varibale.value}</strong><br />
+                                                        </div>
+                                                    </div>
+                                                </Col>
+                                            ))
+                                            }
                                     </Row>
-                                    <Row className="ml-0 mr-0"> 
+                                    {/* <Row className="ml-0 mr-0"> 
                                         <Col sm="4" className="px-0">
                                             <div className="border p-1 border-top-0">
                                                 <small><strong>Vessel No.</strong></small> <br /><br /><br />
@@ -248,7 +247,7 @@ const Invoice =  (props) => {
                                                 <small><strong>Port of Loading</strong></small> <br /><br /><br />
                                             </div>
                                         </Col>
-                                    </Row>
+                                    </Row> */}
                                     <Row className="ml-0 mr-0">
                                         <Col sm="4" className="px-0">
                                             <div className="border p-1 border-top-0 border-bottom-0">
@@ -272,7 +271,7 @@ const Invoice =  (props) => {
                                             <span><strong>120 DAYS FROM THE DATE OF B/L ON D/A</strong></span><br /><br />
                                         </div>
                                     </div>
-                                    <Table responsive className="table-hover-animation border-top">
+                                    {/* <Table responsive className="table-hover-animation border-top">
                                         <tbody>
                                             {
                                                 orderData.status_variable_values.map((varibale) => (
@@ -286,7 +285,7 @@ const Invoice =  (props) => {
 
                                             </tr>
                                         </tbody>
-                                    </Table>
+                                    </Table> */}
                                 </Col>
                             </Row>
 
@@ -308,10 +307,10 @@ const Invoice =  (props) => {
                                             </div>
                                         </th>
                                         <th>
-                                            <small><strong>Description</strong></small>
+                                            {/* <small><strong>Description</strong></small>
                                             <div>
                                                 <span><strong>of goods</strong></span>
-                                            </div>
+                                            </div> */}
                                         </th>
                                         <th>
                                             <small><strong>Qty.</strong></small>
@@ -344,8 +343,8 @@ const Invoice =  (props) => {
                                                 <td><strong>{index + 1}</strong></td>
                                                 <td colSpan="2"><strong>{item.product_variant.product.title}</strong></td>
                                                 <td><strong>{item.quantity}</strong></td>
-                                                <td><strong>{priceFormatter(item.price)}</strong></td>
-                                                <td><strong>{priceFormatter(item.quantity * item.price)}</strong></td>
+                                                <td><strong>{priceFormatterDollar(item.price)}</strong></td>
+                                                <td><strong>{priceFormatterDollar(item.quantity * item.price)}</strong></td>
                                             </tr>
                                         ))
                                     }
@@ -358,7 +357,7 @@ const Invoice =  (props) => {
                                 </Col>
                                 <Col sm="4" className="border border-left-0">
                                     <small><strong>Total:</strong></small><br />
-                                    <span><strong>{"  "}{priceFormatter( totals?.actualPrice)}</strong></span>
+                                    <span><strong>{"  "}{priceFormatterDollar( totals?.actualPrice)}</strong></span>
                                 </Col>
                             </Row>
                             <Row className="border-top-0 border ml-0 mr-0">
