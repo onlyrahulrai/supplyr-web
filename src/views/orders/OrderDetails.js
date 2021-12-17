@@ -7,6 +7,14 @@ import {
   Button, Card,
   CardBody,
   Col,
+  Form,
+  FormGroup,
+  Input,
+  Label,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   Row
 } from "reactstrap";
 
@@ -23,6 +31,8 @@ import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 import OrderTimeline from "components/common/OrderTimeline"
 import Spinner from "components/@vuexy/spinner/Loading-spinner"
 import NetworkError from "components/common/NetworkError"
+import DynamicForm from "components/forms/dynamic-form/DynamicForm"
+import { connect } from "react-redux";
 // import { productsList } from "./cartData";
 
 const statusDisplayDict = {
@@ -38,7 +48,14 @@ const statusDisplayDict = {
     getIcon: (size, color) => (<BsCheck size={size} color={color ?? "blue"} />),
     color: 'blue',
     buttonClass: 'primary',
-    buttonLabel: 'Mark Approved'
+    buttonLabel: 'Approve'
+  },
+  processed: {
+    name: "Order Processed",
+    getIcon: (size, color) => (<BsCheck size={size} color={color ?? "blue"} />),
+    color: 'blue',
+    buttonClass: 'primary',
+    buttonLabel: 'Mark Order Processed'
   },
   dispatched: {
     name: "Dispatched",
@@ -76,8 +93,7 @@ function OrderStatus({status_code, size=16}) {
   )
 }
 
-
-export default function OrderDetails() {
+function OrderDetails({order_status_variables}) {
 
   const {orderId} = useParams()
   console.log({orderId})
@@ -120,10 +136,14 @@ export default function OrderDetails() {
   );
 
 
-  const orderStatuses = ['awaiting_approval', 'approved', 'dispatched', 'delivered'] // Skipped 'cancelled' here as it has separate control
+  const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered'] // Skipped 'cancelled' here as it has separate control
   const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
   const nextStatusDisplayData = statusDisplayDict[nextStatus]
+  const nextStatusVariables = order_status_variables[nextStatus] 
   const [isHiddenControlsVisible, setIsHiddenControlsVisible] = useState(null)
+
+  const [isStateVariableModalVisible, setIsStateVariableModalVisible] = useState(false)
+  const toggleStateVariableModal = () => setIsStateVariableModalVisible(!isStateVariableModalVisible)
 
 
   const onAction = (operation, data) => {
@@ -164,6 +184,31 @@ export default function OrderDetails() {
       }
       return false;
     })
+  }
+
+  const changeOrderStatus = (_nextStatus, variables) => {
+    if (!variables){
+      onAction('change_status', _nextStatus)
+    }
+    else {
+      onAction('change_status_with_variables', {
+        status: _nextStatus,
+        variables
+      })
+    }
+  }
+
+  const onChangeStatusButtonPress = (_nextStatus) => {
+    // console.log('object :>> ', nextStatus);
+    // alert("CS to ss")
+    if (nextStatusVariables) {
+      // alert("Markind disopatch")
+      toggleStateVariableModal()
+    }
+    else {
+      changeOrderStatus(_nextStatus)
+    }
+    // onAction('change_status', nextStatus)
   }
 
 
@@ -308,14 +353,50 @@ export default function OrderDetails() {
               color={nextStatusDisplayData.buttonClass}
               block
               className="btn-block"
-              onClick={e => onAction('change_status', nextStatus)}
+              onClick={e => onChangeStatusButtonPress(nextStatus)}
             >
               {nextStatusDisplayData.getIcon(18, 'white')}
               {" "}{nextStatusDisplayData.buttonLabel}
             </Button.Ripple>
           }
-          <br />
 
+          {nextStatusVariables && (
+          <Modal
+            isOpen={isStateVariableModalVisible}
+            toggle={toggleStateVariableModal}
+            className="modal-dialog-centered"
+          >
+            <ModalHeader toggle={toggleStateVariableModal}>
+              Add Relevant Information:
+            </ModalHeader>
+            <ModalBody>
+                <DynamicForm
+                  schema={{
+                    fields: nextStatusVariables.map(sv => ({
+                      type: sv.data_type,
+                      name: sv.id,
+                      label: sv.name,
+                    }))
+                  }}
+                  save_button_label = {nextStatusDisplayData.buttonLabel}
+                  // initialValues={{
+                  //   business_name: '',}}
+                  errors= {{
+                      fields: {},
+                      global: "",
+                    }}
+                  onSubmit={(data, setSubmitting) => {
+                    // setSubmitting(true);
+                    changeOrderStatus(nextStatus, data)
+                    toggleStateVariableModal()
+                  }}
+                />
+
+            </ModalBody>
+          </Modal>
+          )}
+          <br />
+{/* 
           {!isHiddenControlsVisible &&
           <Button.Ripple
             type="submit"
@@ -326,7 +407,7 @@ export default function OrderDetails() {
             onClick={() => setIsHiddenControlsVisible(true)}>
             More <BsFillCaretDownFill />
           </Button.Ripple>
-          }
+          } */}
 
           {isHiddenControlsVisible && 
             <Row>
@@ -372,3 +453,10 @@ export default function OrderDetails() {
   }
   </>
 }
+
+
+const mapStateToProps = (state) => ({
+  order_status_variables: state.auth.userInfo.profile.order_status_variables,
+});
+
+export default connect(mapStateToProps)(OrderDetails);

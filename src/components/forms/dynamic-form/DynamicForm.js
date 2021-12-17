@@ -71,7 +71,7 @@ class DynamicForm extends Component {
                                 </Alert>
                                 {fields}
                                 {/* <pre>{JSON.stringify(values, null, 2)}</pre> */}
-                                <Button color="primary" disabled={isSubmitting} className="float-right btn-lg" type="submit">Save Changes</Button>
+                                <Button color="primary" disabled={isSubmitting} className="float-right btn-lg" type="submit">{this.props.save_button_label ?? "Save Changes"}</Button>
 
                             </Form>
                         )
