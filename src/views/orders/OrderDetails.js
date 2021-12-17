@@ -23,6 +23,7 @@ import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 import OrderTimeline from "components/common/OrderTimeline"
 import Spinner from "components/@vuexy/spinner/Loading-spinner"
 import NetworkError from "components/common/NetworkError"
+import apiClient from "api/base";
 // import { productsList } from "./cartData";
 
 const statusDisplayDict = {
@@ -166,7 +167,18 @@ export default function OrderDetails() {
     })
   }
 
-
+  const handleGenerateInvoice = async () => {
+    setIsLoading(true)
+    let data = {
+      order:orderId
+    }
+    await apiClient.post("/orders/generate-invoice/",data)
+    .then((response) => {
+      setIsLoading(false)
+      history.push(`/orders/${orderId}/invoice/${response.data.id}`)
+    })
+    .catch((error) => console.log(error))
+  }
 
   return <>
   {isLoading &&
@@ -317,8 +329,8 @@ export default function OrderDetails() {
           <br />
 
         
-              <Button.Ripple color="success" block className="btn-block mb-2" onClick={() => history.push(`/orders/${orderId}/invoice`)}>
-                Generate Invoice
+              <Button.Ripple color="success" block className="btn-block mb-2" onClick={handleGenerateInvoice}>
+                {orderData?.invoice?.order ? "View Invoice" :"Generate Invoice" }
               </Button.Ripple>
             
 

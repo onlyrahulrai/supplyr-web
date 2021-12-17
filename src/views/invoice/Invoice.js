@@ -23,6 +23,7 @@ import { ToWords } from 'to-words';
 
 const Invoice =  (props) => {
     const orderId = props.match.params.orderId;
+    const InvoiceNumber = props.match.params.invoiceNumber
     const [isLoading,setIsLoading] = useState(true)
     const [orderData,setOrderData] = useState(null)
     const [loadingError,setLoadingError] = useState(null)
@@ -65,7 +66,10 @@ const Invoice =  (props) => {
 
     const toWords = new ToWords();
 
-    console.log(orderData,totals)
+    const getDate = (date) => {
+        let _date = new Date(date)
+        return _date.toLocaleDateString("en-GB",{day:"numeric",month:"numeric",year:"numeric"})
+    }
 
     return (
         <>
@@ -80,14 +84,14 @@ const Invoice =  (props) => {
         />
         <Row>
           <Col className="mb-1 invoice-header" md="5" sm="12">
-            <InputGroup>
+            {/* <InputGroup>
               <Input placeholder="Email" />
               <InputGroupAddon addonType="append">
                 <Button.Ripple color="primary" outline>
                   Send Invoice
                 </Button.Ripple>
               </InputGroupAddon>
-            </InputGroup>
+            </InputGroup> */}
           </Col>
           <Col
             className="d-flex flex-column flex-md-row justify-content-end invoice-header mb-1"
@@ -112,33 +116,34 @@ const Invoice =  (props) => {
               <CardBody>
               <h3 className="text-center"><u>INVOICE</u></h3>
                             <Row className="mt-3 ml-0 mr-0">
-                                <Col sm="4" className="border px-0">
-                                <div className="p-1">
-                                    <small><strong>Exporter:</strong></small> <br />
+                                <Col sm="5" className="border px-0">
+                                    <div className="p-1">
+                                        <small><strong>Exporter:</strong></small> <br />
                                 
-                                    <div>
-                                        <span><strong>{capitalizeString(orderData.buyer_name)}</strong></span>
-                                        <br />
-                                        <span><strong>{orderData.address.name.toUpperCase()}</strong></span>
-                                        <br />
-                                        <span><strong>{orderData.address.city.toUpperCase()}</strong></span>
-                                        <br />
-                                        <span><strong>{orderData.address.line1.toUpperCase()}</strong></span>
-                                        <br />
-                                        <span><strong>{orderData.address.line2.toUpperCase()}</strong></span>
-                                        <br />
-                                        <span><strong>{orderData.address.state.toUpperCase()}</strong></span>
-                                    </div>
+                                        <div>
+                                            <span><strong>M/S. PAT GLOBAL INC.</strong></span>
+                                            <br />
+                                            <span><strong>NO.33 AND 34,, 8TH CROSS,</strong></span>
+                                            <br />
+                                            <span><strong>MUTHURAYASWAMY LAYOUT,</strong></span>
+                                            <br />
+                                            <span><strong>HULIMAVU,</strong></span>
+                                            <br />
+                                            <span><strong>BENGALURU</strong></span>
+                                            <br />
+                                            <span><strong>KARNATAKA -560076</strong></span>
+                                            <br />
+                                        </div>
                                     </div>
                                 </Col>
-                                <Col sm="8" className="px-0">
+                                <Col sm="7" className="px-0">
                                     <Row className="ml-0 mr-0">
                                         <Col sm="6" className="px-0">
                                         <div className="p-1 border">
                                                 <small><strong>Invoice No. & Date:</strong></small><br />
                                                 <div>
-                                                    <strong>PGI/EXP/----/21-22</strong><br />
-                                                    <strong>DT:--/--/----</strong><br />
+                                                    <strong>{orderData?.invoice?.invoice_number}</strong><br />
+                                                    <strong>DT:&nbsp;{orderData?.invoice?.created_at && getDate(orderData?.invoice?.created_at)}</strong><br />
                                                 </div>
                                             </div>
                                             
@@ -169,9 +174,19 @@ const Invoice =  (props) => {
                                 <div className="border p-1 border-top-0" style={{minHeight:"180px"}}>
                                     <small><strong>Consignee:</strong></small> <br />
 
-                                    <div>
-                                        <strong>TO ORDER</strong> 
-                                    </div>
+                                        <div>
+                                            <span><strong>{capitalizeString(orderData.buyer_name)}</strong></span>
+                                            <br />
+                                            <span><strong>{orderData.address.name.toUpperCase()}</strong></span>
+                                            <br />
+                                            <span><strong>{orderData.address.city.toUpperCase()}</strong></span>
+                                            <br />
+                                            <span><strong>{orderData.address.line1.toUpperCase()}</strong></span>
+                                            <br />
+                                            <span><strong>{orderData.address.line2.toUpperCase()}</strong></span>
+                                            <br />
+                                            <span><strong>{orderData.address.state.toUpperCase()}</strong></span>
+                                        </div>
                                 </div>
                             </Col>
                             <Col sm="8" className="pl-0 border">
@@ -287,9 +302,9 @@ const Invoice =  (props) => {
                                             </div>
                                         </th>
                                         <th>
-                                            <small><strong>No. & Kind</strong></small>
+                                            <small><strong>Title</strong></small>
                                             <div>
-                                                <span><strong>of Packages</strong></span>
+                                                <span><strong>(Package Name)</strong></span>
                                             </div>
                                         </th>
                                         <th>
@@ -327,7 +342,7 @@ const Invoice =  (props) => {
                                         orderData.items.map((item,index) => (
                                             <tr key={index}>
                                                 <td><strong>{index + 1}</strong></td>
-                                                <td colspan="2"><strong>{item.product_variant.product.title}</strong></td>
+                                                <td colSpan="2"><strong>{item.product_variant.product.title}</strong></td>
                                                 <td><strong>{item.quantity}</strong></td>
                                                 <td><strong>{priceFormatter(item.price)}</strong></td>
                                                 <td><strong>{priceFormatter(item.quantity * item.price)}</strong></td>
