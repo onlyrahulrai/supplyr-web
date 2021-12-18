@@ -12,8 +12,9 @@ import {
   Button,
   Spinner
 } from "reactstrap"
-import Breadcrumbs from "components/@vuexy/breadCrumbs/BreadCrumb"
+import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 import { FileText, Download } from "react-feather"
+import { history } from "../../history"
 
 import "../../assets/scss/pages/invoice.scss"
 import { OrdersApi } from "api/endpoints"
@@ -77,10 +78,10 @@ const Invoice =  (props) => {
         {!isLoading && loadingError && <NetworkError error={loadingError} />}
         {!isLoading && (
       <React.Fragment>
-        <Breadcrumbs
-          breadCrumbTitle="Invoice"
-          breadCrumbParent="Pages"
-          breadCrumbActive="Invoice"
+        <BreadCrumb
+            breadCrumbTitle={"Invoice for Order #" + orderId}
+            breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</a>}
+            breadCrumbActive = {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/${orderId}`)}}>{`Order #${orderId}`}</a>}
         />
         <Row>
           <Col className="mb-1 invoice-header" md="5" sm="12">
