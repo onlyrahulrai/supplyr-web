@@ -8,6 +8,7 @@ const orderStatusDisplayMapping = {
     'delivered': {text: <>Order marked as <b>DELIVERED</b></>, color: 'green'},
     'awaiting_approval': {text: <>Order marked as <b>AWAITING APPROVED</b></>, color: 'gray'},
     'cancelled': {text: <>Order <b>CANCELLED</b></>, color: 'pink'},
+    'awaiting_approval': {text: <>Order marked as <b>AWAITING APPROVED</b></>, color: 'gray'},
 }
 
 export default function Timeline({data}) {

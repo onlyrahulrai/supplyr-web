@@ -4,14 +4,13 @@ import { getApiURL } from "api/utils";
 import BreadCrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import NetworkError from "components/common/NetworkError";
 import React, { useEffect, useState } from "react";
-import { AlertTriangle, ArrowLeft, Edit3, Eye, Plus, Trash } from "react-feather";
+import { ArrowLeft, Edit3, Eye, Plus, Trash } from "react-feather";
 import {
   Button,
   Card,
   CardBody,
   CardHeader,
   Form,
-  FormFeedback,
   FormGroup,
   Input,
   Label,
@@ -373,11 +372,13 @@ const OrderAdd = (props) => {
                                   setItem((prevState) => ({
                                     ...prevState,
                                     variant: product.variants_data,
+                                    quantity: product.variants_data.minimum_order_quantity,
                                   }));
                                 } else {
                                   setItem((prevState) => ({
                                     ...prevState,
                                     variant: product.variants_data[0],
+                                    quantity:product.variants_data[0].minimum_order_quantity
                                   }));
                                 }
                                 setSelectedProduct(product);
@@ -470,7 +471,7 @@ const OrderAdd = (props) => {
                               type="number"
                               placeholder="1"
                               name="quantity"
-                              value={item?.quantity || selectedProduct?.minimum_order_quantity || ""}
+                              value={item?.quantity || ""}
                               bsSize="lg"
                               onChange={(e) =>
                                 setItem((prevState) => ({
@@ -479,13 +480,13 @@ const OrderAdd = (props) => {
                                 }))
                               }
                               disabled={!selectedProduct}
-                              invalid={item?.quantity < selectedProduct?.minimum_order_quantity}
+                              // invalid={(item?.quantity < selectedProduct?.minimum_order_quantity)}
                             />
-                            <FormFeedback invalid={item?.quantity < selectedProduct?.minimum_order_quantity}>
+                            {/* <FormFeedback invalid={(item?.quantity < selectedProduct?.minimum_order_quantity)}>
                               <div className="text-danger">
                                 <AlertTriangle size={14}  /> Minimun Quantity: {selectedProduct?.minimum_order_quantity}
                               </div>
-                         </FormFeedback>
+                         </FormFeedback> */}
                           </FormGroup>
 
                           <Button.Ripple

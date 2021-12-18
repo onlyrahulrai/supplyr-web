@@ -40,7 +40,7 @@ class LandingUpdate extends Component {
               <Col lg="6" md="12" className="p-0 d-flex align-items-center justify-content-center"  style={{height:"100%"}}>
                 <Card className="rounded mb-0 ">
                   <CardBody>
-                    <img src={logo} class='img-fluid p-3' />
+                    <img src={logo} class='img-fluid p-3' alt="logo" />
                     <h3 className="text-center">Modernize Your Sales &amp; Purchases</h3>
                     <br />
                     <div className="mb-2 text-center">

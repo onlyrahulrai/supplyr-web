@@ -7,13 +7,8 @@ import {
   Button, Card,
   CardBody,
   Col,
-  Form,
-  FormGroup,
-  Input,
-  Label,
   Modal,
   ModalBody,
-  ModalFooter,
   ModalHeader,
   Row
 } from "reactstrap";
@@ -24,13 +19,14 @@ import {getMediaURL} from "api/utils"
 import VariantLabel from "components/inventory/VariantLabel"
 import Address from "components/inventory/Address"
 import ProductDummyImage from "assets/img/svg/cart.svg"
-import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsFillCaretDownFill} from "react-icons/bs"
+import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsReceipt} from "react-icons/bs"
 import {RiTruckLine} from "react-icons/ri"
 import Swal from "utility/sweetalert"
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 import OrderTimeline from "components/common/OrderTimeline"
 import Spinner from "components/@vuexy/spinner/Loading-spinner"
 import NetworkError from "components/common/NetworkError"
+import apiClient from "api/base";
 import DynamicForm from "components/forms/dynamic-form/DynamicForm"
 import { connect } from "react-redux";
 // import { productsList } from "./cartData";
@@ -186,6 +182,19 @@ function OrderDetails({order_status_variables}) {
     })
   }
 
+  const handleGenerateInvoice = async () => {
+    setIsLoading(true)
+    let data = {
+      order:orderId
+    }
+    await apiClient.post("/orders/generate-invoice/",data)
+    .then((response) => {
+      setIsLoading(false)
+      history.push(`/orders/${orderId}/invoice/${response.data.id}`)
+    })
+    .catch((error) => console.log(error))
+  }
+  
   const changeOrderStatus = (_nextStatus, variables) => {
     if (!variables){
       onAction('change_status', _nextStatus)
@@ -199,16 +208,12 @@ function OrderDetails({order_status_variables}) {
   }
 
   const onChangeStatusButtonPress = (_nextStatus) => {
-    // console.log('object :>> ', nextStatus);
-    // alert("CS to ss")
     if (nextStatusVariables) {
-      // alert("Markind disopatch")
       toggleStateVariableModal()
     }
     else {
       changeOrderStatus(_nextStatus)
     }
-    // onAction('change_status', nextStatus)
   }
 
 
@@ -347,101 +352,112 @@ function OrderDetails({order_status_variables}) {
 
           <hr />
           {!['cancelled', 'delivered'].includes(orderData?.order_status) &&
-          <>
-          {nextStatus && nextStatus !== 'cancelled' &&
-            <Button.Ripple
-              color={nextStatusDisplayData.buttonClass}
-              block
-              className="btn-block"
-              onClick={e => onChangeStatusButtonPress(nextStatus)}
-            >
-              {nextStatusDisplayData.getIcon(18, 'white')}
-              {" "}{nextStatusDisplayData.buttonLabel}
-            </Button.Ripple>
+            <>
+              {nextStatus && nextStatus !== 'cancelled' &&
+                <Button.Ripple
+                  color={nextStatusDisplayData.buttonClass}
+                  block
+                  className="btn-block"
+                  onClick={e => onChangeStatusButtonPress(nextStatus)}
+                >
+                  {nextStatusDisplayData.getIcon(18, 'white')}
+                  {" "}{nextStatusDisplayData.buttonLabel}
+                </Button.Ripple>
+              }
+
+                
+              {nextStatusVariables && (
+              <Modal
+                isOpen={isStateVariableModalVisible}
+                toggle={toggleStateVariableModal}
+                className="modal-dialog-centered"
+              >
+                <ModalHeader toggle={toggleStateVariableModal}>
+                  Add Relevant Information:
+                </ModalHeader>
+                <ModalBody>
+                    <DynamicForm
+                      schema={{
+                        fields: nextStatusVariables.map(sv => ({
+                          type: sv.data_type,
+                          name: sv.id,
+                          label: sv.name,
+                        }))
+                      }}
+                      save_button_label = {nextStatusDisplayData.buttonLabel}
+                      // initialValues={{
+                      //   business_name: '',}}
+                      errors= {{
+                          fields: {},
+                          global: "",
+                        }}
+                      onSubmit={(data, setSubmitting) => {
+                        // setSubmitting(true);
+                        changeOrderStatus(nextStatus, data)
+                        toggleStateVariableModal()
+                      }}
+                    />
+
+                </ModalBody>
+              </Modal>
+              )}
+              <br />
+    {/* 
+              {!isHiddenControlsVisible &&
+              <Button.Ripple
+                type="submit"
+                block
+                color="dark"
+                outline
+                className="btn-block mb-2"
+                onClick={() => setIsHiddenControlsVisible(true)}>
+                More <BsFillCaretDownFill />
+              </Button.Ripple>
+              } */}
+
+                
+
+              {isHiddenControlsVisible && 
+                <Row>
+                {orderStatuses.filter(status => status!==nextStatus && status !=orderData?.order_status).map(status => {
+                  const _displayData = statusDisplayDict[status]  
+                  return (
+                  <Col>
+                  <Button.Ripple
+                    color={_displayData.buttonClass}
+                    block
+                    className="btn-block mb-1"
+                    onClick={e => onAction('change_status', status)}
+                  >
+                    {_displayData.getIcon(18, 'white')}
+                    {" "}{_displayData.buttonLabel}
+                  </Button.Ripple>
+                  </Col>
+                )}
+                )}
+                <Col>
+                  <Button.Ripple
+                    color='danger'
+                    block
+                    className="btn-block"
+                    onClick={onCancel}
+                  >
+                    {statusDisplayDict['cancelled'].getIcon(18, 'white')}
+                    {" "}{statusDisplayDict['cancelled'].buttonLabel}
+                  </Button.Ripple>
+                </Col>
+                </Row>
+              }
+
+            </>
           }
 
-          {nextStatusVariables && (
-          <Modal
-            isOpen={isStateVariableModalVisible}
-            toggle={toggleStateVariableModal}
-            className="modal-dialog-centered"
-          >
-            <ModalHeader toggle={toggleStateVariableModal}>
-              Add Relevant Information:
-            </ModalHeader>
-            <ModalBody>
-                <DynamicForm
-                  schema={{
-                    fields: nextStatusVariables.map(sv => ({
-                      type: sv.data_type,
-                      name: sv.id,
-                      label: sv.name,
-                    }))
-                  }}
-                  save_button_label = {nextStatusDisplayData.buttonLabel}
-                  // initialValues={{
-                  //   business_name: '',}}
-                  errors= {{
-                      fields: {},
-                      global: "",
-                    }}
-                  onSubmit={(data, setSubmitting) => {
-                    // setSubmitting(true);
-                    changeOrderStatus(nextStatus, data)
-                    toggleStateVariableModal()
-                  }}
-                />
-
-            </ModalBody>
-          </Modal>
-          )}
-          <br />
-{/* 
-          {!isHiddenControlsVisible &&
-          <Button.Ripple
-            type="submit"
-            block
-            color="dark"
-            outline
-            className="btn-block"
-            onClick={() => setIsHiddenControlsVisible(true)}>
-            More <BsFillCaretDownFill />
-          </Button.Ripple>
-          } */}
-
-          {isHiddenControlsVisible && 
-            <Row>
-            {orderStatuses.filter(status => status!==nextStatus && status !=orderData?.order_status).map(status => {
-              const _displayData = statusDisplayDict[status]  
-              return (
-              <Col>
-              <Button.Ripple
-                color={_displayData.buttonClass}
-                block
-                className="btn-block"
-                onClick={e => onAction('change_status', status)}
-              >
-                {_displayData.getIcon(18, 'white')}
-                {" "}{_displayData.buttonLabel}
+          {['processed', 'dispatched', 'delivered'].includes(orderData.order_status) &&
+              
+              <Button.Ripple color="warning" block className="btn-block mt-2" onClick={handleGenerateInvoice}>
+                <BsReceipt size={20} color={"white"} />
+                {orderData?.invoice?.order ? " View Invoice" :" Generate Invoice" }
               </Button.Ripple>
-              </Col>
-            )}
-            )}
-            <Col>
-              <Button.Ripple
-                color='danger'
-                block
-                className="btn-block"
-                onClick={onCancel}
-              >
-                {statusDisplayDict['cancelled'].getIcon(18, 'white')}
-                {" "}{statusDisplayDict['cancelled'].buttonLabel}
-              </Button.Ripple>
-            </Col>
-            </Row>
-          }
-
-          </>
           }
 
           </CardBody>

@@ -1,6 +1,6 @@
 import Select from "react-select";
 import { SimpleInputField } from "components/forms/fields";
-import React, { useEffect, useReducer, useState } from "react";
+import React, { useEffect } from "react";
 import { ArrowLeft, Edit, Trash } from "react-feather";
 import {
   Button,
@@ -8,12 +8,10 @@ import {
   CardBody,
   CardHeader,
   Col,
-  Form,
   FormGroup,
   Input,
   Label,
   Row,
-  Spinner,
   Table,
 } from "reactstrap";
 import {

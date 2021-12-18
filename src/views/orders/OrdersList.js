@@ -9,13 +9,9 @@ import {
   Spinner,
   Modal,
   FormGroup,
-  Label,
-  Input,
   ModalFooter,
   ModalHeader,
   ModalBody,
-  Form,
-  FormFeedback,
 } from "reactstrap";
 import { AgGridReact } from "ag-grid-react";
 
@@ -29,9 +25,8 @@ import Swal from "utility/sweetalert";
 import CustomPagination from "components/common/CustomPagination";
 import { OrdersApi } from "api/endpoints";
 import Select from "react-select";
-import { priceFormatter } from "utility/general";
-import { AsyncPaginate } from "react-select-async-paginate";
-import {loadBuyerOptions} from "components/orders/loadOptions";
+import { capitalizeString, priceFormatter } from "utility/general";
+import apiClient from "api/base";
 
 const orderStatusLabels = {
   awaiting_approval: "Awaiting Approval",
@@ -67,7 +62,7 @@ class OrdersList extends Component {
         cellRendererFramework: (params) => {
           return (
             <div>
-              {console.log("buyers details :::: >>>> ",params.data.buyer_name)}
+              {console.log("buyers details :::: >>>> ",params.data)}
               <span>{params.value} </span>
               <Edit3
                 size={20}
@@ -75,7 +70,7 @@ class OrdersList extends Component {
                 title="Edit"
                 role="button"
                 className="pointer"
-                onClick={() => history.push(`orders/${params.data.buyer_name}/update/${params.value}`)}
+                onClick={() => history.push(`orders/${params.data.buyer_id}/update/${params.value}`)}
               />
             </div>
           );
@@ -141,7 +136,8 @@ class OrdersList extends Component {
     ],
     modal: false,
     buyer: null,
-    error:false
+    error:false,
+    buyersData:[]
   };
 
   async fetchOrders(options) {
@@ -181,6 +177,25 @@ class OrdersList extends Component {
     }
   }
 
+  async fetchBuyers(){
+    let response = undefined
+    try{
+      this.setState({isLoading:true})
+      response = await apiClient("/inventory/seller-buyers/")
+      response = response.data
+      const buyersData = response.results
+      this.setState({
+        isLoading: false,
+        buyersData:buyersData
+      });
+    }catch(error){
+      Swal.fire("Error !", "Unable to fetch orders", "error");
+      console.log(error);
+    }
+  }
+
+
+
   switchPage(pageNumber) {
     const options = { pageNumber };
     this.state.filtersApplied && (options.filters = this.state.filtersApplied);
@@ -189,6 +204,7 @@ class OrdersList extends Component {
 
   componentDidMount() {
     this.fetchOrders();
+    this.fetchBuyers()
   }
 
   onGridReady = (params) => {
@@ -255,16 +271,27 @@ class OrdersList extends Component {
       this.setState({error:true})
     }else{
       this.toggleModal()
-      history.push(`/orders/${this.state.buyer.label}/add`)
+      history.push(`/orders/${this.state.buyer.value}/add`)
     }
   }
+
+  customStyles = {
+    control: (base) => ({
+      ...base,
+      height: 50,
+      minHeight: 50,
+      div: {
+        overflow: "initial",
+      },
+    }),
+  };
 
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
     const { filters, filtersApplied } = this.state;
     console.log(
-      "buyer detail is ",
-      this.state.buyer ? this.state.buyer : "Please select the buyer:"
+      "buyer data is ",
+      this.state.buyersData
     );
     return (
       <Row className="">
@@ -416,13 +443,25 @@ class OrdersList extends Component {
                         </ModalHeader>
                         <ModalBody>
                           <FormGroup>
-                            <AsyncPaginate
-                              additional={{ page: 1 }}
+                            <Select 
+                              options={this.state.buyersData.map((result) => ({
+                                value: result.buyer.id,
+                                label: capitalizeString(result.buyer.business_name),
+                                email:result.buyer.email
+                              }))}
+                              formatOptionLabel={({ label, email }) => {
+                                return (
+                                  <div>
+                                    <div>
+                                      {label}
+                                    </div>
+                                    <div className="text-lightgray">({email})</div>
+                                  </div>
+                                )
+                              }}
                               value={this.state.buyer}
-                              loadOptions={loadBuyerOptions}
-                              onChange={(value) =>
-                                this.setState({ buyer: value })
-                              }
+                              onChange={(value) => this.setState({ buyer: value })}
+                              styles={this.customStyles}
                             />
                             {this.state.error && (<small className="text-danger mt-1 text-sm">Please! select the buyer. This is required.</small>)}
                           </FormGroup>
