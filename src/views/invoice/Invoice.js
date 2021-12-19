@@ -72,6 +72,10 @@ const Invoice =  (props) => {
         return _date.toLocaleDateString("en-GB",{day:"numeric",month:"numeric",year:"numeric"})
     }
 
+    const variables = orderData?.status_variable_values?.reduce((a,v) => ({...a,[v.variable_slug.replace(/-/g,"")]:v}),{}) // We Are generate an object by using a list of objects coming from the order details API. to use as custom invoice variables.
+
+    
+
     return (
         <>
         {isLoading && <Spinner />}
@@ -223,36 +227,39 @@ const Invoice =  (props) => {
                             </Row>
                             <Row className="ml-0 mr-0">
                                 <Col sm="7" className="px-0">
-                                    <Row className="ml-0 mr-0">
-                                        {
-                                            orderData.status_variable_values.map((varibale) => (
-                                                <Col sm="6" className="px-0">
-                                                    <div className="border p-1 border-top-0">
-                                                        <small><strong>{varibale.variable_name}</strong></small> <br /><br />
-                                                        <div>
-                                                            <strong>{varibale.value}</strong><br />
-                                                        </div>
-                                                    </div>
-                                                </Col>
-                                            ))
-                                            }
-                                    </Row>
-                                    {/* <Row className="ml-0 mr-0"> 
+                                    <Row className="ml-0 mr-0"> 
                                         <Col sm="4" className="px-0">
                                             <div className="border p-1 border-top-0">
-                                                <small><strong>Vessel No.</strong></small> <br /><br /><br />
+                                                <small><strong>Pre-Carriage by</strong></small> <br />
+                                                <span><strong>{variables?.precarriageby?.value ?? " "}</strong></span><br /><br />
                                             </div>
                                         </Col>
                                         <Col sm="8" className="px-0">
                                             <div className="border p-1 border-top-0">
-                                                <small><strong>Port of Loading</strong></small> <br /><br /><br />
+                                                <small><strong>Place of Receiptby Pre-carrier</strong></small> <br />
+                                                <span><strong>{variables?.placeofreceiptbyprecarrier?.value ?? " "}</strong></span><br /><br />
                                             </div>
                                         </Col>
-                                    </Row> */}
+                                    </Row>
+                                    <Row className="ml-0 mr-0"> 
+                                        <Col sm="4" className="px-0">
+                                            <div className="border p-1 border-top-0">
+                                                <small><strong>Vessel No.</strong></small> <br />
+                                                <span><strong>{variables?.vesselno?.value ?? " "}</strong></span><br /><br />
+                                            </div>
+                                        </Col>
+                                        <Col sm="8" className="px-0">
+                                            <div className="border p-1 border-top-0">
+                                                <small><strong>Port of Loading</strong></small> <br />
+                                                <span><strong>{variables?.portofloading?.value || " "}</strong></span><br /><br />
+                                            </div>
+                                        </Col>
+                                    </Row>
                                     <Row className="ml-0 mr-0">
                                         <Col sm="4" className="px-0">
                                             <div className="border p-1 border-top-0 border-bottom-0">
-                                                <small><strong>Port of Disch.</strong></small> <br /><br /><br />
+                                                <small><strong>Port of Disch.</strong></small> <br />
+                                                <span><strong>{variables?.portofdisch?.value || " "}</strong></span><br /><br />
                                             </div>
                                         </Col>
                                         <Col sm="8" className="px-0">
