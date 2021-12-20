@@ -10,9 +10,13 @@ export default class DynamicField extends Component {
         let schema = this.props.schema;
         let fieldError = this.props.error;
         let field = "";
+        if (schema.type === "integer") {
+            schema.type = "number";
+        }
         // eslint-disable-next-line
         switch (schema.type) {
           case "number":
+          case "date":
           case "text": {
             field = (
                 <FormGroup className="form-label-group">

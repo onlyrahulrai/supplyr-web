@@ -331,6 +331,24 @@ function OrderDetails({order_status_variables}) {
           <Address
             {...orderData.address}
           />
+          {orderData.status_variable_values &&  (
+          <> 
+            <hr />
+            <h6 className="text-secondary">INFORMATION</h6>
+            {orderData.status_variable_values.map(status_variable => (
+              <Row className="mt-1">
+                <Col xs={6}>
+                  <strong>
+                  {status_variable.variable_name}
+                  </strong>
+                </Col>
+                <Col xs={6} className='text-right'>
+                  {status_variable.value}
+                </Col>
+              </Row>
+            ))}
+          </>)
+          }
           <hr />
           <div className="price-details">
             <p>Price Details</p>
@@ -401,7 +419,6 @@ function OrderDetails({order_status_variables}) {
                 </ModalBody>
               </Modal>
               )}
-              <br />
     {/* 
               {!isHiddenControlsVisible &&
               <Button.Ripple
