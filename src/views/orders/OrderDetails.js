@@ -336,7 +336,7 @@ function OrderDetails({order_status_variables}) {
             <hr />
             <h6 className="text-secondary">INFORMATION</h6>
             {orderData.status_variable_values.map(status_variable => (
-              <Row className="mt-1">
+              <Row className="mt-1" key={status_variable.variable_slug}>
                 <Col xs={6}>
                   <strong>
                   {status_variable.variable_name}
