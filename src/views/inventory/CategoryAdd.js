@@ -435,6 +435,13 @@ const CategoryAdd = (props) => {
                                 }
                                 menuPlacement="auto"
                                 options={category}
+                                menuPortalTarget={document.body}
+                                styles={{
+                                  menuPortal: (base) => ({
+                                    ...base,
+                                    zIndex: 9999,
+                                  }),
+                                }}
                               />
                             }
                           />

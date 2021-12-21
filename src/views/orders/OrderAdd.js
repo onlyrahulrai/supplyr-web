@@ -239,7 +239,7 @@ const OrderAdd = (props) => {
         items: variantData,
         address: orderInfo?.address?.id,
         buyer_id: orderInfo?.buyer_id,
-        discount: orderInfo?.discount || 0,
+        // discount: orderInfo?.discount || 0,
       };
 
       let url = "/orders/";
@@ -589,7 +589,7 @@ const OrderAdd = (props) => {
                       </Card>
                     ))}
 
-                    <FormGroup>
+                    {/* <FormGroup>
                       <Label for="discount">Discount</Label>
                       <Input
                         type="number"
@@ -602,7 +602,7 @@ const OrderAdd = (props) => {
                           }))
                         }
                       />
-                    </FormGroup>
+                    </FormGroup> */}
 
                     <Button.Ripple
                       color="primary"
