@@ -13,7 +13,8 @@ export const numberFormatter = (n) => {
     return formattedNumber + (postDecimal ? ('.' + postDecimal) : '')
   }
 
-export const priceFormatter = _price => <span>&#8377; {numberFormatter(_price)}</span>
+// export const priceFormatter = _price => <span>&#8377; {numberFormatter(_price)}</span>
+export const priceFormatter = _price => <span>&#36; {numberFormatter(_price)}</span>
 
 export const priceFormatterDollar = _price => <span>&#36; {numberFormatter(_price)}</span>
 

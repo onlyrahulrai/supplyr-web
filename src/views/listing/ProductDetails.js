@@ -60,12 +60,12 @@ function DetailPage(props) {
 
   const productPriceDisplay = currentVariant.price
     ? (<>
-      <del className="text-lightgray h6">&#8377;{currentVariant.actual_price}</del>
-      <span className="ml-1">&#8377;{currentVariant.price}</span>
+      <del className="text-lightgray h6">&#36;{currentVariant.actual_price}</del>
+      <span className="ml-1">&#36;{currentVariant.price}</span>
     </>
     )
     : (
-      <span>&#8377;{currentVariant.actual_price}</span>
+      <span>&#36;{currentVariant.actual_price}</span>
     )
 
   const isProductInStock = currentVariant.quantity > 0
@@ -193,7 +193,7 @@ function DetailPage(props) {
                               <div>
                                 <img src={variant.featured_image ? getApiURL(productData.images?.find(image => image.id === variant.featured_image)?.image) : ''} alt='featured' className="float-left mr-1 img-40" />
                                 <div>{getVariantShortDescription(variant)}</div>
-                                <div className="text-lightgray">&#8377; {variant.price}</div>
+                                <div className="text-lightgray">&#36; {variant.price}</div>
                               </div>
                             )
                             return {

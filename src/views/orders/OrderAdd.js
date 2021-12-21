@@ -471,6 +471,7 @@ const OrderAdd = (props) => {
                               type="number"
                               placeholder="1"
                               name="quantity"
+                              min={selectedProduct?.minimum_order_quantity}
                               value={item?.quantity || ""}
                               bsSize="lg"
                               onChange={(e) =>

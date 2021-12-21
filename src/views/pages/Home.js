@@ -250,7 +250,7 @@ const Dashboard = () => {
                       data: weekly_order_stats_list.amount,
                     }}
                     xaxis_labels={weekly_order_stats_list.date}
-                    unit={<span>&#8377;</span>}
+                    unit={<span>&#36;</span>}
                   />
                 </Col>
               </Row>
@@ -272,7 +272,7 @@ const Dashboard = () => {
                       <StatsSmallCard
                         title={
                           <>
-                            <span>&#8377;</span>{" "}
+                            <span>&#36;</span>{" "}
                             {numberFormatter(daily_order_stats.amount)}
                           </>
                         }
