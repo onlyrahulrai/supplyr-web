@@ -431,7 +431,7 @@ const OrderAdd = (props) => {
                                           {getVariantShortDescription(variant)}
                                         </div>
                                         <div className="text-lightgray">
-                                          &#8377; {variant.price}
+                                          &#36; {variant.price}
                                         </div>
                                       </div>
                                     );
