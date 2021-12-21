@@ -949,7 +949,9 @@ function AddProduct(props) {
     }
 
     if(basicData?.weight_value && basicData?.weight_value !== "0.00"){
-      errors.push("Please select the weight unit field!");
+      if(!basicData?.weight_unit){
+        errors.push("Please select the weight unit field!");
+      }
     }
     
     if (variantsData.multiple === undefined) {
