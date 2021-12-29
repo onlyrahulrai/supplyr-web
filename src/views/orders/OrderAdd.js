@@ -27,6 +27,7 @@ import _Swal from "sweetalert2";
 
 import withReactContent from "sweetalert2-react-content";
 import { OrdersApi } from "api/endpoints";
+import DefaultProductImage from "../../assets/img/pages/default_product_image.png"
 
 const Swal = withReactContent(_Swal);
 
@@ -280,8 +281,9 @@ const OrderAdd = (props) => {
   const formatOptionLabel = ({ label, featured_image, quantity }) => {
     return (
       <div className="select-product">
+        {console.log("image url -------> ",featured_image ?? "name")}
         <img
-          src={getApiURL(featured_image)}
+          src={featured_image ? getApiURL(featured_image) : DefaultProductImage}
           alt="featured"
           className="float-left mr-1 img-40"
         />
@@ -477,7 +479,7 @@ const OrderAdd = (props) => {
                               onChange={(e) =>
                                 setItem((prevState) => ({
                                   ...prevState,
-                                  quantity: parseInt(e.target.value),
+                                  quantity: Math.max(parseInt(e.target.value),selectedProduct?.minimum_order_quantity),
                                 }))
                               }
                               disabled={!selectedProduct}

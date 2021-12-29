@@ -27,6 +27,7 @@ import { OrdersApi } from "api/endpoints";
 import Select from "react-select";
 import { capitalizeString, priceFormatter } from "utility/general";
 import apiClient from "api/base";
+import PriceDisplay from "components/settings/general-settings/PriceDisplay";
 
 const orderStatusLabels = {
   awaiting_approval: "Awaiting Approval",
@@ -99,7 +100,9 @@ class OrdersList extends Component {
         // filter: true,
         width: 200,
         cellRendererFramework: (params) => {
-          return <div>{priceFormatter(params.value)}</div>;
+          return <div>
+            <PriceDisplay amount={params.value} />
+          </div>;
         },
       },
 

@@ -40,7 +40,7 @@ import { SimpleInputField } from "components/forms/fields";
 import { matchSorter } from "match-sorter";
 import Swal from "utility/sweetalert";
 import CustomPagination from "components/common/CustomPagination";
-import { priceFormatter } from "utility/general";
+import PriceDisplay from "components/settings/general-settings/PriceDisplay";
 
 // Box Icons
 import { BiImport } from "react-icons/bi";
@@ -305,6 +305,7 @@ class UsersList extends Component {
                 width="30"
               />
               <span>{params.data.title}</span>
+              {params.data.has_multiple_variants && this.multiple_sign}
             </div>
           );
         },
@@ -345,7 +346,8 @@ class UsersList extends Component {
         // filter: true,
         width: 200,
         cellRendererFramework: (params) => {
-          let display_value = priceFormatter(params.value);
+          // let display_value = priceFormatter(params.value);
+          let display_value = <PriceDisplay amount={params.value} />;
           if (
             params.data.has_multiple_variants &&
             params.data.sale_price_maximum &&
@@ -354,15 +356,18 @@ class UsersList extends Component {
           ) {
             display_value = (
               <>
-                {priceFormatter(params.data.sale_price_minimum)} {"-"}{" "}
-                {priceFormatter(params.data.sale_price_maximum)}
+                <PriceDisplay amount={params.data.sale_price_minimum} />{" - "}{" "}
+                <PriceDisplay amount={params.data.sale_price_maximum} />
+                
+                {/* {priceFormatter(params.data.sale_price_minimum)} {"-"}{" "}
+                {priceFormatter(params.data.sale_price_maximum)} */}
               </>
             );
           }
           return (
             <div>
               {display_value}{" "}
-              {params.data.has_multiple_variants && this.multiple_sign}
+              {/* {params.data.has_multiple_variants && this.multiple_sign} */}
             </div>
           );
         },

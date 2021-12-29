@@ -1,4 +1,5 @@
 import Address from "components/inventory/Address";
+import PriceDisplay from "components/settings/general-settings/PriceDisplay";
 import React, { useState } from "react";
 import { Edit3 } from "react-feather";
 import { Card, CardBody, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
@@ -53,12 +54,14 @@ const SidebarComponent = (props) => {
           </div>
           <div className="detail">
             <div className="detail-title">Total MRP</div>
-            <div className="detail-amt">{priceFormatter(totals.actualPrice)}</div>
+            <div className="detail-amt">
+              <PriceDisplay amount={totals.actualPrice} />
+            </div>
           </div>
           <div className="detail">
             <div className="detail-title">Discount</div>
             <div className="detail-amt discount-amt">
-              {priceFormatter(totals.actualPrice - totals.salePrice)}
+              <PriceDisplay amount={(totals.actualPrice - totals.salePrice).toFixed(2)} />
             </div>
           </div>
 

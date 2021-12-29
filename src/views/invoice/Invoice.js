@@ -21,6 +21,7 @@ import { OrdersApi } from "api/endpoints"
 import NetworkError from "components/common/NetworkError"
 import { capitalizeString, priceFormatter, priceFormatterDollar } from "utility/general"
 import { ToWords } from 'to-words';
+import PriceDisplay from "components/settings/general-settings/PriceDisplay"
 
 const Invoice =  (props) => {
     const orderId = props.match.params.orderId;
@@ -351,8 +352,8 @@ const Invoice =  (props) => {
                                                 <td><strong>{index + 1}</strong></td>
                                                 <td colSpan="2"><strong>{item.product_variant.product.title}</strong></td>
                                                 <td><strong>{item.quantity}</strong></td>
-                                                <td><strong>{priceFormatterDollar(item.price)}</strong></td>
-                                                <td><strong>{priceFormatterDollar(item.quantity * item.price)}</strong></td>
+                                                <td><strong><PriceDisplay amount={item.price} /></strong></td>
+                                                <td><strong><PriceDisplay amount={item.quantity * item.price} /></strong></td>
                                             </tr>
                                         ))
                                     }
@@ -365,7 +366,7 @@ const Invoice =  (props) => {
                                 </Col>
                                 <Col sm="4" className="border border-left-0">
                                     <small><strong>Total:</strong></small><br />
-                                    <span><strong>{"  "}{priceFormatterDollar( totals?.actualPrice)}</strong></span>
+                                    <span><strong>{"  "}<PriceDisplay amount={totals?.actualPrice} /></strong></span>
                                 </Col>
                             </Row>
                             <Row className="border-top-0 border ml-0 mr-0">

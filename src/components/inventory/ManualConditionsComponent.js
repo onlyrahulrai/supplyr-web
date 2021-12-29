@@ -27,6 +27,7 @@ import apiClient from "api/base";
 import { SimpleInputField } from "components/forms/fields";
 import Checkbox from "components/@vuexy/checkbox/CheckboxesVuexy";
 import { matchSorter } from "match-sorter";
+import PriceDisplay from "components/settings/general-settings/PriceDisplay";
 
 class SubcategorySelector extends Component {
   constructor(props) {
@@ -316,7 +317,7 @@ class ManualConditionsComponent extends Component {
               onClick={() => history.push(`/product/${params.data.slug}`)}
             >
               <div
-                className="product-tic"
+                className={`${params.data.sub_categories.includes(this.props.category) && "product-tic"}`}
                 style={{ width: "fit-content", height: "fit-content" }}
               >
                 <img
@@ -372,7 +373,7 @@ class ManualConditionsComponent extends Component {
         // filter: true,
         width: 200,
         cellRendererFramework: (params) => {
-          let display_value = priceFormatter(params.value);
+          let display_value = <PriceDisplay amount={params.value} />
           if (
             params.data.has_multiple_variants &&
             params.data.sale_price_maximum &&
@@ -381,8 +382,8 @@ class ManualConditionsComponent extends Component {
           ) {
             display_value = (
               <>
-                {priceFormatter(params.data.sale_price_minimum)} {"-"}{" "}
-                {priceFormatter(params.data.sale_price_maximum)}
+                <PriceDisplay amount={params.data.sale_price_minimum} /> {"-"}{" "}
+                <PriceDisplay amount={params.data.sale_price_maximum} />
               </>
             );
           }

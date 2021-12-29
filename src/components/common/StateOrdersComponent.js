@@ -20,6 +20,7 @@ import {
 import { StateOrdersChart } from "views/ui-elements/cards/statistics";
 import apiClient from "api/base";
 import { numberFormatter } from "utility/general";
+import PriceDisplay from "components/settings/general-settings/PriceDisplay";
 
 const StateOrdersComponent = (props) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -324,8 +325,9 @@ const StateOrdersComponent = (props) => {
                                     <tr key={order.state}>
                                       <td>{order.state}</td>
                                       <td>
-                                        <span>&#8377;</span>{" "}
-                                        {numberFormatter(order.revenue)}
+                                        {/* <span>&#8377;</span>{" "}
+                                        {numberFormatter(order.revenue)} */}
+                                        <PriceDisplay amount={order.revenue} />
                                       </td>
                                     </tr>
                                   ))}
@@ -339,13 +341,17 @@ const StateOrdersComponent = (props) => {
                               </span>
 
                               <span className="text-success font-medium-2">
-                                &#8377;{" "}
+                                {/* &#8377;{" "}
                                 {numberFormatter(
                                   sellerStateOrder.reduce(
                                     (a, b) => a + b.revenue,
                                     0
                                   )
-                                )}
+                                )} */}
+                                <PriceDisplay amount={sellerStateOrder.reduce(
+                                    (a, b) => a + b.revenue,
+                                    0
+                                  )} />
                               </span>
                             </div>
                           </Col>

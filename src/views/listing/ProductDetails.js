@@ -13,6 +13,7 @@ import withReactContent from 'sweetalert2-react-content'
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 import NetworkError from "components/common/NetworkError"
 import Spinner from "components/@vuexy/spinner/Loading-spinner"
+import PriceDisplay from "components/settings/general-settings/PriceDisplay";
 
 const Swal = withReactContent(_Swal)
 
@@ -60,8 +61,12 @@ function DetailPage(props) {
 
   const productPriceDisplay = currentVariant.price
     ? (<>
-      <del className="text-lightgray h6">&#36;{currentVariant.actual_price}</del>
-      <span className="ml-1">&#36;{currentVariant.price}</span>
+      <del className="text-lightgray h6">
+        {/* &#36;{currentVariant.actual_price} */}
+        <PriceDisplay amount={currentVariant.actual_price} />
+      </del>
+      {/* <span className="ml-1">&#36;{currentVariant.price}</span> */}
+      <PriceDisplay amount={currentVariant.actual_price} classes="ml-1" />
     </>
     )
     : (
@@ -193,7 +198,10 @@ function DetailPage(props) {
                               <div>
                                 <img src={variant.featured_image ? getApiURL(productData.images?.find(image => image.id === variant.featured_image)?.image) : ''} alt='featured' className="float-left mr-1 img-40" />
                                 <div>{getVariantShortDescription(variant)}</div>
-                                <div className="text-lightgray">&#36; {variant.price}</div>
+                                <div className="text-lightgray">
+                                  {/* &#36; {variant.price} */}
+                                  <PriceDisplay amount={variant.price} classes="text-lightgray" />
+                                </div>
                               </div>
                             )
                             return {

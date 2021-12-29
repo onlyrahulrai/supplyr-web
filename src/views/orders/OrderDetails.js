@@ -1,7 +1,6 @@
 import "assets/scss/pages/app-ecommerce-shop.scss";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from 'react';
-import {priceFormatter} from "utility/general"
 
 import {
   Button, Card,
@@ -29,6 +28,7 @@ import NetworkError from "components/common/NetworkError"
 import apiClient from "api/base";
 import DynamicForm from "components/forms/dynamic-form/DynamicForm"
 import { connect } from "react-redux";
+import PriceDisplay from "components/settings/general-settings/PriceDisplay";
 // import { productsList } from "./cartData";
 
 const statusDisplayDict = {
@@ -268,9 +268,9 @@ function OrderDetails({order_status_variables}) {
             <div className="item-options m-auto">
               <div className="item-wrapper">
                 <div className="item-cost">
-                  <h5 className="">{priceFormatter(item.price)}</h5>
+                  <h5 className=""><PriceDisplay amount={item.price} /></h5>
                   { item.actual_price !== item.price &&
-                    <h6><del className="strikethrough text-secondary">{priceFormatter(item.actual_price)}</del></h6>
+                    <h6><del className="strikethrough text-secondary"><PriceDisplay amount={item.actual_price} /></del></h6>
                   }
                 </div>
               </div>
@@ -355,17 +355,17 @@ function OrderDetails({order_status_variables}) {
           </div>
           <div className="detail">
             <div className="detail-title">Total MRP</div>
-            <div className="detail-amt">{priceFormatter(totals.actualPrice)}</div>
+            <div className="detail-amt"><PriceDisplay amount={totals.actualPrice} /></div>
           </div>
           <div className="detail">
             <div className="detail-title">Discount</div>
-            <div className="detail-amt discount-amt">{priceFormatter(totals.actualPrice - totals.salePrice)}</div>
+            <div className="detail-amt discount-amt"><PriceDisplay amount={totals.actualPrice - totals.salePrice} /></div>
           </div>
 
           <hr />
           <div className="detail">
             <div className="detail-title detail-total">Final Price</div>
-            <div className="detail-amt total-amt">{priceFormatter(totals.salePrice)}</div>
+            <div className="detail-amt total-amt"><PriceDisplay amount={totals.salePrice} /></div>
           </div>
 
           <hr />

@@ -24,6 +24,7 @@ import Spinner from "components/@vuexy/spinner/Loading-spinner";
 import NetworkError from "components/common/NetworkError";
 import "flatpickr/dist/themes/material_blue.css";
 import StateOrdersComponent from "components/common/StateOrdersComponent";
+import PriceDisplay from "components/settings/general-settings/PriceDisplay";
 
 const StatsSmallCard = (props) => {
   const { title, description, icon, color } = props;
@@ -136,10 +137,22 @@ const LineChart = (props) => {
           <div className="mr-2">
             <p className="mb-50 text-bold-600">Total</p>
             <h2 className="text-bold-400">
-              <sup className="font-medium-1 mr-50">{unit}</sup>
-              <span className="text-success">
+              {/* <sup className="font-medium-1 mr-50">{unit}</sup> */}
+              {
+                unit ? (
+                  <PriceDisplay 
+                amount={data.data.reduce((x, y) => x + y, 0)}
+                classes="text-success"
+              /> 
+                ) : (
+                  <span className="text-success">
                 {numberFormatter(data.data.reduce((x, y) => x + y, 0))}
-              </span>
+              </span> 
+                ) 
+              }
+              {/* <span className="text-success">
+                {numberFormatter(data.data.reduce((x, y) => x + y, 0))}
+              </span> */}
             </h2>
           </div>
         </div>
@@ -272,8 +285,9 @@ const Dashboard = () => {
                       <StatsSmallCard
                         title={
                           <>
-                            <span>&#36;</span>{" "}
-                            {numberFormatter(daily_order_stats.amount)}
+                            {/* <span>&#36;</span>{" "}
+                            {numberFormatter(daily_order_stats.amount)} */}
+                            <PriceDisplay amount={daily_order_stats.amount} />
                           </>
                         }
                         description="Revenue Today"

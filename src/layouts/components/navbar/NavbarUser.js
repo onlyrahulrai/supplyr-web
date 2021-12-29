@@ -7,20 +7,18 @@ import {
 } from "reactstrap"
 import * as Icon from "react-feather"
 import { history } from "../../../history"
-
+import {AiOutlineTool} from "react-icons/ai"
 
 const UserDropdown = props => {
   return (
     <DropdownMenu right className="seller-navbar-user">
-
-      {/* <DropdownItem divider /> */}
       <DropdownItem
         tag="a"
-        href="/logout"
-        onClick={e => {e.preventDefault(); history.push("/logout")}}
+        href="#"
+        onClick={e => {e.preventDefault(); history.push("/settings/")}}
       >
-        <Icon.Power size={14} className="mr-50" />
-        <span className="align-middle">Log Out</span>
+        <AiOutlineTool size={14} className="mr-50" />
+        <span className="align-middle">Settings</span>
       </DropdownItem>
 
       <DropdownItem
@@ -30,6 +28,16 @@ const UserDropdown = props => {
       >
         <Icon.Settings size={14} className="mr-50" />
         <span className="align-middle">Account Settings</span>
+      </DropdownItem>
+
+      {/* <DropdownItem divider /> */}
+      <DropdownItem
+        tag="a"
+        href="/logout"
+        onClick={e => {e.preventDefault(); history.push("/logout")}}
+      >
+        <Icon.Power size={14} className="mr-50" />
+        <span className="align-middle">Log Out</span>
       </DropdownItem>
     </DropdownMenu>
   )

@@ -46,6 +46,8 @@ const AccountSettings = lazy(() =>
   import("./views/pages/account-settings/AccountSettings")
 );
 
+const Settings = lazy(() => import("./views/pages/settings/Settings"))
+
 const Landing = lazy(() => import("./views/pages/Landing"));
 
 const error404 = lazy(() => import("./views/pages/404"));
@@ -196,6 +198,7 @@ class AppRouter extends React.Component {
             fullLayout
           />
           <PublicOnlyAppRoute exact path="/" component={Landing} fullLayout />
+          <AppRoute path="/settings" component={Settings} />
           <AppRoute path="/account-settings" component={AccountSettings} />
           <AppRoute exact path="/profiling" component={ProfilingWizard} />
           <AppRoute exact path="/dashboard" component={Home} />
