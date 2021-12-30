@@ -163,7 +163,7 @@ class RegisterJWT extends Component {
             icon={<Check className="vx-icon" size={16} />}
             label=" I accept the terms & conditions."
             defaultChecked={this.state.checked}
-            onChange={(e) => this.setState({ checked: e.target.value })}
+            onChange={(e) => this.setState({ checked: !this.state.checked })}
           />
         </FormGroup>
         <div className="d-flex justify-content-between">
