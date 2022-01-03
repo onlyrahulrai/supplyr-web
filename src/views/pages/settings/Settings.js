@@ -9,13 +9,9 @@ import {
   Card,
   Row,
   Col,
-  Button,
-  CardFooter,
-  CardHeader,
   CardTitle,
 } from "reactstrap";
 import classnames from "classnames";
-import Select from "react-select";
 import { ArrowLeft } from "react-feather";
 import { history } from "../../../history";
 import GeneralSettings from "./GeneralSettings";
@@ -75,7 +71,7 @@ const Settings = () => {
                     }}
                     style={{borderBottom:`${active === "2" && "2px solid white"}`}}
                   >
-                    Product Settings
+                    Invoice Settings
                   </NavLink>
                 </NavItem>
                 <NavItem>
@@ -88,7 +84,7 @@ const Settings = () => {
                     }}
                     style={{borderBottom:`${active === "3" && "2px solid white"}`}}
                   >
-                    Invoice Settings
+                    Product Settings
                   </NavLink>
                 </NavItem>
               </Nav>
@@ -100,14 +96,14 @@ const Settings = () => {
                   className="tab-border"
                   tabId="2"
                 >
-                  <ProductSettings />
+                  <InvoiceSettings />
                 </TabPane>
                 <TabPane
                   className="tab-border"
                   tabId="3"
                 >
-                  <InvoiceSettings />
-                </TabPane>
+                  <ProductSettings />
+                </TabPane> 
               </TabContent>
             </Col>
           </Row>

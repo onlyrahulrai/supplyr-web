@@ -11,7 +11,7 @@ import {
 import "../../../assets/scss/pages/account-settings.scss";
 import classnames from "classnames";
 import {_CurrenciesData} from "../../../assets/data/CurrenciesData"
-import InvoicePrefixSetting from "components/settings/general-settings/InvoicePrefixSetting";
+import InvoicePrefixSetting from "components/settings/invoice-settings/InvoicePrefixSetting";
 import { connect } from "react-redux";
 
 const InvoiceSettings = ({profile}) => {
@@ -58,15 +58,12 @@ const InvoiceSettings = ({profile}) => {
             </NavLink>
           </NavItem>
         </Nav>
-        <Card>
-          <CardBody>
-            <TabContent activeTab={active}>
-              <TabPane tabId="1">
-                <InvoicePrefixSetting profile={profile} />
-              </TabPane>
-            </TabContent>
-          </CardBody>
-        </Card>
+
+        <TabContent activeTab={active}>
+          <TabPane tabId="1">
+            <InvoicePrefixSetting profile={profile} />
+          </TabPane>
+        </TabContent>
       </div>
     </React.Fragment>
   );
