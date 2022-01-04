@@ -27,7 +27,7 @@ import { OrdersApi } from "api/endpoints";
 import Select from "react-select";
 import { capitalizeString, priceFormatter } from "utility/general";
 import apiClient from "api/base";
-import PriceDisplay from "components/settings/general-settings/PriceDisplay";
+import PriceDisplay from "components/utils/PriceDisplay";
 
 const orderStatusLabels = {
   awaiting_approval: "Awaiting Approval",

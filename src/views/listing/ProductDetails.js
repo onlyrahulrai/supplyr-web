@@ -13,7 +13,8 @@ import withReactContent from 'sweetalert2-react-content'
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
 import NetworkError from "components/common/NetworkError"
 import Spinner from "components/@vuexy/spinner/Loading-spinner"
-import PriceDisplay from "components/settings/general-settings/PriceDisplay";
+import PriceDisplay from "components/utils/PriceDisplay";
+import Translatable from "components/utils/Translatable";
 
 const Swal = withReactContent(_Swal)
 
@@ -228,7 +229,8 @@ function DetailPage(props) {
                   }
 
                   <p className="my-50">
-                    <span>Quanitities</span>
+                    {/* <span>Quanitities</span> */}
+                    <Translatable text="quantity" />
                     <span className="mx-50">-</span>
                     {isProductInStock
                       ? (<strong className="text-success">{currentVariant.quantity} Units</strong>)

@@ -2,6 +2,7 @@ import apiClient from 'api/base'
 import React, { useState } from 'react'
 import { Button, Form, FormGroup, Input, Label,Col, Card, CardBody, CardHeader, CardTitle } from 'reactstrap'
 import Swal from 'sweetalert2'
+import Translatable from "../../utils/Translatable"
 
 
 const TranslationSetting = ({translation:_translation}) => {

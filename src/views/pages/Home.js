@@ -24,7 +24,7 @@ import Spinner from "components/@vuexy/spinner/Loading-spinner";
 import NetworkError from "components/common/NetworkError";
 import "flatpickr/dist/themes/material_blue.css";
 import StateOrdersComponent from "components/common/StateOrdersComponent";
-import PriceDisplay from "components/settings/general-settings/PriceDisplay";
+import PriceDisplay from "components/utils/PriceDisplay";
 
 const StatsSmallCard = (props) => {
   const { title, description, icon, color } = props;
