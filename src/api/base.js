@@ -14,7 +14,8 @@ apiClient.interceptors.response.use(
     response => {
     if (response.data?.user_info) {
         const userInfo = response.data.user_info
-        store.dispatch({ type: 'SET_USER_INFO', userInfo})
+        const userSettings = response.data.user_settings
+        store.dispatch({ type: 'SET_USER_INFO', payload:{userInfo:userInfo,userSettings:userSettings}})
         
         let userRole = null;
         if (['admin', 'staff'].includes(userInfo.user_role)) {

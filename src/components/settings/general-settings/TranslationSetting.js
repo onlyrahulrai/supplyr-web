@@ -5,15 +5,15 @@ import Swal from 'sweetalert2'
 import Translatable from "../../utils/Translatable"
 
 
-const TranslationSetting = ({translation:_translation}) => {
-    const [translation,setTranslation] = useState(_translation)
+const TranslationSetting = ({translations:_translations}) => {
+    const [translations,setTranslations] = useState(_translations)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
     
         let requestedData = {
           setting:"profile-setting",
-          data: {translation:translation}
+          data: {translations:translations}
         }
     
         await apiClient
@@ -24,7 +24,7 @@ const TranslationSetting = ({translation:_translation}) => {
           .catch((error) => console.log(error.data));
       };
 
-      console.log("---- $ seller translation $ ---- ",translation)
+      console.log("---- $ seller translation $ ---- ",translations)
     
     return (
       <Card>
@@ -39,7 +39,7 @@ const TranslationSetting = ({translation:_translation}) => {
                   <Label>Quantity Translation</Label>
               </Col>
               <Col md="9">
-                <Input type="text" placeholder="Add quantity translation..." name='quantity' onChange={(e) => setTranslation((prevState) => ({...prevState,quantity:e.target.value}))} value={translation?.quantity || ""} maxLength={25} required />
+                <Input type="text" placeholder="Add quantity translation..." name='quantity' onChange={(e) => setTranslations((prevState) => ({...prevState,quantity:e.target.value}))} value={translations?.quantity || ""} maxLength={25} required />
               </Col>
               </FormGroup>
               <FormGroup row>

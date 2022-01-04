@@ -310,7 +310,7 @@ class UsersList extends Component {
       },
       {
         // headerName: "Quantity",
-        headerName: `${this.props.profile?.translation?.quantity || "Quantity"}`,
+        headerName: `${this.props.profile?.translations?.quantity || "Quantity"}`,
         field: "quantity",
         // filter: true,
         width: 200,
