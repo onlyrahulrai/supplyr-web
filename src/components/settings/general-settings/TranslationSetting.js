@@ -2,10 +2,10 @@ import apiClient from 'api/base'
 import React, { useState } from 'react'
 import { Button, Form, FormGroup, Input, Label,Col, Card, CardBody, CardHeader, CardTitle } from 'reactstrap'
 import Swal from 'sweetalert2'
-import Translatable from "../../utils/Translatable"
+import {connect} from "react-redux"
 
 
-const TranslationSetting = ({translations:_translations}) => {
+const TranslationSetting = ({translations:_translations,user_settings}) => {
     const [translations,setTranslations] = useState(_translations)
 
     const handleSubmit = async (e) => {
@@ -24,7 +24,7 @@ const TranslationSetting = ({translations:_translations}) => {
           .catch((error) => console.log(error.data));
       };
 
-      console.log("---- $ seller translation $ ---- ",translations)
+      // console.log("---- $ seller translation $ ---- ",translations,user_settings.translatables)
     
     return (
       <Card>
@@ -34,14 +34,20 @@ const TranslationSetting = ({translations:_translations}) => {
         <hr />
         <CardBody>
           <Form onSubmit={handleSubmit} className='pb-2'>
-              <FormGroup row className='align-item-center'>
-              <Col md="3" className='d-flex align-items-center'>
-                  <Label>Quantity Translation</Label>
-              </Col>
-              <Col md="9">
-                <Input type="text" placeholder="Add quantity translation..." name='quantity' onChange={(e) => setTranslations((prevState) => ({...prevState,quantity:e.target.value}))} value={translations?.quantity || ""} maxLength={25} required />
-              </Col>
-              </FormGroup>
+              
+                {
+                  user_settings?.translatables.includes("quantity") && (
+                    <FormGroup row className='align-item-center'>
+                      <Col md="3" className='d-flex align-items-center'>
+                          <Label>Quantity Translation</Label>
+                      </Col>
+                      <Col md="9">
+                        <Input type="text" placeholder="Add quantity translation..." name='quantity' onChange={(e) => setTranslations((prevState) => ({...prevState,quantity:e.target.value}))} value={translations?.quantity || ""} maxLength={25} required />
+                      </Col>
+                    </FormGroup>
+                  )
+                }
+                
               <FormGroup row>
                 <Col md={{size:9,offset:3}} >
                   <Button.Ripple type="submit" color="primary">Save</Button.Ripple>
@@ -53,4 +59,10 @@ const TranslationSetting = ({translations:_translations}) => {
     )
 }
 
-export default TranslationSetting
+const mapStatesToProps = (state) => {
+  return {
+    "user_settings":state.auth.userSettings
+  }
+}
+
+export default connect(mapStatesToProps)(TranslationSetting)
