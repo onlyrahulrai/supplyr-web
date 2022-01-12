@@ -505,18 +505,13 @@ class UsersList extends Component {
             <CardBody>
               <Row className="align-items-center">
                 <Col sm="12" md="auto">
-                  <CardTitle className="pr-2 mr-1 border-right">
-                    Filters 
-                  </CardTitle>
-                </Col>
-                <Col sm="12" md="auto">
                   <Row>
                     <Col sm="12" md="auto">
                       {console.log(" ---- && seller profile && ---- ",this.props.profile?.translation?.quantity)}
                       <Input
                         className="mr-1 d-inline-block"
                         type="text"
-                        placeholder="Search query..."
+                        placeholder="Filter Products"
                         onChange={(e) =>
                           this.setState({
                             filters: { ...filters, search: e.target.value },
@@ -529,7 +524,7 @@ class UsersList extends Component {
                     <Col sm="8" md="auto">
                       <SubcategorySelector
                         subCategories={this.state.operationalSubCategories}
-                        buttonLabel="Filter By Categories"
+                        buttonLabel="Categories"
                         buttonIcon={<Folder size={16} />}
                         modalTitle="Select Categories"
                         confirmButtonLabel="Done"
@@ -611,16 +606,13 @@ class UsersList extends Component {
                 <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1">
                   <Row className="align-items-center">
                     <Col lg="auto">
-                      <CardTitle className="pr-2 mr-1 border-right">
-                        Actions
-                      </CardTitle>
                     </Col>
                     <Col lg="auto mr-auto">
                       <SubcategorySelector
                         subCategories={this.state.operationalSubCategories}
-                        buttonLabel="Add Categories"
+                        buttonLabel="Add to Categories"
                         buttonIcon={<FolderPlus size={16} />}
-                        modalTitle="Add Categories"
+                        modalTitle="Add to Categories"
                         confirmButtonLabel="Add Selected Categories"
                         className=""
                         disabled={!this.state.gridReady}
@@ -638,9 +630,9 @@ class UsersList extends Component {
 
                       <SubcategorySelector
                         subCategories={this.state.operationalSubCategories}
-                        buttonLabel="Remove Categories"
+                        buttonLabel="Remove from Categories"
                         buttonIcon={<FolderMinus size={16} />}
-                        modalTitle="Remove Categories"
+                        modalTitle="Remove from Categories"
                         confirmButtonLabel="Remove Selected Categories"
                         className="ml-sm-1"
                         disabled={!this.state.gridReady}
@@ -673,9 +665,9 @@ class UsersList extends Component {
                           e.preventDefault();
                           history.push("/products/add/");
                         }}
-                        style={{padding:"0.9rem 1rem"}}
+                        style={{padding:"0.8rem 1rem"}}
                       >
-                        <PlusCircle size="20" className="mr-1" />
+                        <PlusCircle size="16" className="mr-1" />
                         Add New Product
                       </Button>
                     </Col>

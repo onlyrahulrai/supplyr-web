@@ -51,7 +51,7 @@ const ThemeNavbar = props => {
               <div className="bookmark-wrapper">
                 {props.user.profile?.connection_code &&
                   <>
-                    <small>Connection Code</small>
+                    <small>Seller Code</small>
                     <h5>{props.user.profile.connection_code}</h5>
                   </>
                 }
