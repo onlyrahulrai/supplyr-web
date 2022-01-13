@@ -19,7 +19,7 @@ const TranslationSetting = ({translations:_translations,user_settings}) => {
         await apiClient
           .put(`/profile/seller-profile-settings/`,requestedData)
           .then((response) => {
-            Swal.fire("Currency Saved", "", "success");
+            Swal.fire("Saved", "", "success");
           })
           .catch((error) => console.log(error.data));
       };
