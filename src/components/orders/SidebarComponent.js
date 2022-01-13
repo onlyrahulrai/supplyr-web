@@ -1,5 +1,5 @@
 import Address from "components/inventory/Address";
-import PriceDisplay from "components/settings/general-settings/PriceDisplay";
+import PriceDisplay from "components/utils/PriceDisplay";
 import React, { useState } from "react";
 import { Edit3 } from "react-feather";
 import { Card, CardBody, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";

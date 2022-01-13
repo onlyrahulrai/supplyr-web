@@ -51,6 +51,7 @@ import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb";
 
 import CreatableSelect from "react-select/creatable";
 import { CountryData } from "../../assets/data/CountryData";
+import Translatable from "components/utils/Translatable";
 
 const Swal = withReactContent(_Swal);
 
@@ -127,7 +128,8 @@ function VariantFields(props) {
       )}
 
       <SimpleInputField
-        label="Quantity Available"
+        // label="Quantity Available"
+        label={<Translatable text="quantity" />}
         placeholder="Quantity Available in Inventory"
         name="quantity"
         type="number"
@@ -141,7 +143,8 @@ function VariantFields(props) {
       <Row>
         <Col>
           <SimpleInputField
-            label="Minimum Order Quantity"
+            // label="Minimum Order Quantity"
+            label={<Translatable text="quantity" prefix="Minimum Order" />}
             name="minumum_order_quantity"
             type="number"
             onChange={(e) =>

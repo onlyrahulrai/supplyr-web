@@ -40,10 +40,8 @@ import { SimpleInputField } from "components/forms/fields";
 import { matchSorter } from "match-sorter";
 import Swal from "utility/sweetalert";
 import CustomPagination from "components/common/CustomPagination";
-import PriceDisplay from "components/settings/general-settings/PriceDisplay";
+import PriceDisplay from "components/utils/PriceDisplay";
 
-// Box Icons
-import { BiImport } from "react-icons/bi";
 
 class SubcategorySelector extends Component {
   constructor(props) {
@@ -311,7 +309,8 @@ class UsersList extends Component {
         },
       },
       {
-        headerName: "Quantity",
+        // headerName: "Quantity",
+        headerName: `${this.props.profile?.translations?.quantity || "Quantity"}`,
         field: "quantity",
         // filter: true,
         width: 200,
@@ -507,12 +506,13 @@ class UsersList extends Component {
               <Row className="align-items-center">
                 <Col sm="12" md="auto">
                   <CardTitle className="pr-2 mr-1 border-right">
-                    Filters
+                    Filters 
                   </CardTitle>
                 </Col>
                 <Col sm="12" md="auto">
                   <Row>
                     <Col sm="12" md="auto">
+                      {console.log(" ---- && seller profile && ---- ",this.props.profile?.translation?.quantity)}
                       <Input
                         className="mr-1 d-inline-block"
                         type="text"

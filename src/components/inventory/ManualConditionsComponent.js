@@ -27,7 +27,7 @@ import apiClient from "api/base";
 import { SimpleInputField } from "components/forms/fields";
 import Checkbox from "components/@vuexy/checkbox/CheckboxesVuexy";
 import { matchSorter } from "match-sorter";
-import PriceDisplay from "components/settings/general-settings/PriceDisplay";
+import PriceDisplay from "components/utils/PriceDisplay";
 
 class SubcategorySelector extends Component {
   constructor(props) {

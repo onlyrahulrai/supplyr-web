@@ -21,7 +21,7 @@ import { OrdersApi } from "api/endpoints"
 import NetworkError from "components/common/NetworkError"
 import { capitalizeString, priceFormatter, priceFormatterDollar } from "utility/general"
 import { ToWords } from 'to-words';
-import PriceDisplay from "components/settings/general-settings/PriceDisplay"
+import PriceDisplay from "components/utils/PriceDisplay"
 
 const Invoice =  (props) => {
     const orderId = props.match.params.orderId;

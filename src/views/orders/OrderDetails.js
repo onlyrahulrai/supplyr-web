@@ -28,7 +28,8 @@ import NetworkError from "components/common/NetworkError"
 import apiClient from "api/base";
 import DynamicForm from "components/forms/dynamic-form/DynamicForm"
 import { connect } from "react-redux";
-import PriceDisplay from "components/settings/general-settings/PriceDisplay";
+import PriceDisplay from "components/utils/PriceDisplay";
+import Translatable from "components/utils/Translatable";
 // import { productsList } from "./cartData";
 
 const statusDisplayDict = {
@@ -258,7 +259,9 @@ function OrderDetails({order_status_variables}) {
                   </p>
                 }
                 <div className="item-quantity">
-                  <p className="quantity-title">Quantity: {item.quantity}</p>
+                  <p className="quantity-title">
+                    <Translatable text="quantity" />: {item.quantity}
+                  </p>
 
                 </div>
                 <p className="delivery-date">{item.deliveryBy}</p>

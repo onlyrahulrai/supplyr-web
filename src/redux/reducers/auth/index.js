@@ -18,7 +18,7 @@ const login = (state = { userRole: "general" }, action) => {
     }
 
     case "SET_USER_INFO": {
-      return { ...state, userInfo: action.userInfo}
+      return { ...state, ...action.payload}
     }
 
     case "CHANGE_ROLE": {

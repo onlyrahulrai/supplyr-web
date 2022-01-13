@@ -20,7 +20,7 @@ import {
 import { StateOrdersChart } from "views/ui-elements/cards/statistics";
 import apiClient from "api/base";
 import { numberFormatter } from "utility/general";
-import PriceDisplay from "components/settings/general-settings/PriceDisplay";
+import PriceDisplay from "components/utils/PriceDisplay";
 
 const StateOrdersComponent = (props) => {
   const [isLoading, setIsLoading] = useState(false);
