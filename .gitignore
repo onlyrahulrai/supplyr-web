@@ -29,3 +29,5 @@ yarn-error.log*
 /react-shell-scripts
 TODO
 .eslintcache
+package-lock.json
+yarn.lock

@@ -119,6 +119,9 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        line-height: 1.4rem;
+        margin-top: 0.4rem;
+        margin-bottom: 0.4rem;
         &:last-child {
           width: 180px;
         }
@@ -264,7 +267,7 @@
           box-shadow: 0 0 10px 1px rgba($primary, 0.7);
           border-radius: 4px;
           > a {
-            color: $white;
+            color: #494949;
             // font-weight: 500;
           }
         }

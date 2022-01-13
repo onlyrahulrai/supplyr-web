@@ -21,7 +21,7 @@
 
 $base-font-size: 14px;
 $body-direction: ltr; // Default ltr, change it to rtl for Right To Left support.
-$content-padding: 2.2rem;
+$content-padding: 1.5rem;
 
 //  ------------------------------
 //    Colors
@@ -69,13 +69,13 @@ $pagination-font-size-lg: 1.5rem;
 $menu-dark-color: #dcdcdc;
 $menu-dark-bg-color: #10163a;
 
-$menu-padding: 10px 15px;
-$menu-second-level-padding: 10px 15px 10px 20px;
-$menu-third-level-padding: 10px 15px 10px 20px;
-$menu-forth-level-padding: 10px 15px 10px 30px;
+$menu-padding: 0px 15px;
+$menu-second-level-padding: 0px 15px 0px 20px;
+$menu-third-level-padding: 0px 15px 0px 20px;
+$menu-forth-level-padding: 0px 15px 0px 30px;
 
 // vertical menu
-$menu-expanded-width: 260px;
+$menu-expanded-width: 240px;
 $menu-collapsed-width: 80px;
 
 //  ------------------------------
