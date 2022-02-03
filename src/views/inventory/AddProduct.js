@@ -1050,12 +1050,12 @@ function AddProduct(props) {
       <div>
         <div
           className={`${
-            subCategory.category === "(Category)" ? "text-bold-600" : ""
+            !subCategory.category ? "text-bold-600" : ""
           }`}
         >
           {subCategory.name}
         </div>
-        <div className="text-lightgray">{subCategory.category}</div>
+        <div className="text-lightgray">{subCategory.category??"(Category)"}</div>
       </div>
     );
     return {
