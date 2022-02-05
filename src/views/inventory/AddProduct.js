@@ -1128,14 +1128,14 @@ function AddProduct(props) {
                     if (!searchString) return true;
                     const subcat = props.profile.sub_categories.filter(
                       (sc) => sc.id == value
-                    );
-
+                      );
+                      
                     // return false
                     return (
                       subcat[0]?.name
                         .toLowerCase()
                         .includes(searchString.toLowerCase()) ||
-                      subcat[0]?.category
+                      (subcat[0]?.category??"(Category)")   // ?? part will be executed when it subcat is a category itself, having no parent category 
                         .toLowerCase()
                         .includes(searchString.toLowerCase())
                     );
