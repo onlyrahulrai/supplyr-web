@@ -126,6 +126,9 @@ const CategoryAdd = (props) => {
   const [action, setAction] = useState("automated");
   const [condition, setCondition] = useState("all");
 
+  const _categoryId = props.match.params.categoryId;
+  
+
   function clearState() {
     if (props.match.params.categoryId) {
       setBasicData("");
@@ -149,8 +152,10 @@ const CategoryAdd = (props) => {
 
   const isPageRenderReady = !isEditingExistingProduct || isCategoryDataLoaded;
 
+  const category = props.user.profiling_data?.categories_data.categories.filter((category) => (category.seller === props.user.name))
+    .map((category) => ({  label: category.name,value: category.id}));
+
   useEffect(() => {
-    const _categoryId = props.match.params.categoryId;
     if (_categoryId) {
       setIsLoading(true);
       setCategoryId(_categoryId);
@@ -184,14 +189,10 @@ const CategoryAdd = (props) => {
     setBasicData(basicDataCopy);
   };
 
-  const category = props.user.profiling_data?.categories_data.categories
-    .filter((category) => category.seller === props.user.name)
-    .map((category) => {
-      return {
-        label: category.name,
-        value: category.id,
-      };
-    });
+  
+
+
+  // console.log(" ------ category ------ ", _categoryId ,props.user.profiling_data?.categories_data.categories.filter((category) =>  ( category.id !== _categoryId && category.seller === props.user.name)))
 
   const validateForm = () => {
     let errors = [];
@@ -419,33 +420,46 @@ const CategoryAdd = (props) => {
                           )}
                         </FormGroup>
 
-                        {(!(basicData.parent === null) || !haveSubCategory) && (
-                          <SimpleInputField
-                            label="Select parent category (Optional)"
-                            field={
-                              <Select
-                                onChange={(data) =>
-                                  setBasicFieldData("parent", data.value)
-                                }
-                                value={
-                                  category.find(
-                                    (parent) =>
-                                      parent.value === basicData.parent
-                                  ) || ""
-                                }
-                                menuPlacement="auto"
-                                options={category}
-                                menuPortalTarget={document.body}
-                                styles={{
-                                  menuPortal: (base) => ({
-                                    ...base,
-                                    zIndex: 9999,
-                                  }),
-                                }}
-                              />
-                            }
-                          />
-                        )}
+                        {
+                          isPageRenderReady && (
+                            <>
+                              {
+                                console.log(category.filter((c) => c.value != props.match.params.categoryId))
+                              }
+                                {(!(basicData.parent === null) || !haveSubCategory) && (
+                                  <SimpleInputField
+                                    label="Select parent category (Optional)"
+                                    field={
+                                      <Select
+                                        onChange={(data) =>
+                                          setBasicFieldData("parent", data.value)
+                                        }
+                                        value={
+                                          category.find(
+                                            (parent) =>
+                                              parent.value === basicData.parent
+                                          ) || ""
+                                        }
+                                        menuPlacement="auto"
+                                        options={_categoryId ? category.filter((c) => c.value != _categoryId) : category}
+                                        menuPortalTarget={document.body}
+                                        
+                                        styles={{
+                                          menuPortal: (base) => ({
+                                            ...base,
+                                            zIndex: 9999,
+                                          }),
+                                        }}
+                                      />
+                                    }
+                                  />
+                                )}
+                            </>
+                          )
+                        }
+                        
+
+                        {/* {console.log(" ----- category data ------ ",categoryId,_categoryId)} */}
 
                         <div className="d-flex justify-content-between flex-column  mt-1">
                           <span className="text-bold-600 text-dark">

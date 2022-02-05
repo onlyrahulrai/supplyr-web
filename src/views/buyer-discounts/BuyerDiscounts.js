@@ -1,4 +1,4 @@
-import { BuyerSidebar,BuyerDiscountMain } from "components/buyer-discounts";
+import { BuyerDiscountMain, BuyerSidebar } from "components/buyer-discounts";
 import React from "react";
 import Sidebar from "react-sidebar";
 import "../../assets/scss/pages/app-email.scss";
@@ -45,12 +45,9 @@ class BuyerDiscounts extends React.Component {
     this.setState({buyer:buyer})
   }
 
-  updateBuyer = (buyer) => {
-    this.setState({buyer:buyer})
-  }
 
   render() {
-    console.log(this.state.buyer)
+    console.log(" ---- buyer data ---- ",this.state.buyer)
     return (
         <div className={`email-application position-relative`}>
           <div
@@ -82,8 +79,7 @@ class BuyerDiscounts extends React.Component {
             </ContextLayout.Consumer>
             <BuyerDiscountMain 
               mainSidebar={this.onSetSidebarOpen}
-              buyer={this.state.buyer}
-              updateBuyer={this.updateBuyer}
+              connected_buyer={this.state.buyer}
             />
           </div>
     );

@@ -1,12 +1,14 @@
 import Address from "components/inventory/Address";
 import PriceDisplay from "components/utils/PriceDisplay";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Edit3 } from "react-feather";
 import { Card, CardBody, Col, Modal, ModalBody, ModalHeader, Row } from "reactstrap";
-import { capitalizeString, priceFormatter } from "utility/general";
+import { calculateTotals, capitalizeString, extraDiscounts, priceFormatter } from "utility/general";
+
+
 
 const SidebarComponent = (props) => {
-    const {setOrderInfo,buyerData,orderId,totals,orderInfo} = props
+    const {setOrderInfo,buyerData,orderId,totals,orderInfo,items} = props
     const [modal,setModal] = useState(false)
 
     const toggleModal = () => {
@@ -17,7 +19,6 @@ const SidebarComponent = (props) => {
         setOrderInfo((prevState) => ({...prevState,address:buyerData.address.find((address) => address.id === id)}))
         toggleModal()
     }
-    console.log("order info data >>>> ",orderInfo)
   return (
     <>
       <Card>
@@ -30,7 +31,7 @@ const SidebarComponent = (props) => {
             </Col>
             <Col sm="auto" className="ml-auto text-right">
               <h6 className="text-secondary">From</h6>
-              <h3>{capitalizeString(buyerData.owner || "")}</h3>
+              <h3>{capitalizeString(buyerData.name || "")}</h3>
             </Col>
           </Row>
           <hr />
@@ -47,29 +48,45 @@ const SidebarComponent = (props) => {
           </div>
 
           <Address {...buyerData.address[0]} />
+          {
+            items?.length ? (
+            <>
+              <hr />
+              <div className="price-details">
+                <p>Price Details</p>
+              </div>
+              <div className="detail">
+                <div className="detail-title">Total MRP</div>
+                <div className="detail-amt">
+                  <PriceDisplay amount={totals.salePrice} />
+                </div>
+              </div>
+              {/* <div className="detail">
+                <div className="detail-title">Discount</div>
+                <div className="detail-amt discount-amt">
+                  <PriceDisplay amount={(totals.actualPrice - totals.salePrice).toFixed(2)} />
+                </div>
+              </div> */}
 
-          <hr />
-          <div className="price-details">
-            <p>Price Details</p>
-          </div>
-          <div className="detail">
-            <div className="detail-title">Total MRP</div>
-            <div className="detail-amt">
-              <PriceDisplay amount={totals.actualPrice} />
-            </div>
-          </div>
-          <div className="detail">
-            <div className="detail-title">Discount</div>
-            <div className="detail-amt discount-amt">
-              <PriceDisplay amount={(totals.actualPrice - totals.salePrice).toFixed(2)} />
-            </div>
-          </div>
+              
+                  <div className="detail">
+                    <div className="detail-title">Extra Discount</div>
+                    <div className="detail-amt discount-amt">
+                      <PriceDisplay amount={orderInfo?.total_extra_discount || 0} />
+                    </div>
+                  </div>
+                
+             
 
-          <hr />
-          <div className="detail">
-            <div className="detail-title detail-total">Final Price</div>
-            <div className="detail-amt total-amt">{priceFormatter(totals.salePrice)}</div>
-          </div> 
+              <hr />
+              <div className="detail">
+                <div className="detail-title detail-total">Final Price</div>
+                <div className="detail-amt total-amt"><PriceDisplay amount={totals.salePrice - (orderInfo?.total_extra_discount || 0)} /></div>
+              </div> 
+          </>
+            ):("")
+          }
+          
 
             <Modal
             isOpen={modal}

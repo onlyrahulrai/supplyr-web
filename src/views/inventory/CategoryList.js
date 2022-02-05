@@ -2,7 +2,7 @@ import apiClient from "api/base";
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Col, Row, Spinner, Table, Button } from "reactstrap";
-import { Delete, Edit2, PlusCircle } from "react-feather";
+import { Delete, Edit2, PlusCircle, Trash } from "react-feather";
 import Swal from "sweetalert2";
 import { history } from "../../history";
 import NetworkError from "components/common/NetworkError";
@@ -49,9 +49,9 @@ const CategoryList = (props) => {
       return false;
     });
 
-    apiClient.delete("/inventory/categories/" + id).then((response) => {
-      console.log(response);
-    });
+    // apiClient.delete("/inventory/categories/" + id).then((response) => {
+    //   console.log(response);
+    // });
   }
 
   function deleteSubCategory(categoryId,subcategoryId){
@@ -78,9 +78,9 @@ const CategoryList = (props) => {
       return false;
     });
 
-    apiClient.delete("/inventory/categories/" + subcategoryId).then((response) => {
-      console.log(response);
-    });
+    // apiClient.delete("/inventory/categories/" + subcategoryId).then((response) => {
+    //   console.log(response);
+    // });
   }
 
 
@@ -150,7 +150,7 @@ const CategoryList = (props) => {
                                 )
                               }
                             />
-                            <Delete
+                            <Trash
                               size="16"
                               onClick={() => deleteCategory(category.id)}
                               className="cursor-pointer"
@@ -185,7 +185,7 @@ const CategoryList = (props) => {
                                   )
                                 }
                               />
-                              <Delete
+                              <Trash
                                 size="16"
                                 onClick={() => deleteSubCategory(categoryId,sub_category.id)}
                                 className="cursor-pointer"

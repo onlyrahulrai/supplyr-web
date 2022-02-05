@@ -191,3 +191,45 @@
   padding-bottom: 0px;
   border-top-left-radius:0px;
 }
+
+
+.custom-bg-color{
+  background: linear-gradient(118deg, #ea5455, rgba(234, 84, 85, 0.7));
+}
+
+.mb-h5-0 h5{
+  margin-bottom: 0 !important;
+}
+
+.discount-input{
+  height: calc(1.25 * 1em + 2.4rem + 1px);
+}
+
+$misc-inner-max-width: 750px;
+
+.misc-wrapper {
+  display: flex;
+  flex-basis: 100%;
+  // min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+
+  .misc-inner {
+    position: relative;
+    max-width: $misc-inner-max-width;
+  }
+
+  .brand-logo {
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    margin: 0;
+    .brand-text {
+      font-weight: 600;
+    }
+  }
+}

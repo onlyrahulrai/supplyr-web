@@ -4,19 +4,21 @@ import { getApiURL } from "api/utils";
 import BreadCrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import NetworkError from "components/common/NetworkError";
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, Edit3, Eye, Plus, Trash } from "react-feather";
+import { ArrowLeft, Check, Edit3, Eye, Plus, Trash } from "react-feather";
 import {
   Button,
   Card,
   CardBody,
   CardHeader,
+  Col,
   Form,
   FormGroup,
   Input,
   Label,
+  Row,
   Spinner,
 } from "reactstrap";
-import { priceFormatter } from "utility/general";
+import { calculateTotals, calculate_extra_discount, extraDiscounts, priceFormatter } from "utility/general";
 
 
 import { history } from "../../history";
@@ -28,6 +30,9 @@ import _Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { OrdersApi } from "api/endpoints";
 import DefaultProductImage from "../../assets/img/pages/default_product_image.png"
+import PriceDisplay from "components/utils/PriceDisplay";
+import Translatable from "components/utils/Translatable";
+import { SimpleInputField } from "components/forms/fields";
 
 const Swal = withReactContent(_Swal);
 
@@ -55,6 +60,8 @@ function getVariantShortDescription(variant) {
   return <div>{desc}</div>;
 }
 
+
+
 const OrderAdd = (props) => {
   const buyerSlug = props.match.params.buyerId;
   const orderId = props.match.params.orderId;
@@ -71,6 +78,8 @@ const OrderAdd = (props) => {
 
   const [toggleButton, setToggleButton] = useState(false);
 
+  const [activeExtraDiscount,setActiveExtraDiscount] = useState(null)
+
   useEffect(() => {
     if (buyerSlug) {
       const fetchData = async () => {
@@ -79,6 +88,7 @@ const OrderAdd = (props) => {
         );
         let fetchProductData = await apiClient.get("/inventory/products/list/");
         setOrderInfo((prevState) => ({
+          ...prevState,
           buyer_id: fetchBuyerData?.data?.id,
           address: fetchBuyerData?.data?.address[0],
           
@@ -96,16 +106,16 @@ const OrderAdd = (props) => {
 
   useEffect(() => {
     if (orderId) {
+      setIsLoading(true)
       OrdersApi.retrieve(orderId)
         .then((response) => {
-          // console.log("orders data >>>> ",response.data)
           let _items = response.data.items.map((item) => ({
-            quantity: item.quantity,
+            ...item,
             variant: item.product_variant,
-            id: item.id,
           }));
-          console.log("orders items ", _items);
+          // console.log("orders items ", _items);
           setItems(_items);
+          setOrderInfo((prevState) => ({...prevState,total_extra_discount:response.data?.total_extra_discount}))
         })
         .catch((error) => console.log(error.message));
     }
@@ -151,50 +161,54 @@ const OrderAdd = (props) => {
     }
   };
 
-  const handleAdd = () => {
-    let is_valid = validateForm();
+  const extra_discount_per_product = (product_id,price) => {
+    const product_discount = fetchData?.buyer?.product_discounts.find((discount_product) => discount_product.product.id === product_id)
 
-    if (is_valid) {
-      if (item.set_focus !== undefined) {
-        let _itemsCopy = [...items];
-        let { quantity, variant, set_focus, id } = item;
-        _itemsCopy[set_focus] = {
-          quantity: quantity,
-          variant: variant,
-          id: id,
-        };
-        setItems(_itemsCopy);
-      } else {
-        setItems((prevState) => [...prevState, item]);
+    console.log(product_id,price,product_discount)
+
+    const calculate_discount = (discount,price) => {
+      let extra_discount = 0;
+      if(product_discount?.discount_type === "percentage"){
+        extra_discount = ((price*parseFloat(discount?.discount_value))/100).toFixed(2)
+      }else{
+        extra_discount = parseFloat(discount?.discount_value)
       }
+
+      return extra_discount
+    }
+
+    if(product_discount){
+      return calculate_discount(product_discount,price)
+    }else if(fetchData?.buyer?.generic_discount){
+      return calculate_discount(fetchData?.buyer?.generic_discount,price)
+    }else{
+      return 0
+    }
+  }
+
+  const handleAdd = () => {
+    const is_valid = validateForm();
+
+    if(is_valid){
+      let _itemsCopy = [...items];
+
+      if(item?.set_focus !== undefined){
+        _itemsCopy[item?.set_focus] = {...item,extra_discount:(extra_discount_per_product(item.variant.product.id,parseFloat(item.price))*item.quantity).toFixed(2)}
+      }else{
+        _itemsCopy = [...items,{...item,extra_discount:(extra_discount_per_product(item.variant.product.id,parseFloat(item.price))*item.quantity).toFixed(2)}]
+      }
+
+      setItems(_itemsCopy)
+
+      const total_extra_discount = _itemsCopy.reduce((total,item) => total+parseFloat(item.extra_discount),0)
+
+      setOrderInfo((prevState) => ({...prevState,total_extra_discount:total_extra_discount}))
 
       setItem({});
       setSelectedProduct(null);
       setToggleButton(false);
     }
-  };
-
-  console.log("items >>>> ", items);
-
-  const totals = items?.reduce(
-    (sum, item) => {
-      const actualPrice =
-        parseFloat(item?.variant?.actual_price) * item?.quantity;
-      const salePrice =
-        parseFloat(item?.variant?.price || item?.variant?.actual_price) *
-        item?.quantity;
-
-      const _sum = {
-        actualPrice: sum.actualPrice + actualPrice,
-        salePrice: sum.salePrice + salePrice,
-      };
-      return _sum;
-    },
-    {
-      actualPrice: 0,
-      salePrice: 0,
-    }
-  );
+  }
 
   const SubmitForm = () => {
     let errors = [];
@@ -231,6 +245,9 @@ const OrderAdd = (props) => {
         variant_id: item.variant.id,
         quantity: item.quantity,
         id: item?.id ?? null,
+        extra_discount:item?.extra_discount,
+        price:item?.price,
+        actual_price:item?.actual_price
       }));
 
       console.log("variants data >>> ", variantData);
@@ -240,7 +257,7 @@ const OrderAdd = (props) => {
         items: variantData,
         address: orderInfo?.address?.id,
         buyer_id: orderInfo?.buyer_id,
-        // discount: orderInfo?.discount || 0,
+        total_extra_discount: orderInfo?.total_extra_discount,
       };
 
       let url = "/orders/";
@@ -281,7 +298,7 @@ const OrderAdd = (props) => {
   const formatOptionLabel = ({ label, featured_image, quantity }) => {
     return (
       <div className="select-product">
-        {console.log("image url -------> ",featured_image ?? "name")}
+        {/* {console.log("image url -------> ",featured_image ?? "name")} */}
         <img
           src={featured_image ? getApiURL(featured_image) : DefaultProductImage}
           alt="featured"
@@ -301,7 +318,21 @@ const OrderAdd = (props) => {
     setItems(itemsCopy)
   }
 
-  console.log("items  >>> ", items);
+  const handleChangeExtraDiscount = () => {
+    setActiveExtraDiscount(null)
+
+    const checkDiscount = items.every((item) => (item.extra_discount === "0.00" || item.extra_discount === "0"))
+
+    if(!checkDiscount){
+      const total_extra_discount = items.reduce((sum,item) => sum + parseFloat(item.extra_discount),0)
+
+      setOrderInfo((prevState) => ({...prevState,total_extra_discount:total_extra_discount}))
+    }
+  }
+
+
+  console.log(" ------ items ------ ",items,fetchData?.buyer)
+
 
   return (
     <>
@@ -354,7 +385,7 @@ const OrderAdd = (props) => {
                               <ArrowLeft size="15" />
                             </span>
 
-                            <span>Add Product</span>
+                            <span>{item?.set_focus !== undefined ?"Update" : "Add"} Product</span>
                           </div>
                         </CardHeader>
                         <CardBody>
@@ -367,20 +398,22 @@ const OrderAdd = (props) => {
                                 let product = fetchData.products.find(
                                   (product) => product.id === data.value
                                 );
-                                let _product = renderProductsData.find(
-                                  (product) => product.value === data.value
-                                );
+
                                 if (!product.has_multiple_variants) {
                                   setItem((prevState) => ({
                                     ...prevState,
                                     variant: product.variants_data,
                                     quantity: product.variants_data.minimum_order_quantity,
+                                    price:product.variants_data.price,
+                                    actual_price:product.variants_data.actual_price,
                                   }));
                                 } else {
                                   setItem((prevState) => ({
                                     ...prevState,
                                     variant: product.variants_data[0],
-                                    quantity:product.variants_data[0].minimum_order_quantity
+                                    quantity:product.variants_data[0].minimum_order_quantity,
+                                    price:product.variants_data[0].price,
+                                    actual_price:product.variants_data[0].actual_price,
                                   }));
                                 }
                                 setSelectedProduct(product);
@@ -400,10 +433,6 @@ const OrderAdd = (props) => {
                               formatOptionLabel={formatOptionLabel}
                               styles={customStyles}
                             />
-
-                            {/* {
-                              console.log(selectedProduct)
-                            } */}
                           </FormGroup>
 
                           {console.log(
@@ -466,8 +495,27 @@ const OrderAdd = (props) => {
                             </FormGroup>
                           )}
 
+                          {
+                            console.log(" <-------- selected product ------> ",selectedProduct)
+                          }
+
+                          <SimpleInputField
+                            label="Sale Price"
+                            placeholder="Sale Price..."
+                            type="number"
+                            value={item?.price || ""}
+                            onChange={(e) => {
+                              setItem((prevState) => ({
+                                ...prevState,
+                                price:e.target.value
+                              }))
+                            }}
+                            requiredIndicator
+                            min="0"
+                          />
+
                           <FormGroup>
-                            <Label for={`quantity`}>Quantity</Label>
+                            <Label for={`quantity`}><Translatable text="quantity" /></Label>
 
                             <Input
                               type="number"
@@ -485,11 +533,6 @@ const OrderAdd = (props) => {
                               disabled={!selectedProduct}
                               // invalid={(item?.quantity < selectedProduct?.minimum_order_quantity)}
                             />
-                            {/* <FormFeedback invalid={(item?.quantity < selectedProduct?.minimum_order_quantity)}>
-                              <div className="text-danger">
-                                <AlertTriangle size={14}  /> Minimun Quantity: {selectedProduct?.minimum_order_quantity}
-                              </div>
-                         </FormFeedback> */}
                           </FormGroup>
 
                           <Button.Ripple
@@ -497,11 +540,10 @@ const OrderAdd = (props) => {
                             color="primary"
                             outline
                             onClick={handleAdd}
-                            // disabled={product?.quantity <= 0}
                           >
                             <Plus size={14} />
                             <span className="align-middle ml-25">
-                              Add Product
+                            {item?.set_focus !== undefined ?"Update" : "Add"} Product
                             </span>
                           </Button.Ripple>
                         </CardBody>
@@ -515,10 +557,10 @@ const OrderAdd = (props) => {
                           className="card-content"
                           style={{ gridTemplateColumns: "0.5fr 3fr 1fr" }}
                         >
-                          <div className="item-img text-center">
+                          <div className="item-img d-flex align-items-start mt-2">
                             <img
-                              src={getApiURL(item?.variant?.featured_image)}
-                              className="img-fluid img-100"
+                              src={item?.variant?.featured_image ? getApiURL(item?.variant?.featured_image) : DefaultProductImage}
+                              className="img-fluid img-100 rounded"
                               alt="Product"
                             />
                           </div>
@@ -534,10 +576,59 @@ const OrderAdd = (props) => {
                           </p>
                         )} */}
                               <div className="d-flex justify-content-between">
-                                <div className="item-quantity">
+                                <div className="item-quantity d-flex flex-column">
                                   <p className="quantity-title">
-                                    Quantity: {item?.quantity}
+                                  <Translatable text="quantity" />: {item?.quantity}
                                   </p>
+                                  
+                                  {
+                                    !(activeExtraDiscount === index) && (
+                                      <div className="d-flex">
+                                        <p className="quantity-title">
+                                          Extra Discount: <PriceDisplay amount={item?.extra_discount} />
+                                        </p>
+
+                                        <div className="ml-1 text-primary cursor-pointer" onClick={() => setActiveExtraDiscount(index)}>
+                                          <Edit3 size={18} />
+                                          Edit
+                                        </div>
+                                      </div>
+                                    )
+                                  }
+                                  
+
+                                  {
+                                    activeExtraDiscount === index && (
+                                      
+                                        <Row>
+                                          <Col md="7">
+                                            <FormGroup>
+                                              <Label htmlFor="extra-discount">Extra Discount: </Label>
+                                              <Input 
+                                                type="number" 
+                                                placeholder="Enter extra discount..." 
+                                                value={item?.extra_discount || ""} 
+                                                onChange={(e) => {
+                                                  const copyItems = [...items]
+                                                  copyItems[index].extra_discount = e.target.value
+                                                  setItems(copyItems) 
+                                                }} 
+                                              />
+                                            </FormGroup>
+                                          </Col>
+                                          <Col md="auto" className="d-flex align-items-center">
+                                            <FormGroup className="mt-1">
+                                              <Button type="button" color="primary" size="sm" onClick={handleChangeExtraDiscount}>
+                                                <Check size={16} />
+                                              </Button>
+                                            </FormGroup>
+                                          </Col>
+                                        </Row>
+                                        
+                                      
+                                    )
+                                  }
+                                  
                                 </div>
                                 <div>
                                   <Eye
@@ -574,14 +665,12 @@ const OrderAdd = (props) => {
                                 item?.product?.has_multiple_variants ? console.log(item?.product?.variants_data?.find((variant) => variant.id === item?.variant)) : console.log(item?.product?.variants_data)
                               }*/}
                                 <h5 className="">
-                                  {priceFormatter(item?.variant?.price || 0)}
+                                  <PriceDisplay amount={item?.price || 0} />
                                 </h5>
 
                                 <h6>
                                   <del className="strikethrough text-secondary">
-                                    {priceFormatter(
-                                      item?.variant?.actual_price || 0
-                                    )}
+                                    <PriceDisplay amount={item?.actual_price || 0} />
                                   </del>
                                 </h6>
                               </div>
@@ -623,7 +712,8 @@ const OrderAdd = (props) => {
                   setOrderInfo={setOrderInfo}
                   buyerData={fetchData?.buyer}
                   orderId={orderId}
-                  totals={totals}
+                  totals={calculateTotals(items)}
+                  items={items}
                 />
               </div>
             </div>

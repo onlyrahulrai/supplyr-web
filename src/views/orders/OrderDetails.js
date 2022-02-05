@@ -30,6 +30,7 @@ import DynamicForm from "components/forms/dynamic-form/DynamicForm"
 import { connect } from "react-redux";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
+
 // import { productsList } from "./cartData";
 
 const statusDisplayDict = {
@@ -98,6 +99,8 @@ function OrderDetails({order_status_variables}) {
   const [orderData, setOrderData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingError, setLoadingError] = useState(null)
+  const [buyerData,setBuyerData] = useState({})
+
 
   const fetchOrderData = () => {
     OrdersApi.retrieve(orderId)
@@ -132,7 +135,6 @@ function OrderDetails({order_status_variables}) {
     }
   );
 
-
   const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered'] // Skipped 'cancelled' here as it has separate control
   const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
   const nextStatusDisplayData = statusDisplayDict[nextStatus]
@@ -163,6 +165,9 @@ function OrderDetails({order_status_variables}) {
     })
 
   }
+
+
+  console.log("order data is >>>> ",orderData)
 
   const onCancel = () => {
     Swal.fire({
@@ -217,6 +222,7 @@ function OrderDetails({order_status_variables}) {
     }
   }
 
+  console.log(" ----- orderinfo ----- ",orderData)
 
 
   return <>
@@ -249,6 +255,17 @@ function OrderDetails({order_status_variables}) {
                 <a href="#" onClick={e => {e.preventDefault(); history.push(`/product/${item.product_variant.product.id}`)}}>
                 <h3>{item.product_variant.product.title}</h3>
                 </a>
+
+
+                <div className="d-flex">
+                  <span className="border-right pr-1"><Translatable text="quantity" />: {item?.quantity}</span>
+
+                  {
+                    Math.floor(item?.extra_discount) ? (
+                      <span className="ml-1">Extra Discount: <PriceDisplay amount={item?.extra_discount || 0} /></span>
+                    ):("")
+                  }
+                </div>
                 {item.product_variant.product.has_multiple_variants &&
                   <p className="item-company">
                     <span className="company-name">
@@ -259,9 +276,9 @@ function OrderDetails({order_status_variables}) {
                   </p>
                 }
                 <div className="item-quantity">
-                  <p className="quantity-title">
+                  {/* <p className="quantity-title">
                     <Translatable text="quantity" />: {item.quantity}
-                  </p>
+                  </p> */}
 
                 </div>
                 <p className="delivery-date">{item.deliveryBy}</p>
@@ -358,17 +375,27 @@ function OrderDetails({order_status_variables}) {
           </div>
           <div className="detail">
             <div className="detail-title">Total MRP</div>
-            <div className="detail-amt"><PriceDisplay amount={totals.actualPrice} /></div>
+            <div className="detail-amt"><PriceDisplay amount={totals.salePrice} /></div>
           </div>
-          <div className="detail">
+          {/* <div className="detail">
             <div className="detail-title">Discount</div>
             <div className="detail-amt discount-amt"><PriceDisplay amount={totals.actualPrice - totals.salePrice} /></div>
-          </div>
+          </div> */}
+
+          
+
+          
+              <div className="detail">
+                <div className="detail-title">Extra Discount</div>
+                <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
+              </div>
+           
+          
 
           <hr />
           <div className="detail">
             <div className="detail-title detail-total">Final Price</div>
-            <div className="detail-amt total-amt"><PriceDisplay amount={totals.salePrice} /></div>
+            <div className="detail-amt total-amt"><PriceDisplay amount={totals.salePrice - (orderData?.total_extra_discount || 0)} /></div>
           </div>
 
           <hr />
@@ -422,21 +449,7 @@ function OrderDetails({order_status_variables}) {
                 </ModalBody>
               </Modal>
               )}
-    {/* 
-              {!isHiddenControlsVisible &&
-              <Button.Ripple
-                type="submit"
-                block
-                color="dark"
-                outline
-                className="btn-block mb-2"
-                onClick={() => setIsHiddenControlsVisible(true)}>
-                More <BsFillCaretDownFill />
-              </Button.Ripple>
-              } */}
-
-                
-
+ 
               {isHiddenControlsVisible && 
                 <Row>
                 {orderStatuses.filter(status => status!==nextStatus && status !=orderData?.order_status).map(status => {

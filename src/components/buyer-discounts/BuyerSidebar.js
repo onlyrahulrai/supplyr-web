@@ -78,14 +78,11 @@ class BuyerSidebar extends React.Component {
   }
 
 
-  handleClick = () => {
-    
-  }
 
   
 
   render() {
-    console.log("buyers >>> ", this.state.buyers);
+    console.log("---- state ---- ", this.state.buyers);
     return (
       <React.Fragment>
         <div className="mr-2 mt-1">
@@ -109,16 +106,16 @@ class BuyerSidebar extends React.Component {
           onScroll={this.handleScroll}
           ref={this.myRef}
         >
-          {this.state.buyers?.map((buyer, index) => (
-            <BuyerSidebarCard
-              key={index}
-              title={buyer.buyer.business_name}
-              discount="10"
-              noOfProducts={5}
-              buyerName={`${capitalizeString(buyer.buyer.buyer_name)} (${buyer.buyer.email})`}
-              onClick={() => this.props.onClick(buyer)}
-              buyer={this.props.buyer}
-            />
+          {this.state.buyers?.map((connection, index) => (
+              <BuyerSidebarCard
+                key={index}
+                title={connection.buyer.business_name}
+                discount={connection?.generic_discount}
+                noOfProducts={connection?.product_discounts.length}
+                buyerName={`${capitalizeString(connection.buyer.name)} (${connection.buyer.email})`}
+                onClick={() => this.props.onClick(connection)}
+                buyer={this.props.buyer}
+              />
           ))}
           <div className="d-flex align-items-center pb-5 justify-content-center">
             {this.state.hasMore ? (

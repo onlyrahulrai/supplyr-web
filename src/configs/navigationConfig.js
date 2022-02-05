@@ -67,13 +67,13 @@ const navigationConfig = [
     navLink: "/orders"
   },
 
-  // {
-  //   id:"buyer_discount",
-  //   title:"Buyer Discount",
-  //   type:"item",
-  //   icon:<AiOutlineUserSwitch  size={20} />,
-  //   navLink:"/buyer-discounts"
-  // },
+  {
+    id:"buyer_discount",
+    title:"Buyer Discount",
+    type:"item",
+    icon:<AiOutlineUserSwitch  size={20} />,
+    navLink:"/buyer-discounts"
+  },
 
   // {
   //   id: "management",
