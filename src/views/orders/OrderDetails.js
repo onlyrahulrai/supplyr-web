@@ -374,7 +374,7 @@ function OrderDetails({order_status_variables}) {
             <p>Price Details</p>
           </div>
           <div className="detail">
-            <div className="detail-title">Total MRP</div>
+            <div className="detail-title">Price</div>
             <div className="detail-amt"><PriceDisplay amount={totals.salePrice} /></div>
           </div>
           {/* <div className="detail">

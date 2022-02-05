@@ -69,7 +69,7 @@ const navigationConfig = [
 
   {
     id:"buyer_discount",
-    title:"Buyer Discount",
+    title:"Buyer Discounts",
     type:"item",
     icon:<AiOutlineUserSwitch  size={20} />,
     navLink:"/buyer-discounts"
