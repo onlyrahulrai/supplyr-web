@@ -18,7 +18,7 @@ import {getMediaURL} from "api/utils"
 import VariantLabel from "components/inventory/VariantLabel"
 import Address from "components/inventory/Address"
 import ProductDummyImage from "assets/img/svg/cart.svg"
-import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsReceipt} from "react-icons/bs"
+import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsReceipt, BsPencil} from "react-icons/bs"
 import {RiTruckLine} from "react-icons/ri"
 import Swal from "utility/sweetalert"
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
@@ -99,7 +99,6 @@ function OrderDetails({order_status_variables}) {
   const [orderData, setOrderData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingError, setLoadingError] = useState(null)
-  const [buyerData,setBuyerData] = useState({})
 
 
   const fetchOrderData = () => {
@@ -237,11 +236,27 @@ function OrderDetails({order_status_variables}) {
   }
   {!isLoading && orderData && (
     <div className="ecommerce-application">
-    <BreadCrumb
-      breadCrumbTitle={"Order #" + orderId}
-      breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</a>}
-      breadCrumbActive = {`#${orderId} (${orderData.buyer_name})`}
-    />
+      <Row>
+        <Col md="10" sm="8" >
+          <BreadCrumb
+            breadCrumbTitle={"Order #" + orderId}
+            breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</a>}
+            breadCrumbActive = {`#${orderId} (${orderData.buyer_name})`}
+          />
+        </Col>
+        <Col sm="4" md="2">
+            <Button.Ripple
+                color='primary'
+                outline
+                block
+                style={{backgroundColor: 'white'}}
+                className="btn-block"
+                onClick={() => history.push(`/orders/${orderData.buyer_id}/update/${orderId}`)}
+              >
+                <BsPencil size={16} color={"primary"} /> Edit Order
+            </Button.Ripple>
+        </Col>
+      </Row>
     <div className="list-view product-checkout">
     <div className="checkout-items">
       {orderData?.items.map((item, i) => (
