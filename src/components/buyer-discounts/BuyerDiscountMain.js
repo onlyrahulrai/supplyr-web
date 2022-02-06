@@ -38,7 +38,7 @@ const BuyerDiscountMain = (props) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [genericDiscount, setGenericDiscount] = useState({
-    discount_type: "amount",
+    discount_type: "percentage",
   });
   const [item, setItem] = useState({ discount_type: "amount" });
   const [productDiscounts, setProductDiscounts] = useState([]);
@@ -55,7 +55,9 @@ const BuyerDiscountMain = (props) => {
           ...response.data.generic_discount,
           buyer: props.connected_buyer.buyer.id,
           seller: props.seller,
+          discount_type:"percentage"
         });
+        console.log("Hello world!",response.data.generic_discount)
         setItem((prevState) => ({
           ...prevState,
           buyer: props.connected_buyer.buyer.id,
@@ -81,6 +83,7 @@ const BuyerDiscountMain = (props) => {
       setting: "generic_discount",
       data: genericDiscount,
     };
+
 
     await apiClient
       .post("inventory/buyer-discounts/", requestedData)
@@ -222,32 +225,12 @@ const BuyerDiscountMain = (props) => {
                             </CardHeader>
                             <CardBody>
                               <Form onSubmit={handleCreateGenericDiscount}>
-                                <FormGroup className="mb-1">
-                                  <Label htmlFor="type">Discount Type</Label>
-                                  <Select
-                                    options={discount_value_type}
-                                    onChange={(data) =>
-                                      setGenericDiscount((prevState) => ({
-                                        ...prevState,
-                                        discount_type: data.value,
-                                      }))
-                                    }
-                                    value={
-                                      discount_value_type.find(
-                                        (data) =>
-                                          data.value ===
-                                          genericDiscount?.discount_type
-                                      ) || ""
-                                    }
-                                  />
-                                </FormGroup>
-
                                 <FormGroup>
                                   <Label htmlFor="discount">
-                                    Discount{" "}
-                                    {genericDiscount?.discount_type === "amount"
+                                    Discount Percentage{" "}
+                                    {/* {genericDiscount?.discount_type === "amount"
                                       ? "Amount"
-                                      : "Percentage"}{" "}
+                                      : "Percentage"}{" "} */}
                                   </Label>
                                   <Input
                                     type="number"
@@ -255,12 +238,16 @@ const BuyerDiscountMain = (props) => {
                                     value={
                                       genericDiscount?.discount_value ?? ""
                                     }
-                                    onChange={(e) =>
+                                    onChange={(e) =>{
                                       setGenericDiscount((prevState) => ({
                                         ...prevState,
-                                        discount_value: e.target.value,
+                                        discount_value: Math.min(e.target.value,100),
                                       }))
-                                    }
+
+                                      console.log(" onchange generic discount! ",genericDiscount)
+                                    }}
+                                    min={1}
+                                    max={genericDiscount?.discount_type === "percentage" ?100:Infinity}
                                     required
                                   />
                                 </FormGroup>
