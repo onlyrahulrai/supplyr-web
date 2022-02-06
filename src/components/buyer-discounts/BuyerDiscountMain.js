@@ -13,7 +13,7 @@ import {
   Input,
 } from "reactstrap";
 import PerfectScrollbar from "react-perfect-scrollbar";
-import { ArrowLeft, Edit3, Menu,Trash } from "react-feather";
+import { ArrowLeft, Edit3, Menu, Trash } from "react-feather";
 import { capitalizeString } from "utility/general";
 import { connect } from "react-redux";
 import apiClient from "api/base";
@@ -22,7 +22,8 @@ import { getApiURL } from "api/utils";
 import DefaultProductImage from "../../assets/img/pages/default_product_image.png";
 import ProductDiscountsFormComponent from "./ProductDiscountsFormComponent";
 import Swal from "sweetalert2";
-import PriceDisplay from "../utils/PriceDisplay"
+import PriceDisplay from "../utils/PriceDisplay";
+import { SimpleInputField } from "components/forms/fields";
 
 const discount_value_type = [
   { label: "Amount", value: "amount" },
@@ -32,8 +33,7 @@ const discount_value_type = [
 const BuyerDiscountMain = (props) => {
   const [toggleGenericDiscountForm, setToggleGenericDiscountForm] =
     useState(false);
-  const [productDiscountsForm, setProductDiscountsForm] =
-    useState(false);
+  const [productDiscountsForm, setProductDiscountsForm] = useState(false);
   const [buyerData, setBuyerData] = useState({});
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -55,9 +55,9 @@ const BuyerDiscountMain = (props) => {
           ...response.data.generic_discount,
           buyer: props.connected_buyer.buyer.id,
           seller: props.seller,
-          discount_type:"percentage"
+          discount_type: "percentage",
         });
-        console.log("Hello world!",response.data.generic_discount)
+        console.log("Hello world!", response.data.generic_discount);
         setItem((prevState) => ({
           ...prevState,
           buyer: props.connected_buyer.buyer.id,
@@ -84,41 +84,43 @@ const BuyerDiscountMain = (props) => {
       data: genericDiscount,
     };
 
-
     await apiClient
       .post("inventory/buyer-discounts/", requestedData)
       .then((response) => {
         setGenericDiscount(response.data);
         setToggleGenericDiscountForm(false);
         fetchDiscount(props.connected_buyer.buyer.id);
-        Swal.fire(`Discount ${genericDiscount?.id ? "Updated!" : "Created!"}`, "success");
+        Swal.fire(
+          `Discount ${genericDiscount?.id ? "Updated!" : "Created!"}`,
+          "success"
+        );
         setIsLoading(false);
       })
       .catch((error) => console.log(error));
   };
 
   const handleEdit = (item) => {
-    setItem({...item,product:item.product.id})
-    setToggleGenericDiscountForm(
-      false
-    );
+    setItem({ ...item, product: item.product.id });
+    setToggleGenericDiscountForm(false);
     setProductDiscountsForm(true);
-  }
+  };
 
   const handleDelete = async (item) => {
-    console.log("remove discount >>> ",item)
-    setIsLoading(true)
-    await apiClient.delete(`inventory/buyer-discounts/${item.id}`)
-    .then((response) => {
-      Swal.fire("Discount removed!", "success");
-      fetchDiscount(item?.buyer)
-      setIsLoading(false)
-      setToggleGenericDiscountForm(false)
-    })
-    .catch((error) => {console.log(error);setIsLoading(false)})
-  }
-
- 
+    console.log("remove discount >>> ", item);
+    setIsLoading(true);
+    await apiClient
+      .delete(`inventory/buyer-discounts/${item.id}`)
+      .then((response) => {
+        Swal.fire("Discount removed!", "success");
+        fetchDiscount(item?.buyer);
+        setIsLoading(false);
+        setToggleGenericDiscountForm(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        setIsLoading(false);
+      });
+  };
 
   return (
     <div className="content-right" style={{ height: "100%" }}>
@@ -175,10 +177,16 @@ const BuyerDiscountMain = (props) => {
                                 )}%`
                               : buyerData?.generic_discount?.discount_type ===
                                   "amount" && (
-                                    <span>
-                                      Amount:<PriceDisplay amount={buyerData?.generic_discount?.discount_value} />
-                                    </span>
-                                  )}
+                                  <span>
+                                    Amount:
+                                    <PriceDisplay
+                                      amount={
+                                        buyerData?.generic_discount
+                                          ?.discount_value
+                                      }
+                                    />
+                                  </span>
+                                )}
                           </h5>
                         </Col>
                         <Col
@@ -228,9 +236,6 @@ const BuyerDiscountMain = (props) => {
                                 <FormGroup>
                                   <Label htmlFor="discount">
                                     Discount Percentage{" "}
-                                    {/* {genericDiscount?.discount_type === "amount"
-                                      ? "Amount"
-                                      : "Percentage"}{" "} */}
                                   </Label>
                                   <Input
                                     type="number"
@@ -238,23 +243,29 @@ const BuyerDiscountMain = (props) => {
                                     value={
                                       genericDiscount?.discount_value ?? ""
                                     }
-                                    onChange={(e) =>{
+                                    onChange={(e) => {
+
+                                      let num = e.target.value
+                                      if(num > 100){
+                                        num = Math.min(100,num)
+                                      }else if(num < 0){
+                                        num = Math.max(num,1)
+                                      }
                                       setGenericDiscount((prevState) => ({
                                         ...prevState,
-                                        discount_value: Math.min(e.target.value,100),
-                                      }))
-
-                                      console.log(" onchange generic discount! ",genericDiscount)
+                                        discount_value: num,
+                                      }));
                                     }}
                                     min={1}
-                                    max={genericDiscount?.discount_type === "percentage" ?100:Infinity}
+                                    max={100}
+                                    step="any"
                                     required
                                   />
                                 </FormGroup>
 
                                 <FormGroup row>
                                   <Col md="6">
-                                      <Button.Ripple
+                                    <Button.Ripple
                                       type="submit"
                                       color="primary"
                                       className="mr-2"
@@ -262,7 +273,7 @@ const BuyerDiscountMain = (props) => {
                                     >
                                       Save
                                     </Button.Ripple>
-                                    
+
                                     <Button.Ripple
                                       type="button"
                                       color="danger"
@@ -276,24 +287,27 @@ const BuyerDiscountMain = (props) => {
                                       Cancel
                                     </Button.Ripple>
                                   </Col>
-                                  <Col md="6" className="d-flex justify-content-end">
-                                    {
-                                    buyerData?.generic_discount && (
+                                  <Col
+                                    md="6"
+                                    className="d-flex justify-content-end"
+                                  >
+                                    {buyerData?.generic_discount && (
                                       <Button.Ripple
                                         type="button"
                                         color="warning"
                                         className="mr-2"
                                         disabled={isLoading}
-                                        onClick={() => handleDelete(buyerData?.generic_discount)}
+                                        onClick={() =>
+                                          handleDelete(
+                                            buyerData?.generic_discount
+                                          )
+                                        }
                                       >
                                         Remove General Discount
                                       </Button.Ripple>
                                     )}
                                   </Col>
                                 </FormGroup>
-                                
-
-                                
                               </Form>
                             </CardBody>
                           </Card>
@@ -321,9 +335,7 @@ const BuyerDiscountMain = (props) => {
                             type="button"
                             color="primary"
                             onClick={() => {
-                              setProductDiscountsForm(
-                                !productDiscountsForm
-                              );
+                              setProductDiscountsForm(!productDiscountsForm);
                               setToggleGenericDiscountForm(false);
                             }}
                           >
@@ -337,12 +349,8 @@ const BuyerDiscountMain = (props) => {
                         <Col md="12" className="p-1">
                           <div className="m-1">
                             <ProductDiscountsFormComponent
-                              productDiscountsForm={
-                                productDiscountsForm
-                              }
-                              setProductDiscountsForm={
-                                setProductDiscountsForm
-                              }
+                              productDiscountsForm={productDiscountsForm}
+                              setProductDiscountsForm={setProductDiscountsForm}
                               productDiscounts={productDiscounts}
                               seller={props.seller}
                               buyer={props.connected_buyer.buyer.id}
@@ -358,11 +366,36 @@ const BuyerDiscountMain = (props) => {
                     {productDiscounts?.map((item, index) => (
                       <Row className=" py-2 mx-0  mt-2 border" key={index}>
                         <Col md="auto">
-                          <img src={item?.product?.featured_image ? getApiURL(item?.product?.featured_image) : DefaultProductImage} style={{objectFit:"contain",height:"100%",width:"64px"}} alt="" />
+                          <img
+                            src={
+                              item?.product?.featured_image
+                                ? getApiURL(item?.product?.featured_image)
+                                : DefaultProductImage
+                            }
+                            style={{
+                              objectFit: "contain",
+                              height: "100%",
+                              width: "64px",
+                            }}
+                            alt=""
+                          />
                         </Col>
                         <Col md="auto">
                           <h4>{item.product.title}</h4>
-                          <h5> {item?.discount_type === "amount" ? <span>Discount: <PriceDisplay amount={item?.discount_value} /> </span>  : <span> Discount: {item?.discount_value}&#37; </span> }</h5>
+                          <h5>
+                            {" "}
+                            {item?.discount_type === "amount" ? (
+                              <span>
+                                Discount:{" "}
+                                <PriceDisplay amount={item?.discount_value} />{" "}
+                              </span>
+                            ) : (
+                              <span>
+                                {" "}
+                                Discount: {item?.discount_value}&#37;{" "}
+                              </span>
+                            )}
+                          </h5>
                           <Button.Ripple
                             type="button"
                             color="primary"
@@ -370,7 +403,8 @@ const BuyerDiscountMain = (props) => {
                             className="mr-1"
                             disabled={isLoading}
                           >
-                            <Edit3 size={12} className="mr-1" />Edit 
+                            <Edit3 size={12} className="mr-1" />
+                            Edit
                           </Button.Ripple>
                           <Button.Ripple
                             type="button"

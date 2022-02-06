@@ -615,6 +615,7 @@ const OrderAdd = (props) => {
                                                   copyItems[index].extra_discount = e.target.value
                                                   setItems(copyItems) 
                                                 }} 
+                                                min={1}
                                               />
                                             </FormGroup>
                                           </Col>
