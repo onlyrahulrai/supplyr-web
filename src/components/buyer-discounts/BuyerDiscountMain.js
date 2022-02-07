@@ -172,9 +172,7 @@ const BuyerDiscountMain = (props) => {
                             {buyerData?.generic_discount &&
                             buyerData?.generic_discount?.discount_type ===
                               "percentage"
-                              ? `Percentage: ${Math.floor(
-                                  buyerData?.generic_discount?.discount_value
-                                )}%`
+                              ? `Percentage: ${buyerData?.generic_discount?.discount_value}%`
                               : buyerData?.generic_discount?.discount_type ===
                                   "amount" && (
                                   <span>
@@ -256,7 +254,7 @@ const BuyerDiscountMain = (props) => {
                                         discount_value: num,
                                       }));
                                     }}
-                                    min={1}
+                                    min={0}
                                     max={100}
                                     step="any"
                                     required
