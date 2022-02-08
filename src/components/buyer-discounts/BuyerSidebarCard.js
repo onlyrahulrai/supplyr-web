@@ -17,7 +17,7 @@ const BuyerSidebarCard = ({title,discount,noOfProducts,buyerName,buyer,onClick})
             <>
               {
                 discount?.discount_type === "percentage" ? (
-                  <p>{Math.floor(discount?.discount_value || 0) }% General Discount</p>
+                  <p>{(discount?.discount_value || 0)}% General Discount</p>
                 ):(
                   <PriceDisplay amount={discount?.discount_value || 0}/>
                 )

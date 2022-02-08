@@ -167,8 +167,9 @@ const OrderAdd = (props) => {
     console.log(product_id,price,product_discount)
 
     const calculate_discount = (discount,price) => {
+      console.log(" <<<<<------>>>>> discount type <<<<<-------->>>>>  ",discount)
       let extra_discount = 0;
-      if(product_discount?.discount_type === "percentage"){
+      if(discount?.discount_type === "percentage"){
         extra_discount = ((price*parseFloat(discount?.discount_value))/100).toFixed(2)
       }else{
         extra_discount = parseFloat(discount?.discount_value)
@@ -180,6 +181,7 @@ const OrderAdd = (props) => {
     if(product_discount){
       return calculate_discount(product_discount,price)
     }else if(fetchData?.buyer?.generic_discount){
+      console.log(" ---- fetch buyer generic discount ---- ",fetchData?.buyer?.generic_discount)
       return calculate_discount(fetchData?.buyer?.generic_discount,price)
     }else{
       return 0
@@ -331,7 +333,7 @@ const OrderAdd = (props) => {
   }
 
 
-  console.log(" ------ items ------ ",items,fetchData?.buyer)
+
 
 
   return (
@@ -613,6 +615,7 @@ const OrderAdd = (props) => {
                                                   copyItems[index].extra_discount = e.target.value
                                                   setItems(copyItems) 
                                                 }} 
+                                                min={1}
                                               />
                                             </FormGroup>
                                           </Col>
