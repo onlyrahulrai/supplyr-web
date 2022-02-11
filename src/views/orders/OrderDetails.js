@@ -290,15 +290,13 @@ function OrderDetails({order_status_variables}) {
                       </span>
                   </p>
                 }
-                <div className="item-quantity">
-                  {/* <p className="quantity-title">
-                    <Translatable text="quantity" />: {item.quantity}
-                  </p> */}
-
-                </div>
-                <p className="delivery-date">{item.deliveryBy}</p>
-                <p className="offers">{item.offers}</p>
               </div>
+              
+              {!!item?.item_note &&
+                <div className="item-note">
+                  <b>Item Note: </b> dfbjh dabjks
+                </div>
+                }
             </CardBody>
             <div className="item-options m-auto">
               <div className="item-wrapper">
