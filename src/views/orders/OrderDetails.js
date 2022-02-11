@@ -291,10 +291,10 @@ function OrderDetails({order_status_variables}) {
                   </p>
                 }
               </div>
-              
+
               {!!item?.item_note &&
                 <div className="item-note">
-                  <b>Item Note: </b> dfbjh dabjks
+                  <b style={{color: '#000'}}><i>Item Note:</i> </b> {item.item_note}
                 </div>
                 }
             </CardBody>
