@@ -4,7 +4,15 @@ import { getApiURL } from "api/utils";
 import BreadCrumbs from "components/@vuexy/breadCrumbs/BreadCrumb";
 import NetworkError from "components/common/NetworkError";
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, Check, Edit3, Eye, Plus, Trash } from "react-feather";
+import {
+  ArrowLeft,
+  Check,
+  Clipboard,
+  Edit3,
+  Eye,
+  Plus,
+  Trash,
+} from "react-feather";
 import {
   Button,
   Card,
@@ -18,8 +26,12 @@ import {
   Row,
   Spinner,
 } from "reactstrap";
-import { calculateTotals, calculate_extra_discount, extraDiscounts, priceFormatter } from "utility/general";
-
+import {
+  calculateTotals,
+  calculate_extra_discount,
+  extraDiscounts,
+  priceFormatter,
+} from "utility/general";
 
 import { history } from "../../history";
 
@@ -29,7 +41,7 @@ import _Swal from "sweetalert2";
 
 import withReactContent from "sweetalert2-react-content";
 import { OrdersApi } from "api/endpoints";
-import DefaultProductImage from "../../assets/img/pages/default_product_image.png"
+import DefaultProductImage from "../../assets/img/pages/default_product_image.png";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import { SimpleInputField } from "components/forms/fields";
@@ -60,8 +72,6 @@ function getVariantShortDescription(variant) {
   return <div>{desc}</div>;
 }
 
-
-
 const OrderAdd = (props) => {
   const buyerSlug = props.match.params.buyerId;
   const orderId = props.match.params.orderId;
@@ -77,8 +87,9 @@ const OrderAdd = (props) => {
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [toggleButton, setToggleButton] = useState(false);
+  const [activeNoteItem, setActiveNoteItem] = useState("");
 
-  const [activeExtraDiscount,setActiveExtraDiscount] = useState(null)
+  const [activeExtraDiscount, setActiveExtraDiscount] = useState(null);
 
   useEffect(() => {
     if (buyerSlug) {
@@ -91,7 +102,6 @@ const OrderAdd = (props) => {
           ...prevState,
           buyer_id: fetchBuyerData?.data?.id,
           address: fetchBuyerData?.data?.address[0],
-          
         }));
         // console.log(fetchBuyerData.data)
         setFetchData({
@@ -106,7 +116,7 @@ const OrderAdd = (props) => {
 
   useEffect(() => {
     if (orderId) {
-      setIsLoading(true)
+      setIsLoading(true);
       OrdersApi.retrieve(orderId)
         .then((response) => {
           let _items = response.data.items.map((item) => ({
@@ -115,7 +125,10 @@ const OrderAdd = (props) => {
           }));
           // console.log("orders items ", _items);
           setItems(_items);
-          setOrderInfo((prevState) => ({...prevState,total_extra_discount:response.data?.total_extra_discount}))
+          setOrderInfo((prevState) => ({
+            ...prevState,
+            total_extra_discount: response.data?.total_extra_discount,
+          }));
         })
         .catch((error) => console.log(error.message));
     }
@@ -161,56 +174,92 @@ const OrderAdd = (props) => {
     }
   };
 
-  const extra_discount_per_product = (product_id,price) => {
-    const product_discount = fetchData?.buyer?.product_discounts.find((discount_product) => discount_product.product.id === product_id)
+  const extra_discount_per_product = (product_id, price) => {
+    const product_discount = fetchData?.buyer?.product_discounts.find(
+      (discount_product) => discount_product.product.id === product_id
+    );
 
-    console.log(product_id,price,product_discount)
+    console.log(product_id, price, product_discount);
 
-    const calculate_discount = (discount,price) => {
-      console.log(" <<<<<------>>>>> discount type <<<<<-------->>>>>  ",discount)
+    const calculate_discount = (discount, price) => {
+      console.log(
+        " <<<<<------>>>>> discount type <<<<<-------->>>>>  ",
+        discount
+      );
       let extra_discount = 0;
-      if(discount?.discount_type === "percentage"){
-        extra_discount = ((price*parseFloat(discount?.discount_value))/100).toFixed(2)
-      }else{
-        extra_discount = parseFloat(discount?.discount_value)
+      if (discount?.discount_type === "percentage") {
+        extra_discount = (
+          (price * parseFloat(discount?.discount_value)) /
+          100
+        ).toFixed(2);
+      } else {
+        extra_discount = parseFloat(discount?.discount_value);
       }
 
-      return extra_discount
-    }
+      return extra_discount;
+    };
 
-    if(product_discount){
-      return calculate_discount(product_discount,price)
-    }else if(fetchData?.buyer?.generic_discount){
-      console.log(" ---- fetch buyer generic discount ---- ",fetchData?.buyer?.generic_discount)
-      return calculate_discount(fetchData?.buyer?.generic_discount,price)
-    }else{
-      return 0
+    if (product_discount) {
+      return calculate_discount(product_discount, price);
+    } else if (fetchData?.buyer?.generic_discount) {
+      console.log(
+        " ---- fetch buyer generic discount ---- ",
+        fetchData?.buyer?.generic_discount
+      );
+      return calculate_discount(fetchData?.buyer?.generic_discount, price);
+    } else {
+      return 0;
     }
-  }
+  };
 
   const handleAdd = () => {
     const is_valid = validateForm();
 
-    if(is_valid){
+    if (is_valid) {
       let _itemsCopy = [...items];
 
-      if(item?.set_focus !== undefined){
-        _itemsCopy[item?.set_focus] = {...item,extra_discount:(extra_discount_per_product(item.variant.product.id,parseFloat(item.price))*item.quantity).toFixed(2)}
-      }else{
-        _itemsCopy = [...items,{...item,extra_discount:(extra_discount_per_product(item.variant.product.id,parseFloat(item.price))*item.quantity).toFixed(2)}]
+      if (item?.set_focus !== undefined) {
+        _itemsCopy[item?.set_focus] = {
+          ...item,
+          extra_discount: (
+            extra_discount_per_product(
+              item.variant.product.id,
+              parseFloat(item.price)
+            ) * item.quantity
+          ).toFixed(2),
+        };
+      } else {
+        _itemsCopy = [
+          ...items,
+          {
+            ...item,
+            extra_discount: (
+              extra_discount_per_product(
+                item.variant.product.id,
+                parseFloat(item.price)
+              ) * item.quantity
+            ).toFixed(2),
+          },
+        ];
       }
 
-      setItems(_itemsCopy)
+      setItems(_itemsCopy);
 
-      const total_extra_discount = _itemsCopy.reduce((total,item) => total+parseFloat(item.extra_discount),0)
+      const total_extra_discount = _itemsCopy.reduce(
+        (total, item) => total + parseFloat(item.extra_discount),
+        0
+      );
 
-      setOrderInfo((prevState) => ({...prevState,total_extra_discount:total_extra_discount}))
+      setOrderInfo((prevState) => ({
+        ...prevState,
+        total_extra_discount: total_extra_discount,
+      }));
 
       setItem({});
       setSelectedProduct(null);
       setToggleButton(false);
     }
-  }
+  };
 
   const SubmitForm = () => {
     let errors = [];
@@ -243,13 +292,15 @@ const OrderAdd = (props) => {
     let is_valid = SubmitForm();
 
     if (is_valid) {
+      console.log(" -------- items on submit ------- ", items);
       let variantData = items?.map((item) => ({
         variant_id: item.variant.id,
         quantity: item.quantity,
         id: item?.id ?? null,
-        extra_discount:item?.extra_discount,
-        price:item?.price,
-        actual_price:item?.actual_price
+        extra_discount: item?.extra_discount,
+        price: item?.price,
+        actual_price: item?.actual_price,
+        item_note: item?.item_note ?? "",
       }));
 
       console.log("variants data >>> ", variantData);
@@ -315,26 +366,32 @@ const OrderAdd = (props) => {
   };
 
   const handleClick = (index) => {
-    let itemsCopy = [...items]
-    itemsCopy.splice(index,1)
-    setItems(itemsCopy)
-  }
+    let itemsCopy = [...items];
+    itemsCopy.splice(index, 1);
+    setItems(itemsCopy);
+  };
 
   const handleChangeExtraDiscount = () => {
-    setActiveExtraDiscount(null)
+    setActiveExtraDiscount(null);
 
-    const checkDiscount = items.every((item) => (item.extra_discount === "0.00" || item.extra_discount === "0"))
+    const checkDiscount = items.every(
+      (item) => item.extra_discount === "0.00" || item.extra_discount === "0"
+    );
 
-    if(!checkDiscount){
-      const total_extra_discount = items.reduce((sum,item) => sum + parseFloat(item.extra_discount),0)
+    if (!checkDiscount) {
+      const total_extra_discount = items.reduce(
+        (sum, item) => sum + parseFloat(item.extra_discount),
+        0
+      );
 
-      setOrderInfo((prevState) => ({...prevState,total_extra_discount:total_extra_discount}))
+      setOrderInfo((prevState) => ({
+        ...prevState,
+        total_extra_discount: total_extra_discount,
+      }));
     }
-  }
+  };
 
-
-
-
+  console.log(" ------ items list ------  ", items);
 
   return (
     <>
@@ -387,7 +444,10 @@ const OrderAdd = (props) => {
                               <ArrowLeft size="15" />
                             </span>
 
-                            <span>{item?.set_focus !== undefined ?"Update" : "Add"} Product</span>
+                            <span>
+                              {item?.set_focus !== undefined ? "Update" : "Add"}{" "}
+                              Product
+                            </span>
                           </div>
                         </CardHeader>
                         <CardBody>
@@ -405,17 +465,23 @@ const OrderAdd = (props) => {
                                   setItem((prevState) => ({
                                     ...prevState,
                                     variant: product.variants_data,
-                                    quantity: product.variants_data.minimum_order_quantity,
-                                    price:product.variants_data.price,
-                                    actual_price:product.variants_data.actual_price,
+                                    quantity:
+                                      product.variants_data
+                                        .minimum_order_quantity,
+                                    price: product.variants_data.price,
+                                    actual_price:
+                                      product.variants_data.actual_price,
                                   }));
                                 } else {
                                   setItem((prevState) => ({
                                     ...prevState,
                                     variant: product.variants_data[0],
-                                    quantity:product.variants_data[0].minimum_order_quantity,
-                                    price:product.variants_data[0].price,
-                                    actual_price:product.variants_data[0].actual_price,
+                                    quantity:
+                                      product.variants_data[0]
+                                        .minimum_order_quantity,
+                                    price: product.variants_data[0].price,
+                                    actual_price:
+                                      product.variants_data[0].actual_price,
                                   }));
                                 }
                                 setSelectedProduct(product);
@@ -497,9 +563,10 @@ const OrderAdd = (props) => {
                             </FormGroup>
                           )}
 
-                          {
-                            console.log(" <-------- selected product ------> ",selectedProduct)
-                          }
+                          {console.log(
+                            " <-------- selected product ------> ",
+                            selectedProduct
+                          )}
 
                           <SimpleInputField
                             label="Sale Price"
@@ -509,15 +576,17 @@ const OrderAdd = (props) => {
                             onChange={(e) => {
                               setItem((prevState) => ({
                                 ...prevState,
-                                price:e.target.value
-                              }))
+                                price: e.target.value,
+                              }));
                             }}
                             requiredIndicator
                             min="0"
                           />
 
                           <FormGroup>
-                            <Label for={`quantity`}><Translatable text="quantity" /></Label>
+                            <Label for={`quantity`}>
+                              <Translatable text="quantity" />
+                            </Label>
 
                             <Input
                               type="number"
@@ -529,7 +598,10 @@ const OrderAdd = (props) => {
                               onChange={(e) =>
                                 setItem((prevState) => ({
                                   ...prevState,
-                                  quantity: Math.max(parseInt(e.target.value),selectedProduct?.minimum_order_quantity),
+                                  quantity: Math.max(
+                                    parseInt(e.target.value),
+                                    selectedProduct?.minimum_order_quantity
+                                  ),
                                 }))
                               }
                               disabled={!selectedProduct}
@@ -545,7 +617,8 @@ const OrderAdd = (props) => {
                           >
                             <Plus size={14} />
                             <span className="align-middle ml-25">
-                            {item?.set_focus !== undefined ?"Update" : "Add"} Product
+                              {item?.set_focus !== undefined ? "Update" : "Add"}{" "}
+                              Product
                             </span>
                           </Button.Ripple>
                         </CardBody>
@@ -561,7 +634,11 @@ const OrderAdd = (props) => {
                         >
                           <div className="item-img d-flex align-items-start mt-2">
                             <img
-                              src={item?.variant?.featured_image ? getApiURL(item?.variant?.featured_image) : DefaultProductImage}
+                              src={
+                                item?.variant?.featured_image
+                                  ? getApiURL(item?.variant?.featured_image)
+                                  : DefaultProductImage
+                              }
                               className="img-fluid img-100 rounded"
                               alt="Product"
                             />
@@ -580,65 +657,82 @@ const OrderAdd = (props) => {
                               <div className="d-flex justify-content-between">
                                 <div className="item-quantity d-flex flex-column">
                                   <p className="quantity-title">
-                                  <Translatable text="quantity" />: {item?.quantity}
+                                    <Translatable text="quantity" />:{" "}
+                                    {item?.quantity}
                                   </p>
-                                  
-                                  {
-                                    !(activeExtraDiscount === index) && (
-                                      <div className="d-flex">
-                                        <p className="quantity-title">
-                                          Extra Discount: <PriceDisplay amount={item?.extra_discount} />
-                                        </p>
 
-                                        <div className="ml-1 text-primary cursor-pointer" onClick={() => setActiveExtraDiscount(index)}>
-                                          <Edit3 size={18} />
-                                          Edit
-                                        </div>
+                                  {!(activeExtraDiscount === index) && (
+                                    <div className="d-flex">
+                                      <p className="quantity-title">
+                                        Extra Discount:{" "}
+                                        <PriceDisplay
+                                          amount={item?.extra_discount}
+                                        />
+                                      </p>
+
+                                      <div
+                                        className="ml-1 text-primary cursor-pointer"
+                                        onClick={() =>
+                                          setActiveExtraDiscount(index)
+                                        }
+                                      >
+                                        <Edit3 size={18} />
+                                        Edit
                                       </div>
-                                    )
-                                  }
-                                  
+                                    </div>
+                                  )}
 
-                                  {
-                                    activeExtraDiscount === index && (
-                                      
-                                        <Row>
-                                          <Col md="7">
-                                            <FormGroup>
-                                              <Label htmlFor="extra-discount">Extra Discount: </Label>
-                                              <Input 
-                                                type="number" 
-                                                placeholder="Enter extra discount..." 
-                                                value={item?.extra_discount || ""} 
-                                                onChange={(e) => {
-                                                  const copyItems = [...items]
-                                                  copyItems[index].extra_discount = e.target.value
-                                                  setItems(copyItems) 
-                                                }} 
-                                                min={1}
-                                              />
-                                            </FormGroup>
-                                          </Col>
-                                          <Col md="auto" className="d-flex align-items-center">
-                                            <FormGroup className="mt-1">
-                                              <Button type="button" color="primary" size="sm" onClick={handleChangeExtraDiscount}>
-                                                <Check size={16} />
-                                              </Button>
-                                            </FormGroup>
-                                          </Col>
-                                        </Row>
-                                        
-                                      
-                                    )
-                                  }
-                                  
+                                  {activeExtraDiscount === index && (
+                                    <Row>
+                                      <Col md="7">
+                                        <FormGroup>
+                                          <Label htmlFor="extra-discount">
+                                            Extra Discount:{" "}
+                                          </Label>
+                                          <Input
+                                            type="number"
+                                            placeholder="Enter extra discount..."
+                                            value={item?.extra_discount || ""}
+                                            onChange={(e) => {
+                                              const copyItems = [...items];
+                                              copyItems[index].extra_discount =
+                                                e.target.value;
+                                              setItems(copyItems);
+                                            }}
+                                            min={1}
+                                          />
+                                        </FormGroup>
+                                      </Col>
+                                      <Col
+                                        md="auto"
+                                        className="d-flex align-items-center"
+                                      >
+                                        <FormGroup className="mt-1">
+                                          <Button
+                                            type="button"
+                                            color="primary"
+                                            size="sm"
+                                            onClick={handleChangeExtraDiscount}
+                                          >
+                                            <Check size={16} />
+                                          </Button>
+                                        </FormGroup>
+                                      </Col>
+                                    </Row>
+                                  )}
+
+
                                 </div>
                                 <div>
                                   <Eye
                                     size="20"
                                     role="button"
                                     className="mx-1 text-primary"
-                                    onClick={() => history.push(`/product/${item?.variant?.product?.slug}`)}
+                                    onClick={() =>
+                                      history.push(
+                                        `/product/${item?.variant?.product?.slug}`
+                                      )
+                                    }
                                   />
                                   <Edit3
                                     size="20"
@@ -660,6 +754,60 @@ const OrderAdd = (props) => {
                               {/* <p className="delivery-date">{}</p> */}
                               {/* <p className="offers">{10}%</p> */}
                             </div>
+
+                            {!(activeNoteItem === index) ? (
+                                <>
+                                  {!item?.item_note ? (
+                                    <div
+                                      className="d-flex align-items-center text-primary cursor-pointer"
+                                      onClick={() =>
+                                        setActiveNoteItem(index)
+                                      }
+                                    >
+                                      <Clipboard size={16} />
+                                      &nbsp;
+                                      <p className="mb-0">
+                                        <strong>ADD AN NOTE ITEM</strong>
+                                      </p>
+                                    </div>
+                                  ) : (
+                                    <div className="item-note">
+                                      <b style={{color: '#000'}}><i>Item Note:</i> </b> &nbsp; {item.item_note}
+
+                                      <span className="text-primary cursor-pointer" onClick={() =>  setActiveNoteItem(index)}>
+                                        &nbsp;&nbsp;<Edit3 size={16}/> Edit
+                                      </span>
+                                    </div>
+                                  )}
+                                </>
+                              ) : (
+                                <div className="d-flex align-items-center">
+                                  <FormGroup className="mb-0 flex-grow-1">
+                                    <Label for="note">Item Note</Label>
+                                    <Input
+                                      type="text"
+                                      placeholder="Notes..."
+                                      value={item?.item_note || ""}
+                                      onChange={(e) => {
+                                        const copyItems = [...items];
+                                        copyItems[index].item_note =
+                                          e.target.value;
+                                        setItems(copyItems);
+                                      }}
+                                    />
+                                  </FormGroup>
+                                  <FormGroup
+                                    className="mb-0 bg-primary mt-1 ml-1 rounded-full"
+                                    style={{ padding: "5.5px" }}
+                                  >
+                                    <Check
+                                      size={18}
+                                      className="text-white cursor-pointer"
+                                      onClick={() =>  setActiveNoteItem("")}
+                                    />
+                                  </FormGroup>
+                                </div>
+                              )}
                           </CardBody>
                           <div className="item-options m-auto">
                             <div className="item-wrapper">
@@ -673,7 +821,9 @@ const OrderAdd = (props) => {
 
                                 <h6>
                                   <del className="strikethrough text-secondary">
-                                    <PriceDisplay amount={item?.actual_price || 0} />
+                                    <PriceDisplay
+                                      amount={item?.actual_price || 0}
+                                    />
                                   </del>
                                 </h6>
                               </div>

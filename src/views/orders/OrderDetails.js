@@ -294,7 +294,7 @@ function OrderDetails({order_status_variables}) {
 
               {!!item?.item_note &&
                 <div className="item-note">
-                  <b style={{color: '#000'}}><i>Item Note:</i> </b> {item.item_note}
+                  <b style={{color: '#000'}}><i>Item Note:</i> </b> &nbsp; {item.item_note}
                 </div>
                 }
             </CardBody>
