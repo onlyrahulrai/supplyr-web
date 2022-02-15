@@ -105,9 +105,22 @@ class SideMenuContent extends Component {
 
   componentDidMount() {
     this.initRender(this.parentArr[0] ? this.parentArr[0] : [])
+    console.log(" ------ component changed ------ ",this.props.activeItemState,this.props.activeItemState.includes("product"))
+
+    if(this.props.activeItemState.includes("product") || this.props.activeItemState.includes("categories")){
+      this.setState({
+        ...this.state,
+        flag:false,
+        activeGroups:["inventory"],
+        currentActiveGroup:["inventory"],
+        tempArr:["inventory"],
+        activeGroup:["inventory"],
+      })
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
+    
     if (prevProps.activePath !== this.props.activePath) {
       if (this.collapsedMenuPaths !== null) {
         this.props.collapsedMenuPaths(this.collapsedMenuPaths)
@@ -116,10 +129,26 @@ class SideMenuContent extends Component {
       this.initRender(
         this.parentArr[0] ? this.parentArr[this.parentArr.length - 1] : []
       )
+
+        console.log(" ----- url change ----- ",this.props.activeItemState.includes("products" || "product"))
+
+      if (this.props.activeItemState.includes("product") || this.props.activeItemState.includes("categories")){
+        this.setState({
+          ...this.state,
+          flag:false,
+          activeGroup:["inventory"],
+          currentActiveGroup:["inventory"],
+          tempArr:["inventory"],
+          activeGroup:["inventory"],
+        })
+      }
     }
   }
 
   render() {
+    console.log(" ---- props from nav config ---- ",this.props)
+    console.log(" ---- state from nav config ---- ",this.state)
+
     // Loop over sidebar items
     // eslint-disable-next-line
     const menuItems = navigationConfig.map(item => {

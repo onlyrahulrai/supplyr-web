@@ -208,12 +208,16 @@ class AppRouter extends React.Component {
           <AppRoute path="/products/add/" component={AddProduct} />
           <AppRoute path="/products/import/" component={ImportProduct} />
           <AppRoute path="/products/export/" component={ExportProduct} />
-          <AppRoute path="/product/:slug/edit/" component={AddProduct} />
+          <AppRoute path="/products/:slug/edit/" component={AddProduct} />
           <AppRoute
             path="/inventory/categories/list"
             component={CategoryList}
+            exact
           />
-          <AppRoute path="/inventory/categories/add" component={CategoryAdd} />
+          <AppRoute 
+            path="/inventory/categories/add" component={CategoryAdd} 
+            exact
+          />
           <AppRoute
             path="/inventory/categories/edit/:categoryId"
             component={CategoryAdd}

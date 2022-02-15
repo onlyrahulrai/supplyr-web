@@ -77,7 +77,7 @@ class SideMenuGroup extends Component {
                       ),
                       active:
                         (this.props.activeItemState === child.navLink &&
-                        child.type === "item") || (item.parentOf && item.parentOf.includes(this.props.activeItemState)),
+                        child.type === "item") || (child.parentOf && child.parentOf.includes(this.props.activeItemState)),
                       disabled: child.disabled
                     })}
                     onClick={e => {
@@ -91,6 +91,7 @@ class SideMenuGroup extends Component {
                       }
                     }}
                   >
+                    {console.log(" ----- parent url matching ----- ",this.props.activeItemState,child.parentOf)}
                     <CustomAnchorTag
                     className={classnames({
                       "d-flex justify-content-between" : child.type === "collapse"

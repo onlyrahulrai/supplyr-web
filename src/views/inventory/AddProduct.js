@@ -1114,7 +1114,7 @@ function AddProduct(props) {
               onChange={(e) => setBasicFieldData("title", e.target.value)}
               requiredIndicator
               required
-              value={basicData.title}
+              value={basicData.title || ""}
             />
             <SimpleInputField
               label="Select Product Category(s)"

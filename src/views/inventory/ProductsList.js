@@ -292,7 +292,7 @@ class UsersList extends Component {
           return (
             <div
               className="d-flex align-items-center cursor-pointer"
-              onClick={() => history.push(`/product/${params.data.slug}/edit/`)}
+              onClick={() => history.push(`/products/${params.data.slug}/edit/`)}
             >
               <img
                 className="rounded mr-50"
@@ -345,7 +345,7 @@ class UsersList extends Component {
           return (
             <div
               className="cursor-pointer"
-              onClick={() => history.push(`/product/${params.data.slug}/edit/`)}
+              onClick={() => history.push(`/products/${params.data.slug}/edit/`)}
             >
               {stock}
             </div>
@@ -379,7 +379,7 @@ class UsersList extends Component {
           return (
             <div
               className="cursor-pointer"
-              onClick={() => history.push(`/product/${params.data.slug}/edit/`)}
+              onClick={() => history.push(`/products/${params.data.slug}/edit/`)}
             >
               {display_value}{" "}
               {/* {params.data.has_multiple_variants && this.multiple_sign} */}
@@ -398,7 +398,7 @@ class UsersList extends Component {
           return (
             <span
               className="cursor-pointer"
-              onClick={() => history.push(`/product/${params.data.slug}/edit/`)}
+              onClick={() => history.push(`/products/${params.data.slug}/edit/`)}
             >
               {!params.data.has_multiple_variants ? "-" : params.value}
             </span>
@@ -716,7 +716,7 @@ class UsersList extends Component {
                       animateRows={true}
                       // onRowSelected={(e) => history.push(`/product/${e.data.slug}/edit/`)}
                       onRowClicked={(e) =>
-                        history.push(`/product/${e.data.slug}/edit/`)
+                        history.push(`/products/${e.data.slug}/edit/`)
                       }
                       // floatingFilter={true}
                       // pagination={true}
