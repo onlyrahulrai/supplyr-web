@@ -102,7 +102,7 @@ class SubcategorySelector extends Component {
   render() {
     const displayedCategories =
       this.state.displayedSubCategories?.groupBy("category") || {};
-    console.log("Headers Items: ",this.props.modalTitle)
+    console.log("Headers Items: ", this.props.modalTitle);
     return (
       <div className={this.props.className + " d-inline-block"}>
         <ButtonGroup>
@@ -254,42 +254,45 @@ class UsersList extends Component {
       sortable: true,
     },
     columnDefs: [
-      {
-        headerName: "ID",
-        field: "id",
-        width: 150,
-        // filter: true,
-        checkboxSelection: true,
-        headerCheckboxSelectionFilteredOnly: true,
-        headerCheckboxSelection: true,
-        cellRendererFramework: (params) => {
-          return (
-            <div>
-              <span>{params.value} </span>
-              <Edit3
-                size={20}
-                color="cadetblue"
-                title="Edit"
-                role="button"
-                className="pointer"
-                onClick={(e) =>
-                  history.push("/product/" + params.data.slug + "/edit/")
-                }
-              />
-            </div>
-          );
-        },
-      },
+      // {
+      //   headerName: "ID",
+      //   field: "id",
+      //   width: 150,
+      //   // filter: true,
+      //   checkboxSelection: true,
+      //   headerCheckboxSelectionFilteredOnly: true,
+      //   headerCheckboxSelection: true,
+      //   cellRendererFramework: (params) => {
+      //     return (
+      //       <div>
+      //         <span>{params.value} </span>
+      //         <Edit3
+      //           size={20}
+      //           color="cadetblue"
+      //           title="Edit"
+      //           role="button"
+      //           className="pointer"
+      //           onClick={(e) =>
+      //             history.push("/product/" + params.data.slug + "/edit/")
+      //           }
+      //         />
+      //       </div>
+      //     );
+      //   },
+      // },
       {
         headerName: "Product Title",
         field: "title",
         // filter: true,
         width: 350,
+        checkboxSelection: true,
+        headerCheckboxSelectionFilteredOnly: true,
+        headerCheckboxSelection: true,
         cellRendererFramework: (params) => {
           return (
             <div
               className="d-flex align-items-center cursor-pointer"
-              onClick={() => history.push(`/product/${params.data.slug}`)}
+              onClick={() => history.push(`/product/${params.data.slug}/edit/`)}
             >
               <img
                 className="rounded mr-50"
@@ -310,10 +313,13 @@ class UsersList extends Component {
       },
       {
         // headerName: "Quantity",
-        headerName: `${this.props.profile?.translations?.quantity || "Quantity"}`,
+        headerName: `${
+          this.props.profile?.translations?.quantity || "Quantity"
+        }`,
         field: "quantity",
         // filter: true,
         width: 200,
+        checkboxSelection: false,
         cellRendererFramework: (params) => {
           let compare_value = params.value;
           let display_value = params.value;
@@ -336,12 +342,20 @@ class UsersList extends Component {
                 OUT OF STOCK
               </div>
             );
-          return <div>{stock}</div>;
+          return (
+            <div
+              className="cursor-pointer"
+              onClick={() => history.push(`/product/${params.data.slug}/edit/`)}
+            >
+              {stock}
+            </div>
+          );
         },
       },
       {
         headerName: "Sale Price",
         field: "price",
+        checkboxSelection: false,
         // filter: true,
         width: 200,
         cellRendererFramework: (params) => {
@@ -355,16 +369,18 @@ class UsersList extends Component {
           ) {
             display_value = (
               <>
-                <PriceDisplay amount={params.data.sale_price_minimum} />{" - "}{" "}
-                <PriceDisplay amount={params.data.sale_price_maximum} />
-                
+                <PriceDisplay amount={params.data.sale_price_minimum} />
+                {" - "} <PriceDisplay amount={params.data.sale_price_maximum} />
                 {/* {priceFormatter(params.data.sale_price_minimum)} {"-"}{" "}
                 {priceFormatter(params.data.sale_price_maximum)} */}
               </>
             );
           }
           return (
-            <div>
+            <div
+              className="cursor-pointer"
+              onClick={() => history.push(`/product/${params.data.slug}/edit/`)}
+            >
               {display_value}{" "}
               {/* {params.data.has_multiple_variants && this.multiple_sign} */}
             </div>
@@ -376,9 +392,17 @@ class UsersList extends Component {
         field: "variants_count",
         // filter: true,
         width: 150,
+        checkboxSelection: false,
         cellRendererFramework: (params) => {
-          if (!params.data.has_multiple_variants) return "-";
-          return params.value;
+          // if (!params.data.has_multiple_variants) return "-";
+          return (
+            <span
+              className="cursor-pointer"
+              onClick={() => history.push(`/product/${params.data.slug}/edit/`)}
+            >
+              {!params.data.has_multiple_variants ? "-" : params.value}
+            </span>
+          );
         },
       },
     ],
@@ -474,7 +498,11 @@ class UsersList extends Component {
   };
 
   bulkUpdate = (operation, data) => {
-    console.log("hello world!  from bulk update category:----->",operation,data)
+    console.log(
+      "hello world!  from bulk update category:----->",
+      operation,
+      data
+    );
     const selectedNodes = this.gridApi.getSelectedNodes();
     const product_ids = selectedNodes.map((node) => node.data.id);
     return apiClient
@@ -507,7 +535,10 @@ class UsersList extends Component {
                 <Col sm="12" md="auto">
                   <Row>
                     <Col sm="12" md="auto">
-                      {console.log(" ---- && seller profile && ---- ",this.props.profile?.translation?.quantity)}
+                      {console.log(
+                        " ---- && seller profile && ---- ",
+                        this.props.profile?.translation?.quantity
+                      )}
                       <Input
                         className="mr-1 d-inline-block"
                         type="text"
@@ -605,8 +636,7 @@ class UsersList extends Component {
               <div className="ag-theme-material ag-grid-table">
                 <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1">
                   <Row className="align-items-center">
-                    <Col lg="auto">
-                    </Col>
+                    <Col lg="auto"></Col>
                     <Col lg="auto mr-auto">
                       <SubcategorySelector
                         subCategories={this.state.operationalSubCategories}
@@ -665,7 +695,7 @@ class UsersList extends Component {
                           e.preventDefault();
                           history.push("/products/add/");
                         }}
-                        style={{padding:"0.8rem 1rem"}}
+                        style={{ padding: "0.8rem 1rem" }}
                       >
                         <PlusCircle size="16" className="mr-1" />
                         Add New Product
@@ -684,6 +714,10 @@ class UsersList extends Component {
                       onGridReady={this.onGridReady}
                       colResizeDefault={"shift"}
                       animateRows={true}
+                      // onRowSelected={(e) => history.push(`/product/${e.data.slug}/edit/`)}
+                      onRowClicked={(e) =>
+                        history.push(`/product/${e.data.slug}/edit/`)
+                      }
                       // floatingFilter={true}
                       // pagination={true}
                       pivotPanelShow="always"

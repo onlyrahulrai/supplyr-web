@@ -1035,7 +1035,19 @@ function AddProduct(props) {
         .post(url, formData)
         .then((response) => {
           const productSlug = response.data.product.slug;
-          Swal.fire("Product Saved", "", "success");
+          // Swal.fire("Product Saved", "", "success");
+          Swal.fire({
+            title: (
+              <div className="mt-3 mb-1">
+                <h2 className="text-success">Product Saved!</h2>
+                <h5 className="text-secondary">
+                  {/* <Spinner color="secondary" className="mr-1" /> */}
+                  {response.data.product.title}
+                </h5>
+              </div>
+            ),
+            icon: "success",
+          })
           history.push("/product/" + productSlug);
         })
         .catch((error) => {
