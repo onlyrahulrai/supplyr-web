@@ -1,4 +1,4 @@
-import {Home} from "react-feather"
+import {CreditCard, Home} from "react-feather"
 import { FaBoxes, FaUserTie } from "react-icons/fa"
 import {HiOutlineFolderAdd, HiOutlineFolder} from "react-icons/hi"
 import {MdPlaylistAddCheck, MdInput} from "react-icons/md"
@@ -66,7 +66,14 @@ const navigationConfig = [
     // permissions: ["admin", "editor"],
     navLink: "/orders"
   },
-
+  {
+    id: "ledger",
+    title: "Ledger",
+    type: "item",
+    icon: <CreditCard size={20} />,
+    // permissions: ["admin", "editor"],
+    navLink: "/ledger"
+  },
   {
     id:"buyer_discount",
     title:"Buyer Discounts",

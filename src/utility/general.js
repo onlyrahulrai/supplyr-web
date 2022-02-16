@@ -88,3 +88,9 @@ export const calculate_extra_discount = (discount,product) => {
 
   return extra_discount;
 }
+
+export const formateDate = (date) => {
+  const event = new Date(date);
+  const options =  { day: 'numeric', year: 'numeric', month: 'long' };
+  return event.toLocaleDateString(undefined, options)
+}
