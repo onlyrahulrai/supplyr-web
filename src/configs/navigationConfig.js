@@ -36,7 +36,8 @@ const navigationConfig = [
         type: "item",
         icon: <MdPlaylistAddCheck size={20} />,
         // permissions: ["admin", "editor"],
-        navLink: "/products/"
+        navLink: "/products/",
+        parentOf:["/products/add/","/products/:slug/edit/"]
       },
 
       {
@@ -45,7 +46,8 @@ const navigationConfig = [
         type: "item",
         icon: <RiFoldersLine size={20} />,
         // permissions: ["admin", "staff"],
-        navLink: "/inventory/categories/list"
+        navLink: "/inventory/categories/list",
+        parentOf:["/inventory/categories/add","/inventory/categories/edit/:categoryId"]
       },
       // {
       //   id: "add-product",
@@ -64,7 +66,8 @@ const navigationConfig = [
     type: "item",
     icon: <MdInput size={20} />,
     // permissions: ["admin", "editor"],
-    navLink: "/orders"
+    navLink: "/orders",
+    parentOf:["/orders/:buyerId/add","/orders/:buyerId/update/:orderId","/orders/:orderId"]
   },
   {
     id: "ledger",
