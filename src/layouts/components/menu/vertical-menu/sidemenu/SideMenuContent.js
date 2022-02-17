@@ -105,7 +105,8 @@ class SideMenuContent extends Component {
 
   componentDidMount() {
     this.initRender(this.parentArr[0] ? this.parentArr[0] : [])
-    console.log(" ------ component changed ------ ",this.props.activeItemState,this.props.activeItemState.includes("product"))
+    
+    /* When component mount and a user visits to the child route of inventory then inventory added to the state manually */
 
     if(this.props.activeItemState.includes("product") || this.props.activeItemState.includes("categories")){
       this.setState({
@@ -130,7 +131,8 @@ class SideMenuContent extends Component {
         this.parentArr[0] ? this.parentArr[this.parentArr.length - 1] : []
       )
 
-        console.log(" ----- url change ----- ",this.props.activeItemState.includes("products" || "product"))
+   
+      /* When component update and a user visits to the child route of inventory then inventory added to the state manually */
 
       if (this.props.activeItemState.includes("product") || this.props.activeItemState.includes("categories")){
         this.setState({
