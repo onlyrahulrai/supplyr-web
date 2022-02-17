@@ -38,14 +38,14 @@ const statusDisplayDict = {
     name: "Awaiting Approval",
     getIcon: (size, color) => (<BsClockHistory size={size} color={color ?? "orange"} />),
     color: 'orange',
-    buttonClass: 'light',
+    buttonClass: 'secondary',
     buttonLabel: 'Mark Unapproved'
   },
   approved: {
     name: "Approved",
     getIcon: (size, color) => (<BsCheck size={size} color={color ?? "blue"} />),
     color: 'blue',
-    buttonClass: 'primary',
+    buttonClass: 'info',
     buttonLabel: 'Approve'
   },
   processed: {
@@ -59,7 +59,7 @@ const statusDisplayDict = {
     name: "Dispatched",
     getIcon: (size, color) => (<RiTruckLine size={size} color={color ?? "blue"} />),
     color: 'blue',
-    buttonClass: 'primary',
+    buttonClass: 'warning',
     buttonLabel: 'Mark Dispatched'
   },
   delivered: {

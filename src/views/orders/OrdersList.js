@@ -112,12 +112,13 @@ class OrdersList extends Component {
         // filter: true,
         width: 250,
         cellRendererFramework: (params) => {
-          const stock = ["dispatched", "approved"].includes(params.value) ? (
-            <div className="badge badge-pill badge-light-primary">
+          // ["dispatched", "approved"].includes(params.value)
+          const stock = params.value === "approved" ? (
+            <div className="badge badge-pill badge-light-info">
               <b>{params.value}</b>
             </div>
           ) : params.value === "awaiting_approval" ? (
-            <div className="badge badge-pill badge-light-warning">
+            <div className="badge badge-pill badge-light-secondary">
               <b>{params.value}</b>
             </div>
           ) : params.value === "delivered" ? (
@@ -128,11 +129,15 @@ class OrdersList extends Component {
             <div className="badge badge-pill badge-light-danger">
               <b>{params.value}</b>
             </div>
-          ) : (
-            <div className="badge badge-pill badge-light-secondary">
+          ) : params.value === "dispatched" ? (
+            <div className="badge badge-pill badge-light-warning">
               <b>{params.value}</b>
             </div>
-          );
+          ): params.value === "processed" && (
+            <div className="badge badge-pill badge-light-primary">
+              <b>{params.value}</b>
+            </div>
+          ) ;
           return <div> {stock} </div>;
         },
       },
