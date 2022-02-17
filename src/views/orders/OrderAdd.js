@@ -120,7 +120,7 @@ const OrderAdd = (props) => {
       OrdersApi.retrieve(orderId)
         .then((response) => {
           // console.log(" ---- Response data ---- ",response.data.order_status)
-          if(response.data.order_status === "processed"){
+          if(["processed","cancelled","dispatched","delivered"].includes(response.data.order_status)){
             history.push("/orders")
           }
           let _items = response.data.items.map((item) => ({

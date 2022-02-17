@@ -66,7 +66,7 @@ class OrdersList extends Component {
               {console.log("buyers details :::: >>>> ",params.data)}
               <span>{params.value} </span>
               {
-                (params?.data?.order_status !== "processed") && (
+                (params?.data?.order_status === "awaiting_approval" || params?.data?.order_status === "approved") && (
                   <Edit3
                     size={20}
                     color="cadetblue"

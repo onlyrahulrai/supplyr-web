@@ -247,7 +247,7 @@ function OrderDetails({order_status_variables}) {
         <Col sm="4" md="2">
             {console.log(" ------ Order Data? ------ ",orderData)}
             {
-              (orderData?.order_status !== "processed") && (
+              (orderData?.order_status === "awaiting_approval" || orderData?.order_status === "approved") && (
                 <Button.Ripple
                   color='primary'
                   outline
