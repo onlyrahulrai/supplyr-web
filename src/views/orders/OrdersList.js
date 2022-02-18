@@ -65,14 +65,19 @@ class OrdersList extends Component {
             <div>
               {console.log("buyers details :::: >>>> ",params.data)}
               <span>{params.value} </span>
-              <Edit3
-                size={20}
-                color="cadetblue"
-                title="Edit"
-                role="button"
-                className="pointer"
-                onClick={() => history.push(`orders/${params.data.buyer_id}/update/${params.value}`)}
-              />
+              {
+                (params?.data?.order_status === "awaiting_approval" || params?.data?.order_status === "approved") && (
+                  <Edit3
+                    size={20}
+                    color="cadetblue"
+                    title="Edit"
+                    role="button"
+                    className="pointer"
+                    onClick={() => history.push(`orders/${params.data.buyer_id}/update/${params.value}`)}
+                  />
+                ) 
+              }
+              
             </div>
           );
         },

@@ -119,6 +119,10 @@ const OrderAdd = (props) => {
       setIsLoading(true);
       OrdersApi.retrieve(orderId)
         .then((response) => {
+          // console.log(" ---- Response data ---- ",response.data.order_status)
+          if(["processed","cancelled","dispatched","delivered"].includes(response.data.order_status)){
+            history.push("/orders")
+          }
           let _items = response.data.items.map((item) => ({
             ...item,
             variant: item.product_variant,

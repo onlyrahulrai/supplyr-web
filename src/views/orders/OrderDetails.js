@@ -245,16 +245,22 @@ function OrderDetails({order_status_variables}) {
           />
         </Col>
         <Col sm="4" md="2">
-            <Button.Ripple
-                color='primary'
-                outline
-                block
-                style={{backgroundColor: 'white'}}
-                className="btn-block"
-                onClick={() => history.push(`/orders/${orderData.buyer_id}/update/${orderId}`)}
-              >
-                <BsPencil size={16} color={"primary"} /> Edit Order
-            </Button.Ripple>
+            {console.log(" ------ Order Data? ------ ",orderData)}
+            {
+              (orderData?.order_status === "awaiting_approval" || orderData?.order_status === "approved") && (
+                <Button.Ripple
+                  color='primary'
+                  outline
+                  block
+                  style={{backgroundColor: 'white'}}
+                  className="btn-block"
+                  onClick={() => history.push(`/orders/${orderData.buyer_id}/update/${orderId}`)}
+                >
+                  <BsPencil size={16} color={"primary"} /> Edit Order
+                </Button.Ripple>
+              ) 
+            }
+            
         </Col>
       </Row>
     <div className="list-view product-checkout">
