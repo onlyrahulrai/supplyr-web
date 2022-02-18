@@ -86,7 +86,7 @@ class OrdersList extends Component {
         headerName: "Buyer",
         field: "buyer_name",
         // filter: true,
-        width: 450,
+        width: 250,
         cellRendererFramework: (params) => {
           return (
             <div
@@ -97,6 +97,17 @@ class OrdersList extends Component {
             </div>
           );
         },
+      },
+
+      {
+        headerName:"Items",
+        field:"short_items_description",
+        width:400,
+        cellRendererFramework:(params) => {
+          return (
+            <span>{params.value}</span>
+          )
+        }
       },
 
       {
