@@ -416,7 +416,7 @@ class OrdersList extends Component {
                     </Col>
                     <Col lg="auto mr-auto">
                       <Button.Ripple
-                        color="primary"
+                        color="info"
                         className="mr-1"
                         onClick={(e) =>
                           this.onBulkAction("change_status", "approved")
@@ -427,7 +427,18 @@ class OrdersList extends Component {
                       </Button.Ripple>
 
                       <Button.Ripple
-                        color="info"
+                        color="primary"
+                        className="mr-1"
+                        onClick={(e) =>
+                          this.onBulkAction("change_status", "processed")
+                        }
+                      >
+                        <RiCheckLine size={16} style={{ marginRight: 10 }} />
+                        Mark Processed
+                      </Button.Ripple>
+
+                      <Button.Ripple
+                        color="warning"
                         className="mr-1"
                         onClick={(e) =>
                           this.onBulkAction("change_status", "dispatched")

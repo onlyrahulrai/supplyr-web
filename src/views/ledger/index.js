@@ -38,6 +38,7 @@ const TransactionMode = [
 
 const Transaction = (props) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isLedgerLoaded,setIsLedgerLoaded] = useState(false)
   const [buyers, setBuyers] = useState([]);
   const [transactionBuyerInfo, setTransactionBuyerInfo] = useState("");
   const [transactionData, setTransactionData] = useState({});
@@ -62,11 +63,12 @@ const Transaction = (props) => {
   };
 
   const fetchLedgers = async () => {
+    setIsLedgerLoaded(false)
     await apiClient
       .get(`/orders/ledgers/${transactionBuyerInfo}/?page=${page}`)
       .then((res) => {
         setLedgers(res.data);
-
+        setIsLedgerLoaded(true)
         console.log(" ------ ------ response data ", res.data);
       })
       .catch((error) => console.log(error.message));
@@ -244,40 +246,54 @@ const Transaction = (props) => {
                   ) : (
                     <Col
                       md="10"
-                      className="d-flex align-items-center flex-column justify-content-center pt-5"
+                      className="d-flex align-items-center flex-column justify-content-center"
                     >
-                      <Table>
-                        <thead>
-                          <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Amount</th>
-                            <th>Balance</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {ledgers?.data?.map((ledger, index) => (
-                            <tr key={index}>
-                              <td>{formateDate(ledger.created_at)}</td>
-                              <td>
-                                <DescriptionComponent
-                                  ledger={ledger}
-                                  userId={props.userId}
-                                />
-                              </td>
-                              <td>{ledger.amount}</td>
-                              <td>{ledger.balance}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </Table>
-                      <div>
-                        <CustomPagination
-                          pageCount={ledgers?.total_pages}
-                          initialPage={1}
-                          onPageChange={(data) => setPage(data.selected + 1)}
-                        />
-                      </div>
+                      {
+
+                      isLedgerLoaded ? (
+                        <>
+                          <Table>
+                            <thead>
+                              <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Deposit</th>
+                                <th>Credit</th>
+                                <th>Balance</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {ledgers?.data?.map((ledger, index) => (
+                                <tr key={index}>
+                                  <td>{formateDate(ledger.created_at)}</td>
+                                  <td>
+                                    <DescriptionComponent
+                                      ledger={ledger}
+                                      userId={props.userId}
+                                    />
+                                  </td>
+                                  <td>{ledger?.payment && ledger?.amount}</td>
+                                  <td>{ledger?.order && ledger?.amount}</td>
+                                  <td>{ledger.balance}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </Table>
+                          <div>
+                            <CustomPagination
+                              pageCount={ledgers?.total_pages}
+                              initialPage={1}
+                              onPageChange={(data) => setPage(data.selected + 1)}
+                            />
+                          </div>
+                        </>
+                      ):(
+                        <>
+                          <div className="d-flex justify-content-center align-items-center" style={{height:"475px"}}>
+                              <Spinner />
+                          </div>
+                        </>
+                      )}
                     </Col>
                   )}
                 </Row>

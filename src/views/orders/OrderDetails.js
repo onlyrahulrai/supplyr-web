@@ -43,29 +43,29 @@ const statusDisplayDict = {
   },
   approved: {
     name: "Approved",
-    getIcon: (size, color) => (<BsCheck size={size} color={color ?? "blue"} />),
-    color: 'blue',
+    getIcon: (size, color) => (<BsCheck size={size} color={color ?? "#00cfe8"} />),
+    color: '#00cfe8',
     buttonClass: 'info',
     buttonLabel: 'Approve'
   },
   processed: {
     name: "Order Processed",
-    getIcon: (size, color) => (<BsCheck size={size} color={color ?? "blue"} />),
-    color: 'blue',
+    getIcon: (size, color) => (<BsCheck size={size} color={color ?? "#7367f0"} />),
+    color: '#7367f0',
     buttonClass: 'primary',
     buttonLabel: 'Mark Order Processed'
   },
   dispatched: {
     name: "Dispatched",
-    getIcon: (size, color) => (<RiTruckLine size={size} color={color ?? "blue"} />),
-    color: 'blue',
+    getIcon: (size, color) => (<RiTruckLine size={size} color={color ?? "#ff9f43"} />),
+    color: '#ff9f43',
     buttonClass: 'warning',
     buttonLabel: 'Mark Dispatched'
   },
   delivered: {
     name: "Delivered",
-    getIcon: (size, color) => (<BsCheckAll size={size} color={color ?? "darkseagreen"} />),
-    color: 'darkseagreen',
+    getIcon: (size, color) => (<BsCheckAll size={size} color={color ?? "#28c76f"} />),
+    color: '#28c76f',
     buttonClass: 'success',
     buttonLabel: 'Mark Delivered'
   },
