@@ -234,7 +234,6 @@ class Profiling extends Component {
                         errors: { ...this.state.errors, global: error.message },
                       });
                     }
-
                     setSubmitting(false);
                   });
               }}

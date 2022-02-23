@@ -16,14 +16,15 @@ class ProfilingWizard extends Component {
         return 0;
       case "verified":
         return 1;
-      case "new":
-        return 2;
-      case "categories_selected":
+      // case "new":
+      //   return 2;
+      // case "categories_selected":
+      case "profile_created":
       case "permanently_rejected":
       case "pending_approval":
       case "rejected":
       case "need_more_information":
-        return 3;
+        return 2;
 
       default:
         return -1;
@@ -50,15 +51,15 @@ class ProfilingWizard extends Component {
           />
         ),
       },
-      {
-        title: <Package />,
-        content: (
-          <Categories
-            categoriesData={this.props.profilingData?.categories_data}
-            forceStepRefresh={this.forceStepRefresh}
-          />
-        ),
-      },
+      // {
+      //   title: <Package />,
+      //   content: (
+      //     <Categories
+      //       categoriesData={this.props.profilingData?.categories_data}
+      //       forceStepRefresh={this.forceStepRefresh}
+      //     />
+      //   ),
+      // },
       {
         title: <CheckCircle />,
         content: (

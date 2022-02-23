@@ -17,7 +17,7 @@ class Approval extends Component {
 
   render() {
     
-    if (this.props.user.user_status == "categories_selected") {
+    if (this.props.user.user_status == "profile_created") {
       return (
         <div className="mt-3 col-xl-6 col-lg-8 col-md-10 col-12 mx-auto">
           <Card>
