@@ -104,7 +104,13 @@ function OrderDetails({order_status_variables}) {
   const fetchOrderData = () => {
     OrdersApi.retrieve(orderId)
     .then(response => {
-      setOrderData(response.data)
+
+      // replace the order state object to order state name
+      const state_name = response.data?.address?.state.name;
+      const data = {...response.data,address:{...response.data.address,state:state_name}}
+
+
+      setOrderData(data)
       console.log("sds ", response.data)
     })
     .catch(error => {

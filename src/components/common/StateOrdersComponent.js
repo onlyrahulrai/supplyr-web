@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { StateData } from "assets/data/StateData";
 import Flatpickr from "react-flatpickr";
 import {
   Button,
@@ -43,14 +42,7 @@ const StateOrdersComponent = (props) => {
     apiClient
       .get(url)
       .then(({ data }) => {
-        const _data = data.map((order) => {
-          return {
-            state: StateData[order.state],
-            state_orders_count: order.state_orders_count,
-            revenue: order.revenue,
-          };
-        });
-        setSellerStateOrder(_data);
+        setSellerStateOrder(data);
       })
       .catch((err) => setLoadingError(true))
       .finally(() => setIsLoading(false));
