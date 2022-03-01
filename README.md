@@ -14,3 +14,8 @@ npm install
 ```shell
 npm start
 ```
+
+## 3. Publish
+```shell
+npm run build
+```
