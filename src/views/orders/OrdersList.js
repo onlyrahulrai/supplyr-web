@@ -359,7 +359,7 @@ class OrdersList extends Component {
                         color={this.isFiltersDataPresent ? "warning" : "light"}
                         onClick={this.onFilter}
                       >
-                        Apply Filters
+                        Apply
                       </Button.Ripple>
                     </Col>
                     {filtersApplied && (
@@ -409,11 +409,6 @@ class OrdersList extends Component {
               <div className="ag-theme-material ag-grid-table">
                 <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1">
                   <Row className="align-items-center">
-                    <Col lg="auto">
-                      <CardTitle className="pr-2 mr-1 border-right">
-                        Actions
-                      </CardTitle>
-                    </Col>
                     <Col lg="auto mr-auto">
                       <Button.Ripple
                         color="info"
@@ -465,7 +460,7 @@ class OrdersList extends Component {
                     <Col lg="auto">
                       {/* Right aligned button */}
                       <Button color="primary" onClick={this.toggleModal}>
-                        <PlusCircle size="20" className="mr-1" /> Add New Order
+                        <PlusCircle size="15" className="mr-1" /> New Order
                       </Button>
 
                       <Modal
