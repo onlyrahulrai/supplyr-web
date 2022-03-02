@@ -245,7 +245,7 @@ const StateOrdersComponent = (props) => {
                                   .reverse()
                                   .map((order) => (
                                     <tr key={order.state}>
-                                      <td>{order.state}</td>
+                                      <td>{order.state}, {order.country_code}</td>
                                       <td>{order.state_orders_count}</td>
                                     </tr>
                                   ))}
@@ -271,7 +271,7 @@ const StateOrdersComponent = (props) => {
                           <Col md="7">
                             <StateOrdersChart
                               labels={sellerStateOrder.map(
-                                (order) => order.state
+                                (order) => `${order.state}, ${order.country_code}`
                               )}
                               series={sellerStateOrder.map(
                                 (order) => order.state_orders_count
@@ -315,7 +315,7 @@ const StateOrdersComponent = (props) => {
                                   .reverse()
                                   .map((order) => (
                                     <tr key={order.state}>
-                                      <td>{order.state}</td>
+                                      <td>{order.state}, {order.country_code}</td>
                                       <td>
                                         {/* <span>&#8377;</span>{" "}
                                         {numberFormatter(order.revenue)} */}
@@ -350,7 +350,7 @@ const StateOrdersComponent = (props) => {
                           <Col md="7">
                             <StateOrdersChart
                               labels={sellerStateOrder.map(
-                                (order) => order.state
+                                (order) => `${order.state}, ${order.country_code}`
                               )}
                               series={sellerStateOrder.map(
                                 (order) => order.revenue

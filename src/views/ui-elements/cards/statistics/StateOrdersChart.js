@@ -26,6 +26,7 @@ class StateOrdersChart extends React.Component {
             theme: false,
             style:{
               fontSize: '12px',
+              colors: ["white"]
             }
           }
         },
