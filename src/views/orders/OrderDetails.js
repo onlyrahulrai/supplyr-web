@@ -91,7 +91,7 @@ function OrderStatus({status_code, size=16}) {
   )
 }
 
-function OrderDetails({order_status_variables}) {
+function OrderDetails({order_status_variables,order_status_options}) {
 
   const {orderId} = useParams()
   console.log({orderId})
@@ -140,8 +140,14 @@ function OrderDetails({order_status_variables}) {
     }
   );
 
-  const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered'] // Skipped 'cancelled' here as it has separate control
+  const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered',"cancelled"] // Skipped 'cancelled' here as it has separate control
+
+  // order status change Start
   const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
+  const orderCurrentStatusOptions = order_status_options.find((so) => so.slug === orderData?.order_status)
+  // order status change End
+  
+  const orderStatusChangeButtons = orderCurrentStatusOptions?.transitions_possible.map((possibility) => ({button:statusDisplayDict[possibility],status:possibility}))
   const nextStatusDisplayData = statusDisplayDict[nextStatus]
   const nextStatusVariables = order_status_variables[nextStatus] 
   const [isHiddenControlsVisible, setIsHiddenControlsVisible] = useState(null)
@@ -172,7 +178,6 @@ function OrderDetails({order_status_variables}) {
   }
 
 
-  console.log("order data is >>>> ",orderData)
 
   const onCancel = () => {
     Swal.fire({
@@ -424,19 +429,39 @@ function OrderDetails({order_status_variables}) {
           </div>
 
           <hr />
-          {!['cancelled', 'delivered'].includes(orderData?.order_status) &&
+          {
+          // !['cancelled', 'delivered'].includes(orderData?.order_status) &&
             <>
-              {nextStatus && nextStatus !== 'cancelled' &&
-                <Button.Ripple
-                  color={nextStatusDisplayData.buttonClass}
-                  block
-                  className="btn-block"
-                  onClick={e => onChangeStatusButtonPress(nextStatus)}
-                >
-                  {nextStatusDisplayData.getIcon(18, 'white')}
-                  {" "}{nextStatusDisplayData.buttonLabel}
-                </Button.Ripple>
+              {
+              // nextStatus && nextStatus !== 'cancelled' &&
+              
+                // <Button.Ripple
+                //   color={nextStatusDisplayData.buttonClass}
+                //   block
+                //   className="btn-block"
+                //   onClick={e => onChangeStatusButtonPress(nextStatus)}
+                // >
+                //   {nextStatusDisplayData.getIcon(18, 'white')}
+                //   {/* {console.log(" Next status display data: ",nextStatusDisplayData)} */}
+                //   {" "}{nextStatusDisplayData.buttonLabel}
+                // </Button.Ripple>
+
+                orderStatusChangeButtons.map(({button,status},index) => (
+                  <Button.Ripple
+                    color={button.buttonClass}
+                    block
+                    className="btn-block mt-1"
+                    onClick={e => onChangeStatusButtonPress(status)}
+                    key={index}
+                  >
+                    {button.getIcon(18, 'white')}
+                    {/* {console.log(" Next status display data: ",nextStatusDisplayData)} */}
+                    {" "}{button.buttonLabel }
+                  </Button.Ripple>
+                ))
               }
+
+
 
                 
               {nextStatusVariables && (
@@ -531,6 +556,7 @@ function OrderDetails({order_status_variables}) {
 
 const mapStateToProps = (state) => ({
   order_status_variables: state.auth.userInfo.profile.order_status_variables,
+  order_status_options : state.auth.userInfo.profile.order_status_options,
 });
 
 export default connect(mapStateToProps)(OrderDetails);
