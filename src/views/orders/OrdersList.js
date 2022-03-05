@@ -149,8 +149,12 @@ class OrdersList extends Component {
             <div className="badge badge-pill badge-light-warning">
               <b>{params.value}</b>
             </div>
-          ): params.value === "processed" && (
+          ): params.value === "processed" ? (
             <div className="badge badge-pill badge-light-primary">
+              <b>{params.value}</b>
+            </div>
+          ): params.value === "returned" && (
+            <div className="badge badge-pill badge-light-danger">
               <b>{params.value}</b>
             </div>
           ) ;

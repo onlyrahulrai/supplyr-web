@@ -4,6 +4,7 @@ const orderStatusDisplayMapping = {
     'created': {text: <b>Order Placed</b>, color: 'blue'},
     'approved': {text: <>Order status changed to <b>APPROVED</b></>,},
     'processed': {text: <>Order status changed to <b>PROCESSED</b></>,},
+    'returned': {text: <>Order status changed to <b>RETURNED</b></>,},
     'dispatched': {text: <>Order status changed to <b>DISPATCHED</b></>},
     'delivered': {text: <>Order marked as <b>DELIVERED</b></>, color: 'green'},
     'awaiting_approval': {text: <>Order marked as <b>AWAITING APPROVED</b></>, color: 'gray'},

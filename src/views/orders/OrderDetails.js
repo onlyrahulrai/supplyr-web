@@ -30,6 +30,7 @@ import DynamicForm from "components/forms/dynamic-form/DynamicForm"
 import { connect } from "react-redux";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
+import {GiReturnArrow} from "react-icons/gi"
 
 // import { productsList } from "./cartData";
 
@@ -68,6 +69,13 @@ const statusDisplayDict = {
     color: '#28c76f',
     buttonClass: 'success',
     buttonLabel: 'Mark Delivered'
+  },
+  returned: {
+    name: "Returned",
+    getIcon: (size, color) => (<GiReturnArrow size={size} color={color ?? "#ea5455"} />),
+    color: '#ea5455',
+    buttonClass: 'danger',
+    buttonLabel: 'Mark Returned'
   },
   cancelled: {
     name: "Cancelled",
