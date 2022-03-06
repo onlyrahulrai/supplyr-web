@@ -236,12 +236,26 @@ function OrderDetails({order_status_variables,order_status_options}) {
       toggleStateVariableModal()
     }
     else {
-      changeOrderStatus(_nextStatus)
-    }
-  }
+      const order_status_option = order_status_options.find((option) => option.slug === _nextStatus)
 
-  console.log(" ----- orderinfo ----- ",orderData)
-
+      if(order_status_option?.confirmation_needed){
+        Swal.fire({
+          title:"Are you sure?",
+          text:`Do you want to change status of this order to ${_nextStatus}?`,
+          icon:"warning",
+          showCancelButton:true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: `Mark ${order_status_option?.name}`
+        }).then((result) => {
+          if(result.isConfirmed){
+            changeOrderStatus(_nextStatus)
+          }
+        })
+      }else{
+        changeOrderStatus(_nextStatus)
+      }
+}}
 
   return <>
   {isLoading &&
@@ -438,22 +452,8 @@ function OrderDetails({order_status_variables,order_status_options}) {
 
           <hr />
           {
-          // !['cancelled', 'delivered'].includes(orderData?.order_status) &&
             <>
               {
-              // nextStatus && nextStatus !== 'cancelled' &&
-              
-                // <Button.Ripple
-                //   color={nextStatusDisplayData.buttonClass}
-                //   block
-                //   className="btn-block"
-                //   onClick={e => onChangeStatusButtonPress(nextStatus)}
-                // >
-                //   {nextStatusDisplayData.getIcon(18, 'white')}
-                //   {/* {console.log(" Next status display data: ",nextStatusDisplayData)} */}
-                //   {" "}{nextStatusDisplayData.buttonLabel}
-                // </Button.Ripple>
-
                 orderStatusChangeButtons.map(({button,status},index) => (
                   <Button.Ripple
                     color={button.buttonClass}
