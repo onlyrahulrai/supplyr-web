@@ -241,7 +241,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
   }
 
   const onChangeStatusButtonPress = (_nextStatus) => {
-    if (nextStatusVariables) {
+    if (order_status_variables[_nextStatus]) {
       toggleStateVariableModal()
     }
     else {
