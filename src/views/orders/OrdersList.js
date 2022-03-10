@@ -38,6 +38,9 @@ const orderStatusLabels = {
 };
 
 class OrdersList extends Component {
+
+  isBulkOrderProcessingEnabled = false;
+  
   state = {
     filters: {},
     filtersApplied: undefined,
@@ -57,9 +60,10 @@ class OrdersList extends Component {
         field: "id",
         width: 150,
         // filter: true,
-        checkboxSelection: true,
-        headerCheckboxSelectionFilteredOnly: true,
-        headerCheckboxSelection: true,
+
+        checkboxSelection: this.isBulkOrderProcessingEnabled,     //enable these three if bulk actions to be enabled
+        headerCheckboxSelectionFilteredOnly: this.isBulkOrderProcessingEnabled,
+        headerCheckboxSelection: this.isBulkOrderProcessingEnabled,
         cellRendererFramework: (params) => {
           return (
             <div>
@@ -413,6 +417,7 @@ class OrdersList extends Component {
               <div className="ag-theme-material ag-grid-table">
                 <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1">
                   <Row className="align-items-center">
+                    {this.isBulkOrderProcessingEnabled &&
                     <Col lg="auto mr-auto">
                       <Button.Ripple
                         color="info"
@@ -461,6 +466,7 @@ class OrdersList extends Component {
                         Mark Delivered
                       </Button.Ripple>
                     </Col>
+                    }
                     <Col lg="auto">
                       {/* Right aligned button */}
                       <Button color="primary" onClick={this.toggleModal}>
