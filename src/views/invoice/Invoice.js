@@ -191,7 +191,7 @@ const Invoice =  (props) => {
                                             <br />
                                             <span><strong>{orderData.address.line2.toUpperCase()}</strong></span>
                                             <br />
-                                            <span><strong>{orderData.address.state.toUpperCase()}</strong></span>
+                                            <span><strong>{orderData.address.state.name.toUpperCase()}</strong></span>
                                         </div>
                                 </div>
                             </Col>
@@ -219,7 +219,7 @@ const Invoice =  (props) => {
                                             <small><strong>Country of final </strong></small> <br />
                                             <div>
                                                 <small><strong>Destination</strong></small> <br />
-                                                <span><strong>{orderData.address.state.toUpperCase()}</strong></span><br />
+                                                <span><strong>{orderData.address.state.name.toUpperCase()}</strong></span><br />
                                             </div>
                                         </div>   
                                     </Col>
@@ -266,7 +266,7 @@ const Invoice =  (props) => {
                                         <Col sm="8" className="px-0">
                                             <div className="border p-1 border-top-0 border-bottom-0">
                                                 <small><strong>Final Destinat.</strong></small> <br />
-                                                <span><strong>{`${orderData.address.name} (${orderData.address.state}) `}</strong></span><br />
+                                                <span><strong>{`${orderData.address.name} (${orderData.address.state.name}) `}</strong></span><br />
                                             </div>
                                         </Col>
                                     </Row>

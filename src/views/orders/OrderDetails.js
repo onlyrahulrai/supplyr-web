@@ -6,6 +6,9 @@ import {
   Button, Card,
   CardBody,
   Col,
+  FormGroup,
+  Input,
+  Label,
   Modal,
   ModalBody,
   ModalHeader,
@@ -19,6 +22,7 @@ import VariantLabel from "components/inventory/VariantLabel"
 import Address from "components/inventory/Address"
 import ProductDummyImage from "assets/img/svg/cart.svg"
 import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsReceipt, BsPencil} from "react-icons/bs"
+import {AiOutlineEdit} from "react-icons/ai"
 import {RiTruckLine} from "react-icons/ri"
 import Swal from "utility/sweetalert"
 import BreadCrumb from "components/@vuexy/breadCrumbs/BreadCrumb"
@@ -108,6 +112,11 @@ function OrderDetails({order_status_variables,order_status_options}) {
   const [isLoading, setIsLoading] = useState(true)
   const [loadingError, setLoadingError] = useState(null)
 
+  /* ------ Order Status Variable Start ----- */
+  const [orderStatusVariableData,setOrderStatusVariableData] = useState(null);
+  const [toggleOrderStatusVariableDataModal,setToggleOrderStatusVariableDataModal] = useState(false)
+  const [isFormLoading,setIsFormLoading] = useState(false)
+  /* ------ Order Status Variable End ----- */
 
   const fetchOrderData = () => {
     OrdersApi.retrieve(orderId)
@@ -255,7 +264,31 @@ function OrderDetails({order_status_variables,order_status_options}) {
       }else{
         changeOrderStatus(_nextStatus)
       }
-}}
+    }
+  }
+
+
+  /* ------ Order Status Variable Start ----- */
+  const handleUpdateStatusVariable = (id) => {
+    const variable = orderData.status_variable_values.find((variable) => variable.id === id)
+    setOrderStatusVariableData(variable)
+    setToggleOrderStatusVariableDataModal(true)
+  }
+
+  const handleUpdateOrderStatusVariable = () => {
+    setIsFormLoading(true)
+    const requestedData = {
+      value:orderStatusVariableData.value
+    }
+    apiClient.put(`orders/order-status-variable/${orderId}/${orderStatusVariableData?.id}/`,requestedData)
+    .then((response) => {
+      setIsFormLoading(false)
+      setToggleOrderStatusVariableDataModal(false)
+      fetchOrderData()
+    })
+    .catch((error) => console.log(error))
+  }
+  /* ------ Order Status Variable End ----- */
 
   return <>
   {isLoading &&
@@ -278,7 +311,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
           />
         </Col>
         <Col sm="4" md="2">
-            {console.log(" ------ Order Data? ------ ",orderData)}
+            {/* {console.log(" ------ Order Data? ------ ",orderData)} */}
             {
               (orderData?.order_status === "awaiting_approval" || orderData?.order_status === "approved") && (
                 <Button.Ripple
@@ -370,15 +403,6 @@ function OrderDetails({order_status_variables,order_status_options}) {
       </Card>
     </div>
 
-
-
-
-
-
-
-
-
-
     <div className="checkout-options">
       <Card>
         <CardBody>
@@ -406,6 +430,39 @@ function OrderDetails({order_status_variables,order_status_options}) {
           {orderData.status_variable_values &&  (
           <> 
             <hr />
+            {
+              toggleOrderStatusVariableDataModal && (
+                <Modal
+                  isOpen={toggleOrderStatusVariableDataModal}
+                  toggle={() => setToggleOrderStatusVariableDataModal(false)}
+                  className="modal-dialog-centered"
+                >
+                  <ModalHeader toggle={() => setToggleOrderStatusVariableDataModal(false)}>
+                    Update Order Status Variable:
+                  </ModalHeader>
+                  <ModalBody>
+                    <FormGroup>
+                      <Label htmlFor="value">{orderStatusVariableData?.variable_name}</Label>
+                      <Input type="text" 
+                        value={orderStatusVariableData?.value}
+                        onChange={(e) => setOrderStatusVariableData((prevState) => ({...prevState,[e.target.name]:e.target.value}))}
+                        name="value"
+                        disabled={!toggleOrderStatusVariableDataModal}
+                      />
+                       {
+                         isFormLoading && (
+                          <Spinner />
+                         )
+                       }
+                    </FormGroup>
+                    <FormGroup>
+                      <Button outline color="primary" onClick={handleUpdateOrderStatusVariable}>Save</Button>
+                      <Button outline color="danger" className="ml-1" onClick={() => setToggleOrderStatusVariableDataModal(false)} >Cancel</Button>
+                    </FormGroup>
+                  </ModalBody>
+                </Modal>
+              )
+            }
             <h6 className="text-secondary">INFORMATION</h6>
             {orderData.status_variable_values.map(status_variable => (
               <Row className="mt-1" key={status_variable.variable_slug}>
@@ -413,6 +470,9 @@ function OrderDetails({order_status_variables,order_status_options}) {
                   <strong>
                   {status_variable.variable_name}
                   </strong>
+                  <span className="text-primary cursor-pointer" onClick={() => handleUpdateStatusVariable(status_variable.id)}>
+                    <AiOutlineEdit size={20} />
+                  </span>
                 </Col>
                 <Col xs={6} className='text-right'>
                   {status_variable.value}
