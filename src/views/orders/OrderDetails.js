@@ -470,9 +470,16 @@ function OrderDetails({order_status_variables,order_status_options}) {
                   <strong>
                   {status_variable.variable_name}
                   </strong>
-                  <span className="text-primary cursor-pointer" onClick={() => handleUpdateStatusVariable(status_variable.id)}>
-                    <AiOutlineEdit size={20} />
-                  </span>
+                  {
+                    ["awaiting_approval","approved","processed"].includes(orderData?.order_status) ? (
+                      <span className="text-primary cursor-pointer" onClick={() => handleUpdateStatusVariable(status_variable.id)}>
+                        <AiOutlineEdit size={20} />
+                      </span>
+                    ):(
+                      ""
+                    )
+                  }
+                  
                 </Col>
                 <Col xs={6} className='text-right'>
                   {status_variable.value}

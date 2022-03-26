@@ -46,7 +46,7 @@ const OrderPrefixSetting = (props) => {
                           <Label>Order number prefix</Label>
                       </Col>
                       <Col md="9">
-                        <Input type="text" placeholder="Add order number prefix..." name='order_number_prefix' onChange={(e) => setValue(e.target.value)} value={value} required />
+                        <Input type="text" placeholder="Add order number prefix..." name='order_number_prefix' onChange={(e) => setValue(e.target.value)} value={value}  />
                       </Col>
                     </FormGroup>
                   )
