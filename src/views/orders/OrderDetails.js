@@ -464,7 +464,9 @@ function OrderDetails({order_status_variables,order_status_options}) {
               )
             }
             <h6 className="text-secondary">INFORMATION</h6>
-            {orderData.status_variable_values.map(status_variable => (
+
+          
+            {orderData?.status_variable_values?.length ? orderData.status_variable_values.map(status_variable => (
               <Row className="mt-1" key={status_variable.variable_slug}>
                 <Col xs={6}>
                   <strong>
@@ -485,7 +487,9 @@ function OrderDetails({order_status_variables,order_status_options}) {
                   {status_variable.value}
                 </Col>
               </Row>
-            ))}
+            )):(
+              <span>No information added</span>
+            )}
           </>)
           }
           <hr />
