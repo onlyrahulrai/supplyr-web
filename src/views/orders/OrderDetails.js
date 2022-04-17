@@ -305,9 +305,9 @@ function OrderDetails({order_status_variables,order_status_options}) {
       <Row>
         <Col md="10" sm="8" >
           <BreadCrumb
-            breadCrumbTitle={"Order #" + orderId}
+            breadCrumbTitle={"Order " + orderData.order_number}
             breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</a>}
-            breadCrumbActive = {`#${orderId} (${orderData.buyer_name})`}
+            breadCrumbActive = {`${orderData.order_number} (${orderData.buyer_name})`}
           />
         </Col>
         <Col sm="4" md="2">
@@ -409,7 +409,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
         <Row className="mb-1">
           <Col>
             <h6 className="text-secondary">Order ID</h6>
-            <h3>#{orderId}</h3>
+            <h3>{orderData.order_number}</h3>
             <h6>{orderData.order_date}</h6>
           </Col>
           <Col sm="auto" className="ml-auto text-right">

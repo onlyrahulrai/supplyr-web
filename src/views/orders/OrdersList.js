@@ -57,7 +57,7 @@ class OrdersList extends Component {
     columnDefs: [
       {
         headerName: "ID",
-        field: "id",
+        field: "order_number",
         width: 150,
         // filter: true,
 
