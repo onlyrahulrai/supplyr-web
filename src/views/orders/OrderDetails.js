@@ -464,21 +464,32 @@ function OrderDetails({order_status_variables,order_status_options}) {
               )
             }
             <h6 className="text-secondary">INFORMATION</h6>
-            {orderData.status_variable_values.map(status_variable => (
+
+          
+            {orderData?.status_variable_values?.length ? orderData.status_variable_values.map(status_variable => (
               <Row className="mt-1" key={status_variable.variable_slug}>
                 <Col xs={6}>
                   <strong>
                   {status_variable.variable_name}
                   </strong>
-                  <span className="text-primary cursor-pointer" onClick={() => handleUpdateStatusVariable(status_variable.id)}>
-                    <AiOutlineEdit size={20} />
-                  </span>
+                  {
+                    ["awaiting_approval","approved","processed"].includes(orderData?.order_status) ? (
+                      <span className="text-primary cursor-pointer" onClick={() => handleUpdateStatusVariable(status_variable.id)}>
+                        <AiOutlineEdit size={20} />
+                      </span>
+                    ):(
+                      ""
+                    )
+                  }
+                  
                 </Col>
                 <Col xs={6} className='text-right'>
                   {status_variable.value}
                 </Col>
               </Row>
-            ))}
+            )):(
+              <span>No information added</span>
+            )}
           </>)
           }
           <hr />

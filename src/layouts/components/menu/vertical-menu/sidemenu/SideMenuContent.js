@@ -148,8 +148,8 @@ class SideMenuContent extends Component {
   }
 
   render() {
-    console.log(" ---- props from nav config ---- ",this.props)
-    console.log(" ---- state from nav config ---- ",this.state)
+    // console.log(" ---- props from nav config ---- ",this.props)
+    // console.log(" ---- state from nav config ---- ",this.state)
 
     // Loop over sidebar items
     // eslint-disable-next-line

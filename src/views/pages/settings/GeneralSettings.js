@@ -14,6 +14,7 @@ import {_CurrenciesData} from "../../../assets/data/CurrenciesData"
 import CurrencySetting from "components/settings/general-settings/CurrencySetting";
 import TranslationSetting from "components/settings/general-settings/TranslationSetting";
 import { connect } from "react-redux";
+import OrderPrefixSetting from "components/settings/general-settings/OrderPrefixSetting";
 
 const GeneralSettings = ({profile}) => {
   const [active, setActive] = useState("1");
@@ -66,6 +67,17 @@ const GeneralSettings = ({profile}) => {
             >
               Translation
             </NavLink>
+            <NavLink
+              className={classnames({
+                active:active === "3",
+              })}
+              onClick={() => {
+                toggle("3")
+              }}
+              style={{borderBottom:`${active === "3" && "1px solid white"}`}}
+            >
+              Order Number Prefix
+            </NavLink>
           </NavItem>
         </Nav>
         <TabContent activeTab={active}>
@@ -74,6 +86,9 @@ const GeneralSettings = ({profile}) => {
           </TabPane>
           <TabPane tabId="2">
             <TranslationSetting {...profile} />
+          </TabPane>
+          <TabPane tabId="3" > 
+            <OrderPrefixSetting {...profile} />
           </TabPane>
         </TabContent>
       </div>
