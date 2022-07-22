@@ -14,6 +14,10 @@ import {
   ModalBody,
   ModalFooter,
   ButtonGroup,
+  UncontrolledButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import { AgGridReact } from "ag-grid-react";
 
@@ -41,6 +45,7 @@ import { matchSorter } from "match-sorter";
 import Swal from "utility/sweetalert";
 import CustomPagination from "components/common/CustomPagination";
 import PriceDisplay from "components/utils/PriceDisplay";
+import { FiFilter } from "react-icons/fi";
 
 
 class SubcategorySelector extends Component {
@@ -458,6 +463,32 @@ class UsersList extends Component {
     }
   }
 
+  onClickSort = (value) => {
+    let _products;
+
+    this.setState({
+      isLoading:true
+    })
+
+    if(value === 'title'){
+      _products = this.state.rowData.sort((a,b) => a.title.localeCompare(b.title))
+    }else if(value === 'quantity_ltoh'){
+      _products = this.state.rowData.sort((a,b) => a.quantity - b.quantity)
+    }else if(value === 'quantity_htol'){
+      _products = this.state.rowData.sort((a,b) => b.quantity - a.quantity)
+    }else if(value === 'price_ltoh'){
+      _products = this.state.rowData.sort((a,b) => a.price - b.price)
+    }else{
+      _products = this.state.rowData.sort((a,b) => b.price - a.price)
+    }
+
+    this.setState({
+      rowData:_products
+    },() => this.setState({
+      isLoading:false
+    }))
+  }
+
   switchPage(pageNumber) {
     const options = { pageNumber };
     this.state.filtersApplied && (options.filters = this.state.filtersApplied);
@@ -525,7 +556,7 @@ class UsersList extends Component {
 
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
-    const { filters, filtersApplied } = this.state;
+    const { filters, filtersApplied} = this.state;
     return (
       <Row className="">
         <Col sm="12">
@@ -689,12 +720,50 @@ class UsersList extends Component {
                       </Button>
                     </Col> */}
                     <Col lg="auto">
+                      <UncontrolledButtonDropdown>
+                        <DropdownToggle
+                          color="danger"
+                          size="sm"
+                          className="btn-icon dropdown-toggle d-flex align-items-center"
+                          style={{padding:"0.8rem 1rem"}}
+                        >
+                          <FiFilter
+                            size={14}
+                            style={{
+                              left: 0
+                            }}
+                            className="mr-1"
+                          />
+
+                          <span style={{fontSize:"14px"}}>
+                            Sort By
+                          </span>
+                        </DropdownToggle>
+                        <DropdownMenu tag="ul" right>
+                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('title')}>
+                            Title
+                          </DropdownItem>
+                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('quantity_ltoh')}>
+                            Quantity (Low to High)
+                          </DropdownItem>
+                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('quantity_htol')}>
+                            Quantity (High to Low)
+                          </DropdownItem>
+                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('price_ltoh')}>
+                            Price (Low to High)
+                          </DropdownItem>
+                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('price_htol')}>
+                            Price (High to Low)
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </UncontrolledButtonDropdown>
                       <Button
                         color="danger"
                         onClick={(e) => {
                           e.preventDefault();
                           history.push("/products/add/");
                         }}
+                        className="ml-3"
                         style={{ padding: "0.8rem 1rem" }}
                       >
                         <PlusCircle size="16" className="mr-1" />
