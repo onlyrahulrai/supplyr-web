@@ -2,7 +2,6 @@ import { Component } from "react";
 import {
   Card,
   CardBody,
-  CardTitle,
   Input,
   Row,
   Col,
@@ -14,10 +13,6 @@ import {
   ModalBody,
   ModalFooter,
   ButtonGroup,
-  UncontrolledButtonDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
 } from "reactstrap";
 import { AgGridReact } from "ag-grid-react";
 
@@ -28,7 +23,6 @@ import {
   FolderPlus,
   FolderMinus,
   Filter,
-  Edit3,
   PlusCircle,
 } from "react-feather";
 import { history } from "../../history";
@@ -46,6 +40,15 @@ import Swal from "utility/sweetalert";
 import CustomPagination from "components/common/CustomPagination";
 import PriceDisplay from "components/utils/PriceDisplay";
 import { FiFilter } from "react-icons/fi";
+import Select from "react-select";
+
+const SortingOptions = [
+  {label:"Title",value:"title"},
+  {label:"Quantity (Low To High)",value:"quantity_all_variants"},
+  {label:"Quantity (High To Low)",value:"-quantity_all_variants"},
+  {label:"Price (Low To High)",value:"sale_price_maximum"},
+  {label:"Price (High To Low)",value:"-sale_price_maximum"},
+]
 
 
 class SubcategorySelector extends Component {
@@ -554,6 +557,11 @@ class UsersList extends Component {
       });
   };
 
+  onChangeSortingInputField = (data) => {
+    this.setState({
+      filters:{...this.state.filters,order_by:data.value}
+    },() => this.onFilter())
+  }
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
     const { filters, filtersApplied} = this.state;
@@ -563,13 +571,7 @@ class UsersList extends Component {
           <Card className="card-action card-reload">
             <CardBody>
               <Row className="align-items-center">
-                <Col sm="12" md="auto">
-                  <Row>
-                    <Col sm="12" md="auto">
-                      {console.log(
-                        " ---- && seller profile && ---- ",
-                        this.props.profile?.translation?.quantity
-                      )}
+                    <Col sm="6" md="auto">
                       <Input
                         className="mr-1 d-inline-block"
                         type="text"
@@ -583,7 +585,7 @@ class UsersList extends Component {
                         onKeyPress={(e) => e.charCode === 13 && this.onFilter()}
                       />
                     </Col>
-                    <Col sm="8" md="auto">
+                    <Col sm="6" className="d-sm-flex justify-content-sm-between" md="auto">
                       <SubcategorySelector
                         subCategories={this.state.operationalSubCategories}
                         buttonLabel="Categories"
@@ -601,22 +603,19 @@ class UsersList extends Component {
                           });
                         }}
                       />
-                    </Col>
-                    <Col
-                      sm="auto "
-                      md="auto"
-                      className="ml-auto ml-md-0 mr-0 mr-md-auto"
-                    >
                       <Button.Ripple
                         color={this.isFiltersDataPresent ? "warning" : "light"}
                         onClick={this.onFilter}
+                        className="ml-md-1"
                       >
                         Apply Filters
                       </Button.Ripple>
                     </Col>
-                    {filtersApplied && (
-                      <Col sm="12" className="mt-1 primary">
-                        <Filter size={18} />
+                </Row>
+                <Row>
+                  {filtersApplied && (
+                    <Col sm="12" className="mt-1 primary">
+                      <Filter size={18} />
                         <b> Filters Applied {">"} </b>
                         {filtersApplied.search && (
                           <>
@@ -626,10 +625,20 @@ class UsersList extends Component {
                             </span>
                           </>
                         )}
+                        {
+                          filtersApplied.order_by && (
+                            <>
+                              <span>{filtersApplied.search && ", "} Sort By: </span>
+                              <span className="text-gray">
+                                {SortingOptions.find((option) => option.value === filtersApplied.order_by).label ?? ""}
+                              </span>
+                            </>
+                          )
+                        }
                         {filtersApplied.sub_categories && (
                           <>
                             <span>
-                              {filtersApplied.search && ", "}Sub Categories:{" "}
+                              {(filtersApplied.search || filtersApplied.order_by ) && ", "}Sub Categories:{" "}
                             </span>
                             <span className="text-gray">
                               {filtersApplied.sub_categories
@@ -655,8 +664,8 @@ class UsersList extends Component {
                       </Col>
                     )}
                   </Row>
-                </Col>
-              </Row>
+
+                  
             </CardBody>
           </Card>
         </Col>
@@ -667,8 +676,7 @@ class UsersList extends Component {
               <div className="ag-theme-material ag-grid-table">
                 <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1">
                   <Row className="align-items-center">
-                    <Col lg="auto"></Col>
-                    <Col lg="auto mr-auto">
+                    <Col md={6} className="d-flex justify-content-sm-between justify-content-md-start" sm={12}>
                       <SubcategorySelector
                         subCategories={this.state.operationalSubCategories}
                         buttonLabel="Add to Categories"
@@ -709,65 +717,39 @@ class UsersList extends Component {
                         }}
                       />
                     </Col>
-                    {/* <Col lg="auto">
-                      <Button color="primary" 
-                        onClick={(e) => {
-                          e.preventDefault()
-                          history.push("/products/import/");
-                        }}
-                      >
-                        <BiImport />
-                      </Button>
-                    </Col> */}
-                    <Col lg="auto">
-                      <UncontrolledButtonDropdown>
-                        <DropdownToggle
-                          color="danger"
-                          size="sm"
-                          className="btn-icon dropdown-toggle d-flex align-items-center"
-                          style={{padding:"0.8rem 1rem"}}
-                        >
-                          <FiFilter
-                            size={14}
-                            style={{
-                              left: 0
-                            }}
-                            className="mr-1"
-                          />
+                    <Col md={6} sm={12} className="d-flex justify-content-md-end justify-content-sm-between mt-sm-2 mt-md-0">
+                    
+                      <div  style={{width:"198px"}}>
+                        <Select 
+                          placeholder={
+                            <div>
+                              <FiFilter
+                                size={14}
+                                style={{
+                                  left: 0
+                                }}
+                                className="mr-1"
+                              />
+                              Sort By
+                            </div>}
+                          options={SortingOptions}
+                          onChange={this.onChangeSortingInputField}
+                        />
+                      </div>
 
-                          <span style={{fontSize:"14px"}}>
-                            Sort By
-                          </span>
-                        </DropdownToggle>
-                        <DropdownMenu tag="ul" right>
-                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('title')}>
-                            Title
-                          </DropdownItem>
-                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('quantity_ltoh')}>
-                            Quantity (Low to High)
-                          </DropdownItem>
-                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('quantity_htol')}>
-                            Quantity (High to Low)
-                          </DropdownItem>
-                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('price_ltoh')}>
-                            Price (Low to High)
-                          </DropdownItem>
-                          <DropdownItem tag="li" className="cursor-pointer" onClick={() => this.onClickSort('price_htol')}>
-                            Price (High to Low)
-                          </DropdownItem>
-                        </DropdownMenu>
-                      </UncontrolledButtonDropdown>
                       <Button
                         color="danger"
                         onClick={(e) => {
                           e.preventDefault();
                           history.push("/products/add/");
                         }}
-                        className="ml-3"
+                        className="ml-2"
                         style={{ padding: "0.8rem 1rem" }}
                       >
-                        <PlusCircle size="16" className="mr-1" />
-                        Add New Product
+                        <PlusCircle size="16"  />
+                        <span className="d-sm-none d-md-inline-block ml-1">
+                          Add New Product
+                        </span>
                       </Button>
                     </Col>
                   </Row>
