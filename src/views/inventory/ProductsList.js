@@ -7,7 +7,6 @@ import {
   Col,
   Button,
   Spinner,
-  UncontrolledTooltip,
   Modal,
   ModalHeader,
   ModalBody,
@@ -238,12 +237,9 @@ class UsersList extends Component {
     <>
       <RiCheckboxMultipleBlankLine
         className="ml-1"
-        id="multiple-warning"
-        color="#777"
+        size={24}
+        title="This product has multiple variants"
       />
-      <UncontrolledTooltip placement="top" target="multiple-warning">
-        This product has multiple variants
-      </UncontrolledTooltip>
     </>
   );
   state = {
@@ -292,7 +288,7 @@ class UsersList extends Component {
         headerName: "Product Title",
         field: "title",
         // filter: true,
-        width: 350,
+        width: 450,
         checkboxSelection: true,
         headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: true,
@@ -313,14 +309,15 @@ class UsersList extends Component {
                 height="30"
                 width="30"
               />
-              <span>{params.data.title}</span>
-              {params.data.has_multiple_variants && this.multiple_sign}
+              <span>
+                {params?.data?.title.substr(0,48)}
+              </span>
+                {params?.data?.has_multiple_variants ? this?.multiple_sign : null}
             </div>
           );
         },
       },
       {
-        // headerName: "Quantity",
         headerName: `${
           this.props.profile?.translations?.quantity || "Quantity"
         }`,
