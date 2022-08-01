@@ -463,32 +463,6 @@ class UsersList extends Component {
     }
   }
 
-  onClickSort = (value) => {
-    let _products;
-
-    this.setState({
-      isLoading:true
-    })
-
-    if(value === 'title'){
-      _products = this.state.rowData.sort((a,b) => a.title.localeCompare(b.title))
-    }else if(value === 'quantity_ltoh'){
-      _products = this.state.rowData.sort((a,b) => a.quantity - b.quantity)
-    }else if(value === 'quantity_htol'){
-      _products = this.state.rowData.sort((a,b) => b.quantity - a.quantity)
-    }else if(value === 'price_ltoh'){
-      _products = this.state.rowData.sort((a,b) => a.price - b.price)
-    }else{
-      _products = this.state.rowData.sort((a,b) => b.price - a.price)
-    }
-
-    this.setState({
-      rowData:_products
-    },() => this.setState({
-      isLoading:false
-    }))
-  }
-
   switchPage(pageNumber) {
     const options = { pageNumber };
     this.state.filtersApplied && (options.filters = this.state.filtersApplied);
