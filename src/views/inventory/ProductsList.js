@@ -251,7 +251,6 @@ class UsersList extends Component {
     isLoading: false,
     requestsCache: {},
     gridReady: false,
-
     rowData: null,
     // pageSize: 20,
     defaultColDef: {
@@ -445,10 +444,11 @@ class UsersList extends Component {
       this.setState({
         rowData,
         currentPage,
-        totalPages,
+        totalPages
+      },() => this.setState({
         isLoading: false,
         filtersApplied: filters,
-      });
+      }));
 
       !cached &&
         this.setState({
@@ -466,7 +466,9 @@ class UsersList extends Component {
   switchPage(pageNumber) {
     const options = { pageNumber };
     this.state.filtersApplied && (options.filters = this.state.filtersApplied);
-    this.fetchProducts(options);
+    this.setState({
+      currentPage:pageNumber
+    },() => this.fetchProducts(options))
   }
 
   componentDidMount() {
@@ -499,7 +501,10 @@ class UsersList extends Component {
   };
 
   clearFilters = () => {
-    this.fetchProducts();
+    this.setState({
+      currentPage:1,
+      filters:{}
+    },() => this.fetchProducts())
   };
 
   bulkUpdate = (operation, data) => {
@@ -530,12 +535,13 @@ class UsersList extends Component {
 
   onChangeSortingInputField = (data) => {
     this.setState({
-      filters:{...this.state.filters,order_by:data.value}
+      filters:{...this.state.filters,order_by:data.value},
+      currentPage:0,
     },() => this.onFilter())
   }
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
-    const { filters, filtersApplied} = this.state;
+    const { filters, filtersApplied,currentPage} = this.state;
     return (
       <Row className="">
         <Col sm="12">
@@ -704,6 +710,7 @@ class UsersList extends Component {
                               Sort By
                             </div>}
                           options={SortingOptions}
+                          value={SortingOptions.find((option) => option.value === this.state.filters?.order_by) ?? null}
                           onChange={this.onChangeSortingInputField}
                         />
                       </div>
@@ -759,7 +766,7 @@ class UsersList extends Component {
               </div>
               <CustomPagination
                 pageCount={this.state.totalPages}
-                initialPage={1}
+                initialPage={currentPage}
                 onPageChange={(data) => this.switchPage(data.selected + 1)}
               />
             </CardBody>
