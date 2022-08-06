@@ -2,13 +2,11 @@ import { Component } from "react";
 import {
   Card,
   CardBody,
-  CardTitle,
   Input,
   Row,
   Col,
   Button,
   Spinner,
-  UncontrolledTooltip,
   Modal,
   ModalHeader,
   ModalBody,
@@ -24,7 +22,6 @@ import {
   FolderPlus,
   FolderMinus,
   Filter,
-  Edit3,
   PlusCircle,
 } from "react-feather";
 import { history } from "../../history";
@@ -41,6 +38,16 @@ import { matchSorter } from "match-sorter";
 import Swal from "utility/sweetalert";
 import CustomPagination from "components/common/CustomPagination";
 import PriceDisplay from "components/utils/PriceDisplay";
+import { FiFilter } from "react-icons/fi";
+import Select from "react-select";
+
+const SortingOptions = [
+  {label:"Title",value:"title"},
+  {label:"Quantity (Low To High)",value:"quantity_all_variants"},
+  {label:"Quantity (High To Low)",value:"-quantity_all_variants"},
+  {label:"Price (Low To High)",value:"sale_price_maximum"},
+  {label:"Price (High To Low)",value:"-sale_price_maximum"},
+]
 
 
 class SubcategorySelector extends Component {
@@ -230,12 +237,9 @@ class UsersList extends Component {
     <>
       <RiCheckboxMultipleBlankLine
         className="ml-1"
-        id="multiple-warning"
-        color="#777"
+        size={24}
+        title="This product has multiple variants"
       />
-      <UncontrolledTooltip placement="top" target="multiple-warning">
-        This product has multiple variants
-      </UncontrolledTooltip>
     </>
   );
   state = {
@@ -247,7 +251,6 @@ class UsersList extends Component {
     isLoading: false,
     requestsCache: {},
     gridReady: false,
-
     rowData: null,
     // pageSize: 20,
     defaultColDef: {
@@ -284,7 +287,7 @@ class UsersList extends Component {
         headerName: "Product Title",
         field: "title",
         // filter: true,
-        width: 350,
+        width: 450,
         checkboxSelection: true,
         headerCheckboxSelectionFilteredOnly: true,
         headerCheckboxSelection: true,
@@ -305,14 +308,15 @@ class UsersList extends Component {
                 height="30"
                 width="30"
               />
-              <span>{params.data.title}</span>
-              {params.data.has_multiple_variants && this.multiple_sign}
+              <span>
+                {params?.data?.title.substr(0,48)}
+              </span>
+                {params?.data?.has_multiple_variants ? this?.multiple_sign : null}
             </div>
           );
         },
       },
       {
-        // headerName: "Quantity",
         headerName: `${
           this.props.profile?.translations?.quantity || "Quantity"
         }`,
@@ -440,10 +444,11 @@ class UsersList extends Component {
       this.setState({
         rowData,
         currentPage,
-        totalPages,
+        totalPages
+      },() => this.setState({
         isLoading: false,
         filtersApplied: filters,
-      });
+      }));
 
       !cached &&
         this.setState({
@@ -461,7 +466,9 @@ class UsersList extends Component {
   switchPage(pageNumber) {
     const options = { pageNumber };
     this.state.filtersApplied && (options.filters = this.state.filtersApplied);
-    this.fetchProducts(options);
+    this.setState({
+      currentPage:pageNumber
+    },() => this.fetchProducts(options))
   }
 
   componentDidMount() {
@@ -494,7 +501,10 @@ class UsersList extends Component {
   };
 
   clearFilters = () => {
-    this.fetchProducts();
+    this.setState({
+      currentPage:1,
+      filters:{}
+    },() => this.fetchProducts())
   };
 
   bulkUpdate = (operation, data) => {
@@ -523,22 +533,22 @@ class UsersList extends Component {
       });
   };
 
+  onChangeSortingInputField = (data) => {
+    this.setState({
+      filters:{...this.state.filters,order_by:data.value},
+      currentPage:0,
+    },() => this.onFilter())
+  }
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
-    const { filters, filtersApplied } = this.state;
+    const { filters, filtersApplied,currentPage} = this.state;
     return (
       <Row className="">
         <Col sm="12">
           <Card className="card-action card-reload">
             <CardBody>
               <Row className="align-items-center">
-                <Col sm="12" md="auto">
-                  <Row>
-                    <Col sm="12" md="auto">
-                      {console.log(
-                        " ---- && seller profile && ---- ",
-                        this.props.profile?.translation?.quantity
-                      )}
+                    <Col sm="6" md="auto">
                       <Input
                         className="mr-1 d-inline-block"
                         type="text"
@@ -552,7 +562,7 @@ class UsersList extends Component {
                         onKeyPress={(e) => e.charCode === 13 && this.onFilter()}
                       />
                     </Col>
-                    <Col sm="8" md="auto">
+                    <Col sm="6" className="d-sm-flex justify-content-sm-between" md="auto">
                       <SubcategorySelector
                         subCategories={this.state.operationalSubCategories}
                         buttonLabel="Categories"
@@ -570,22 +580,19 @@ class UsersList extends Component {
                           });
                         }}
                       />
-                    </Col>
-                    <Col
-                      sm="auto "
-                      md="auto"
-                      className="ml-auto ml-md-0 mr-0 mr-md-auto"
-                    >
                       <Button.Ripple
                         color={this.isFiltersDataPresent ? "warning" : "light"}
                         onClick={this.onFilter}
+                        className="ml-md-1"
                       >
                         Apply Filters
                       </Button.Ripple>
                     </Col>
-                    {filtersApplied && (
-                      <Col sm="12" className="mt-1 primary">
-                        <Filter size={18} />
+                </Row>
+                <Row>
+                  {filtersApplied && (
+                    <Col sm="12" className="mt-1 primary">
+                      <Filter size={18} />
                         <b> Filters Applied {">"} </b>
                         {filtersApplied.search && (
                           <>
@@ -595,10 +602,20 @@ class UsersList extends Component {
                             </span>
                           </>
                         )}
+                        {
+                          filtersApplied.order_by && (
+                            <>
+                              <span>{filtersApplied.search && ", "} Sort By: </span>
+                              <span className="text-gray">
+                                {SortingOptions.find((option) => option.value === filtersApplied.order_by).label ?? ""}
+                              </span>
+                            </>
+                          )
+                        }
                         {filtersApplied.sub_categories && (
                           <>
                             <span>
-                              {filtersApplied.search && ", "}Sub Categories:{" "}
+                              {(filtersApplied.search || filtersApplied.order_by ) && ", "}Sub Categories:{" "}
                             </span>
                             <span className="text-gray">
                               {filtersApplied.sub_categories
@@ -624,8 +641,8 @@ class UsersList extends Component {
                       </Col>
                     )}
                   </Row>
-                </Col>
-              </Row>
+
+                  
             </CardBody>
           </Card>
         </Col>
@@ -636,8 +653,7 @@ class UsersList extends Component {
               <div className="ag-theme-material ag-grid-table">
                 <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1">
                   <Row className="align-items-center">
-                    <Col lg="auto"></Col>
-                    <Col lg="auto mr-auto">
+                    <Col md={6} className="d-flex justify-content-sm-between justify-content-md-start" sm={12}>
                       <SubcategorySelector
                         subCategories={this.state.operationalSubCategories}
                         buttonLabel="Add to Categories"
@@ -678,27 +694,40 @@ class UsersList extends Component {
                         }}
                       />
                     </Col>
-                    {/* <Col lg="auto">
-                      <Button color="primary" 
-                        onClick={(e) => {
-                          e.preventDefault()
-                          history.push("/products/import/");
-                        }}
-                      >
-                        <BiImport />
-                      </Button>
-                    </Col> */}
-                    <Col lg="auto">
+                    <Col md={6} sm={12} className="d-flex justify-content-md-end justify-content-sm-between mt-sm-2 mt-md-0">
+                    
+                      <div  style={{width:"198px"}}>
+                        <Select 
+                          placeholder={
+                            <div>
+                              <FiFilter
+                                size={14}
+                                style={{
+                                  left: 0
+                                }}
+                                className="mr-1"
+                              />
+                              Sort By
+                            </div>}
+                          options={SortingOptions}
+                          value={SortingOptions.find((option) => option.value === this.state.filters?.order_by) ?? null}
+                          onChange={this.onChangeSortingInputField}
+                        />
+                      </div>
+
                       <Button
                         color="danger"
                         onClick={(e) => {
                           e.preventDefault();
                           history.push("/products/add/");
                         }}
+                        className="ml-2"
                         style={{ padding: "0.8rem 1rem" }}
                       >
-                        <PlusCircle size="16" className="mr-1" />
-                        Add New Product
+                        <PlusCircle size="16"  />
+                        <span className="d-sm-none d-md-inline-block ml-1">
+                          Add New Product
+                        </span>
                       </Button>
                     </Col>
                   </Row>
@@ -737,7 +766,7 @@ class UsersList extends Component {
               </div>
               <CustomPagination
                 pageCount={this.state.totalPages}
-                initialPage={1}
+                initialPage={currentPage}
                 onPageChange={(data) => this.switchPage(data.selected + 1)}
               />
             </CardBody>

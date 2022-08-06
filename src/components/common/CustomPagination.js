@@ -18,7 +18,11 @@ export default class CustomPagination extends Component {
             }
             activeClassName={"active"}
             onPageChange={this.props.onPageChange}
-            // initialPage={1}
+            forcePage={
+                this.props.initialPage
+                ? parseInt(this.props.initialPage - 1)
+                : 0
+            }
         />
 
     }

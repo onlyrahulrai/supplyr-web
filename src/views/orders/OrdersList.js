@@ -486,16 +486,22 @@ class OrdersList extends Component {
                             <Select 
                               options={this.state.buyersData.map((result) => ({
                                 value: result.buyer.id,
-                                label: capitalizeString(result.buyer.business_name),
-                                email:result.buyer.email
+                                label: capitalizeString(result.buyer.name),
+                                email:result.buyer.email,
+                                business_name:capitalizeString(result.buyer.business_name),
+                                mobile_number:result.buyer.mobile_number
                               }))}
-                              formatOptionLabel={({ label, email }) => {
+                              formatOptionLabel={(props) => {
+                                const { label, email,business_name,mobile_number } = props;
+
                                 return (
                                   <div>
                                     <div>
-                                      {label}
+                                      {label} {" "} ({business_name})
                                     </div>
-                                    <div className="text-lightgray">({email})</div>
+                                    <div className="text-lightgray">
+                                      <span>{mobile_number}</span> | <span>{email} </span>
+                                    </div>
                                   </div>
                                 )
                               }}

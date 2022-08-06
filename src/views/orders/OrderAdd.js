@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Check,
+  CheckCircle,
   Clipboard,
   Edit3,
   Eye,
@@ -28,9 +29,6 @@ import {
 } from "reactstrap";
 import {
   calculateTotals,
-  calculate_extra_discount,
-  extraDiscounts,
-  priceFormatter,
 } from "utility/general";
 
 import { history } from "../../history";
@@ -352,18 +350,34 @@ const OrderAdd = (props) => {
     has_multiple_variants: product.has_multiple_variants,
   }));
 
-  const formatOptionLabel = ({ label, featured_image, quantity }) => {
+  const formatOptionLabel = ({ label,value, featured_image, quantity }) => {
+    const alreadyInCart = items.find((item) => item.variant?.product.id == value)
+
     return (
-      <div className="select-product">
+      <div className="d-flex align-items-center w-100">
         {/* {console.log("image url -------> ",featured_image ?? "name")} */}
-        <img
-          src={featured_image ? getApiURL(featured_image) : DefaultProductImage}
-          alt="featured"
-          className="float-left mr-1 img-40"
-        />
-        <div>{label}</div>
-        <div className="text-lightgray">
-          {quantity > 0 ? "In Stock" : "Out of Stock"}
+        <div>
+          <img
+            src={featured_image ? getApiURL(featured_image) : DefaultProductImage}
+            alt="featured"
+            className="float-left mr-1 img-40"
+          />
+        </div>
+        <div className="w-100 pr-5">
+          <p className="m-0" title={label}>{label.length > 78 ? `${label.substr(0,78)}...` : label}</p>
+          <div className="d-flex justify-content-between">
+            <span className="text-lightgray">
+              {quantity > 0 ? "In Stock" : "Out of Stock"}
+            </span>
+
+            {
+              alreadyInCart ? (
+                <span className="text-info">
+                  <CheckCircle size={16} /> Added
+                </span>
+              ):null
+            }
+          </div>
         </div>
       </div>
     );
@@ -395,7 +409,6 @@ const OrderAdd = (props) => {
     }
   };
 
-  console.log(" ------ items list ------  ", items);
 
   return (
     <>
@@ -455,7 +468,7 @@ const OrderAdd = (props) => {
                           </div>
                         </CardHeader>
                         <CardBody>
-                          <FormGroup>
+                          <FormGroup className="item-add">
                             <Label for={`item-name`}>Product Name</Label>
 
                             <Select
@@ -836,21 +849,6 @@ const OrderAdd = (props) => {
                         </div>
                       </Card>
                     ))}
-
-                    {/* <FormGroup>
-                      <Label for="discount">Discount</Label>
-                      <Input
-                        type="number"
-                        placeholder="1"
-                        value={orderInfo?.discount || ""}
-                        onChange={(e) =>
-                          setOrderInfo((prevState) => ({
-                            ...prevState,
-                            discount: e.target.value,
-                          }))
-                        }
-                      />
-                    </FormGroup> */}
 
                     <Button.Ripple
                       color="primary"
