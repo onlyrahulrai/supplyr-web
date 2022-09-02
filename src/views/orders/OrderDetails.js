@@ -168,7 +168,6 @@ function OrderDetails({order_status_variables,order_status_options}) {
   const orderStatusChangeButtons = orderCurrentStatusOptions?.transitions_possible.map((possibility) => ({button:statusDisplayDict[possibility],status:possibility}))
   const nextStatusDisplayData = statusDisplayDict[nextStatus]
   const nextStatusVariables = order_status_variables[nextStatus] 
-  const [isHiddenControlsVisible, setIsHiddenControlsVisible] = useState(null)
 
   const [isStateVariableModalVisible, setIsStateVariableModalVisible] = useState(false)
   const toggleStateVariableModal = () => setIsStateVariableModalVisible(!isStateVariableModalVisible)
@@ -194,8 +193,6 @@ function OrderDetails({order_status_variables,order_status_options}) {
     })
 
   }
-
-
 
   const onCancel = () => {
     Swal.fire({
@@ -303,6 +300,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
   }
   /* ------ Order Status Variable End ----- */
 
+  const isEditable = (status) => order_status_options.find((option) => option.slug === status);
   return <>
   {isLoading &&
     <Spinner />
@@ -325,7 +323,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
         </Col>
         <Col sm="4" md="2" className="edit-order-btn">
             {
-              (orderData?.order_status === "awaiting_approval" || orderData?.order_status === "approved") && (
+              isEditable(orderData?.order_status).editing_allowed && (
                 <Button.Ripple
                   color='primary'
                   outline
@@ -598,38 +596,6 @@ function OrderDetails({order_status_variables,order_status_options}) {
               </Modal>
               )}
  
-              {isHiddenControlsVisible && 
-                <Row>
-                {orderStatuses.filter(status => status!==nextStatus && status !=orderData?.order_status).map(status => {
-                  const _displayData = statusDisplayDict[status]  
-                  return (
-                  <Col>
-                  <Button.Ripple
-                    color={_displayData.buttonClass}
-                    block
-                    className="btn-block mb-1"
-                    onClick={e => onAction('change_status', status)}
-                  >
-                    {_displayData.getIcon(18, 'white')}
-                    {" "}{_displayData.buttonLabel}
-                  </Button.Ripple>
-                  </Col>
-                )}
-                )}
-                <Col>
-                  <Button.Ripple
-                    color='danger'
-                    block
-                    className="btn-block"
-                    onClick={onCancel}
-                  >
-                    {statusDisplayDict['cancelled'].getIcon(18, 'white')}
-                    {" "}{statusDisplayDict['cancelled'].buttonLabel}
-                  </Button.Ripple>
-                </Col>
-                </Row>
-              }
-
             </>
           }
 

@@ -28,6 +28,7 @@ import { SimpleInputField } from "components/forms/fields";
 import Checkbox from "components/@vuexy/checkbox/CheckboxesVuexy";
 import { matchSorter } from "match-sorter";
 import PriceDisplay from "components/utils/PriceDisplay";
+import { connect } from "react-redux";
 
 class SubcategorySelector extends Component {
   constructor(props) {
@@ -338,7 +339,9 @@ class ManualConditionsComponent extends Component {
         },
       },
       {
-        headerName: "Quantity",
+        headerName:   `${
+          this.props.user_settings?.translations?.quantity || "Quantity"
+        }`,
         field: "quantity",
         // filter: true,
         width: 200,
@@ -535,7 +538,7 @@ class ManualConditionsComponent extends Component {
 
   render() {
     const { filters, rowData, columnDefs, defaultColDef } = this.state;
-    console.log("Selected row ------>>>>>>",this.props.categoryId);
+    console.log(" ------ User Settings ------ ",this.props.user_settings.translations);
     return (
       <Row className="mt-2">
         <Col sm="12">
@@ -700,4 +703,11 @@ class ManualConditionsComponent extends Component {
     );
   }
 }
-export default ManualConditionsComponent;
+
+const mapStatesToProps = (state) => {
+  return {
+    user_settings:state.auth?.userInfo?.profile?.user_settings
+  }
+}
+
+export default connect(mapStatesToProps)(ManualConditionsComponent);

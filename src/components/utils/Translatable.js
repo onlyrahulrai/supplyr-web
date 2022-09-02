@@ -1,11 +1,11 @@
 import React from 'react'
 import {connect} from "react-redux"
 
-const Translatable = ({profile:{translations},text,prefix,styles,classes}) => {
-    console.log(text, "---- # seller profile # ----",translations[text])
+const Translatable = ({profile:{user_settings},text,prefix,styles,classes}) => {
+    console.log(text, "---- # seller profile # ----",user_settings.translations[text])
     return (
         <span style={styles} className={`${classes}`}>
-            {prefix ?? ""} {translations[text] ?? text}
+            {prefix ?? ""} {user_settings.translations[text] ?? text}
         </span>
     )
 }

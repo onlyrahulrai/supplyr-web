@@ -41,6 +41,7 @@ class OrdersList extends Component {
 
   isBulkOrderProcessingEnabled = false;
   
+  isEditable = (status) => this.props.profile.order_status_options.find((option) => option.slug === status)
   state = {
     filters: {},
     filtersApplied: undefined,
@@ -67,10 +68,9 @@ class OrdersList extends Component {
         cellRendererFramework: (params) => {
           return (
             <div>
-              {console.log("buyers details :::: >>>> ",params.data)}
               <span>{params.value} </span>
               {
-                (params?.data?.order_status === "awaiting_approval" || params?.data?.order_status === "approved") && (
+                this.isEditable(params?.data?.order_status).editing_allowed && (
                   <Edit3
                     size={20}
                     color="cadetblue"
@@ -321,10 +321,6 @@ class OrdersList extends Component {
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
     const { filters, filtersApplied } = this.state;
-    console.log(
-      "buyer data is ",
-      this.state.buyersData
-    );
     return (
       <Row className="">
         <Col sm="12">

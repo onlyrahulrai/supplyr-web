@@ -7,6 +7,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Spinner } from "reactstrap";
 import _Swal from "sweetalert2";
@@ -30,6 +31,9 @@ export const OrderAddProvider = ({ children }) => {
   const [buyerSearchInput,setBuyerSearchInput] = useState('');
   const [isMenuOpen,setIsMenuOpen] = useState(false)
   const [isBuyerLoaded,setIsBuyerLoaded] = useState(false)
+  const order_status_options = useSelector((state) => state.auth.userInfo.profile.order_status_options)
+
+  const isEditable = (status) => order_status_options.find((option) => option.slug === status);
 
   useEffect(() => {
     if (orderId) {
@@ -37,10 +41,9 @@ export const OrderAddProvider = ({ children }) => {
       OrdersApi.retrieve(orderId)
         .then((response) => {
           const data = response.data;
+
           if (
-            ["processed", "cancelled", "dispatched", "delivered"].includes(
-              data.order_status
-            )
+            !isEditable(data.order_status).editing_allowed
           ) {
             history.push("/orders");
           }

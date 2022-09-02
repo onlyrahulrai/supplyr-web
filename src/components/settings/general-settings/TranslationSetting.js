@@ -5,8 +5,9 @@ import Swal from 'sweetalert2'
 import {connect} from "react-redux"
 
 
-const TranslationSetting = ({translations:_translations,user_settings}) => {
-    const [translations,setTranslations] = useState(_translations)
+const TranslationSetting = (props) => {
+    const {user_settings,user_setting_config,...rest} = props;
+    const [translations,setTranslations] = useState(user_settings?.translations)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,8 +24,6 @@ const TranslationSetting = ({translations:_translations,user_settings}) => {
           })
           .catch((error) => console.log(error.data));
       };
-
-      // console.log("---- $ seller translation $ ---- ",translations,user_settings.translatables)
     
     return (
       <Card>
@@ -36,7 +35,7 @@ const TranslationSetting = ({translations:_translations,user_settings}) => {
           <Form onSubmit={handleSubmit} className='pb-2'>
               
                 {
-                  user_settings?.translatables.includes("quantity") && (
+                  user_setting_config?.translatables.includes("quantity") && (
                     <FormGroup row className='align-item-center'>
                       <Col md="3" className='d-flex align-items-center'>
                           <Label>Quantity Translation</Label>
@@ -61,7 +60,8 @@ const TranslationSetting = ({translations:_translations,user_settings}) => {
 
 const mapStatesToProps = (state) => {
   return {
-    "user_settings":state.auth.userSettings
+    "user_setting_config":state.auth.userSettings,
+    'user_settings':state.auth.userInfo.profile.user_settings
   }
 }
 
