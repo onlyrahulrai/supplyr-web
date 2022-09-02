@@ -106,7 +106,7 @@ function OrderStatus({status_code, size=16}) {
 function OrderDetails({order_status_variables,order_status_options}) {
 
   const {orderId} = useParams()
-  console.log({orderId})
+  // console.log({orderId})
 
   const [orderData, setOrderData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -124,11 +124,12 @@ function OrderDetails({order_status_variables,order_status_options}) {
 
       // replace the order state object to order state name
       const state_name = response.data?.address?.state.name;
-      const data = {...response.data,address:{...response.data.address,state:state_name}}
+      const _address = response.data.address ? {...response.data.address,state:state_name} : null;
+      const data = {...response.data,address:_address};
 
 
       setOrderData(data)
-      console.log("sds ", response.data)
+      // console.log("sds ", response.data)
     })
     .catch(error => {
       setLoadingError(error.message)
@@ -225,7 +226,13 @@ function OrderDetails({order_status_variables,order_status_options}) {
       setIsLoading(false)
       history.push(`/orders/${orderId}/invoice/${response.data.id}`)
     })
-    .catch((error) => console.log(error))
+    .catch((error) => {
+      Swal.fire({
+        icon:"error",
+        title:"Error",
+        text:" Failed to generate invoice."
+      })
+    })
   }
   
   const changeOrderStatus = (_nextStatus, variables) => {
@@ -286,7 +293,13 @@ function OrderDetails({order_status_variables,order_status_options}) {
       setToggleOrderStatusVariableDataModal(false)
       fetchOrderData()
     })
-    .catch((error) => console.log(error))
+    .catch((error) => {
+      Swal.fire({
+        icon:"error",
+        title:"Error",
+        text:"Failed to update status variables."
+      })
+    })
   }
   /* ------ Order Status Variable End ----- */
 
@@ -307,20 +320,18 @@ function OrderDetails({order_status_variables,order_status_options}) {
           <BreadCrumb
             breadCrumbTitle={"Order " + orderData.order_number}
             breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</a>}
-            breadCrumbActive = {`${orderData.order_number} (${orderData.buyer_name})`}
+            breadCrumbActive = {`${orderData.order_number} ${orderData.buyer_name ? `(${orderData.buyer_name})` : ""}`}
           />
         </Col>
-        <Col sm="4" md="2">
-            {/* {console.log(" ------ Order Data? ------ ",orderData)} */}
+        <Col sm="4" md="2" className="edit-order-btn">
             {
               (orderData?.order_status === "awaiting_approval" || orderData?.order_status === "approved") && (
                 <Button.Ripple
                   color='primary'
                   outline
                   block
-                  style={{backgroundColor: 'white'}}
                   className="btn-block"
-                  onClick={() => history.push(`/orders/${orderData.buyer_id}/update/${orderId}`)}
+                  onClick={() => history.push(`/orders/update/${orderId}`)}
                 >
                   <BsPencil size={16} color={"primary"} /> Edit Order
                 </Button.Ripple>
@@ -354,13 +365,13 @@ function OrderDetails({order_status_variables,order_status_options}) {
                   }
                 </div>
                 {item.product_variant.product.has_multiple_variants &&
-                  <p className="item-company">
-                    <span className="company-name">
+                  <div className="item-company">
+                    <div className="company-name">
                       <VariantLabel
                         variantData={item.product_variant}
                         />
-                      </span>
-                  </p>
+                      </div>
+                  </div>
                 }
               </div>
 
@@ -424,9 +435,17 @@ function OrderDetails({order_status_variables,order_status_options}) {
 
           <hr />
           <h6 className="text-secondary">SHIPPING ADDRESS</h6>
-          <Address
-            {...orderData.address}
-          />
+          {
+            (orderData.address) ? (
+              <Address
+                {...orderData.address}
+              />
+            ):(
+              <div className="mt-1">
+                <span>No Address Added!</span>
+              </div>
+            )
+          }
           {orderData.status_variable_values &&  (
           <> 
             <hr />

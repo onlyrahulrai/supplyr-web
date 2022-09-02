@@ -47,6 +47,8 @@ const SidebarComponent = (props) => {
             />
           </div>
 
+          {console.log(" ----- Buyer Address ----- ",buyerData.address[0])}
+
           <Address {...buyerData.address[0]} />
           {
             items?.length ? (

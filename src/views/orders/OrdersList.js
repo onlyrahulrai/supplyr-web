@@ -77,7 +77,7 @@ class OrdersList extends Component {
                     title="Edit"
                     role="button"
                     className="pointer"
-                    onClick={() => history.push(`orders/${params.data.buyer_id}/update/${params.value}`)}
+                    onClick={() => history.push(`orders/update/${params.value}`)}
                   />
                 ) 
               }
@@ -213,7 +213,7 @@ class OrdersList extends Component {
     let response = undefined
     try{
       this.setState({isLoading:true})
-      response = await apiClient("/inventory/seller-buyers/")
+      response = await apiClient("/inventory/_seller-buyers/")
       response = response.data
       const buyersData = response.results
       this.setState({
@@ -469,7 +469,7 @@ class OrdersList extends Component {
                     }
                     <Col lg="auto">
                       {/* Right aligned button */}
-                      <Button color="primary" onClick={this.toggleModal}>
+                      <Button color="primary" onClick={() => history.push('/orders/add')}>
                         <PlusCircle size="15" className="mr-1" /> New Order
                       </Button>
 

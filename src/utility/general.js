@@ -94,3 +94,8 @@ export const formateDate = (date) => {
   const options =  { day: 'numeric', year: 'numeric', month: 'long' };
   return event.toLocaleDateString(undefined, options)
 }
+export const regx = new Object( {
+  alpha: /^[A-Za-z\s]+$/,
+  email: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+  mobileNumber: /^(\+91|0)?\s?\d{10}$/,
+})

@@ -34,9 +34,9 @@ class BuyerSidebar extends React.Component {
     this.setState({ loading: true });
     let url;
     if (this.state.value) {
-      url = `inventory/seller-buyers/?search=${this.state.value}&page=${this.state.page}&size=${8}`;
+      url = `inventory/_seller-buyers/?search=${this.state.value}&page=${this.state.page}&size=${8}`;
     } else {
-      url = `inventory/seller-buyers/?page=${this.state.page}&size=${8}`;
+      url = `inventory/_seller-buyers/?page=${this.state.page}&size=${8}`;
     }
 
     apiClient.get(url).then((res) => {

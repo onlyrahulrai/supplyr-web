@@ -5,6 +5,7 @@ import { history } from "./history";
 import { connect } from "react-redux";
 import Spinner from "./components/@vuexy/spinner/Loading-spinner";
 import { ContextLayout } from "./utility/context/Layout";
+import { OrderAddProvider } from "context/useOrderAddContext";
 
 // Route-based code splitting
 const Home = lazy(() => import("./views/pages/Home"));
@@ -30,6 +31,7 @@ const OrdersList = lazy(() => import("views/orders/OrdersList"));
 
 const OrderDetails = lazy(() => import("views/orders/OrderDetails"));
 
+const _OrderAdd = lazy(() => import("views/orders/_OrderAdd"));
 const OrderAdd = lazy(() => import("views/orders/OrderAdd"));
 
 const Ledger = lazy(() => import("views/ledger"))
@@ -225,8 +227,27 @@ class AppRouter extends React.Component {
             component={CategoryAdd}
           />
 
-          <AppRoute path="/orders/:buyerId/add" component={OrderAdd} />
-          <AppRoute path="/orders/:buyerId/update/:orderId" component={OrderAdd} />
+          <AppRoute path="/orders/:buyerId/add" component={_OrderAdd} />
+
+          <AppRoute 
+            path="/orders/update/:orderId" 
+            component={() => (
+              <OrderAddProvider>
+                <OrderAdd />
+              </OrderAddProvider>
+            )}  
+          />
+
+          <AppRoute 
+            path="/orders/add" 
+            component={() => (
+              <OrderAddProvider>
+                <OrderAdd />
+              </OrderAddProvider>
+            )}  
+          />
+
+          <AppRoute path="/orders/:buyerId/update/:orderId" component={_OrderAdd} />
           <AppRoute path="/orders/:orderId/invoice/:invoiceNumber" component={Invoice} />
           <AppRoute path="/orders/:orderId" component={OrderDetails} />
           <AppRoute path="/orders" component={OrdersList} />

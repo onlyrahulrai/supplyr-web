@@ -49,7 +49,7 @@ const Transaction = (props) => {
   const sellerBuyerConnections = async () => {
     setIsLoading(true);
     await apiClient
-      .get("/inventory/seller-buyers/", {
+      .get("/inventory/_seller-buyers/", {
         params: {
           pagination: "False",
         },
