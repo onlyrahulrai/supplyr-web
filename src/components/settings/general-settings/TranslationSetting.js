@@ -14,7 +14,7 @@ const TranslationSetting = (props) => {
     
         let requestedData = {
           setting:"profile-setting",
-          data: {translations:translations}
+          data: {user_settings:translations}
         }
     
         await apiClient
