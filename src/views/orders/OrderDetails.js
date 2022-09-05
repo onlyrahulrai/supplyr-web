@@ -161,7 +161,9 @@ function OrderDetails({order_status_variables,order_status_options}) {
   const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered',"cancelled"] // Skipped 'cancelled' here as it has separate control
 
   // order status change Start
-  const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
+  // const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
+
+  const [nextStatus,setNextStatus] = useState(null);
   const orderCurrentStatusOptions = order_status_options.find((so) => so.slug === orderData?.order_status)
   // order status change End
   
@@ -192,25 +194,6 @@ function OrderDetails({order_status_variables,order_status_options}) {
       throw err
     })
 
-  }
-
-  const onCancel = () => {
-    Swal.fire({
-      title: 'Are you sure you want to cancel this order?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'Yes, Cancel Order!'
-    }).then(result => {
-      if (result.value){
-        OrdersApi.cancel(orderId)
-          .then(r => {
-            fetchOrderData()
-          })
-      }
-      return false;
-    })
   }
 
   const handleGenerateInvoice = async () => {
@@ -517,37 +500,36 @@ function OrderDetails({order_status_variables,order_status_options}) {
             <div className="detail-title">Price</div>
             <div className="detail-amt"><PriceDisplay amount={totals.salePrice} /></div>
           </div>
-          {/* <div className="detail">
-            <div className="detail-title">Discount</div>
-            <div className="detail-amt discount-amt"><PriceDisplay amount={totals.actualPrice - totals.salePrice} /></div>
-          </div> */}
-
-          
-
-          
-              <div className="detail">
-                <div className="detail-title">Extra Discount</div>
-                <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
-              </div>
+          <div className="detail">
+            <div className="detail-title">Extra Discount</div>
+            <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
+          </div>
            
-          
-
           <hr />
           <div className="detail">
             <div className="detail-title detail-total">Final Price</div>
             <div className="detail-amt total-amt"><PriceDisplay amount={totals.salePrice - (orderData?.total_extra_discount || 0)} /></div>
           </div>
 
-          <hr />
+
           {
             <>
+              {
+                orderStatusChangeButtons.length > 0 ? (
+                  <hr />
+                ):null
+              }
+
               {
                 orderStatusChangeButtons.map(({button,status},index) => (
                   <Button.Ripple
                     color={button.buttonClass}
                     block
                     className="btn-block mt-1"
-                    onClick={e => onChangeStatusButtonPress(status)}
+                    onClick={e => {
+                      setNextStatus(status)
+                      onChangeStatusButtonPress(status)
+                    }}
                     key={index}
                   >
                     {button.getIcon(18, 'white')}
