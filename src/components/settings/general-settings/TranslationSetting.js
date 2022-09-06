@@ -6,15 +6,15 @@ import {connect} from "react-redux"
 
 
 const TranslationSetting = (props) => {
-    const {user_settings,user_setting_config,...rest} = props;
-    const [translations,setTranslations] = useState(user_settings?.translations)
+    const {user_setting_config,...rest} = props;
+    const [translations,setTranslations] = useState(props.translations)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
     
         let requestedData = {
           setting:"profile-setting",
-          data: {user_settings:translations}
+          data: {user_settings:{translations}}
         }
     
         await apiClient
@@ -61,7 +61,7 @@ const TranslationSetting = (props) => {
 const mapStatesToProps = (state) => {
   return {
     "user_setting_config":state.auth.userSettings,
-    'user_settings':state.auth.userInfo.profile.user_settings
+    'translations_config':state.auth.userInfo.profile.translations
   }
 }
 

@@ -70,7 +70,7 @@ class OrdersList extends Component {
             <div>
               <span>{params.value} </span>
               {
-                this.isEditable(params?.data?.order_status).editing_allowed && (
+                this.isEditable(params?.data?.order_status).editing_allowed ? (
                   <Edit3
                     size={20}
                     color="cadetblue"
@@ -79,7 +79,7 @@ class OrdersList extends Component {
                     className="pointer"
                     onClick={() => history.push(`orders/update/${params.value}`)}
                   />
-                ) 
+                ) : null
               }
               
             </div>
@@ -561,8 +561,10 @@ class OrdersList extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  profile: state.auth.userInfo.profile,
-});
+const mapStateToProps = (state) => {
+  return {
+    profile: state.auth.userInfo.profile,
+    order_status_options:state.auth.userInfo.profile.order_status_options
+}};
 
 export default connect(mapStateToProps)(OrdersList);

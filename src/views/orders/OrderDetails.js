@@ -103,7 +103,7 @@ function OrderStatus({status_code, size=16}) {
   )
 }
 
-function OrderDetails({order_status_variables,order_status_options}) {
+function OrderDetails({order_status_variables,order_status_options,invoice_options}) {
 
   const {orderId} = useParams()
   // console.log({orderId})
@@ -284,6 +284,13 @@ function OrderDetails({order_status_variables,order_status_options}) {
   /* ------ Order Status Variable End ----- */
 
   const isEditable = (status) => order_status_options.find((option) => option.slug === status);
+
+  const isAllowedToGenerateInvoice = (status) => {
+    const index = order_status_options.sort((option) => option.sequence).findIndex((option) => option.slug === status)
+
+    return order_status_options.slice(index).map((option) => option.slug).filter((status) => !['returned','cancelled'].includes(status))
+  }
+
   return <>
   {isLoading &&
     <Spinner />
@@ -581,7 +588,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
             </>
           }
 
-          {['processed', 'dispatched', 'delivered'].includes(orderData.order_status) &&
+          {isAllowedToGenerateInvoice(invoice_options.generate_at_status).includes(orderData.order_status) &&
               
               <Button.Ripple color="warning" block className="btn-block mt-2" onClick={handleGenerateInvoice}>
                 <BsReceipt size={20} color={"white"} />
@@ -603,6 +610,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
 const mapStateToProps = (state) => ({
   order_status_variables: state.auth.userInfo.profile.order_status_variables,
   order_status_options : state.auth.userInfo.profile.order_status_options,
+  invoice_options:state.auth.userInfo.profile.invoice_options
 });
 
 export default connect(mapStateToProps)(OrderDetails);

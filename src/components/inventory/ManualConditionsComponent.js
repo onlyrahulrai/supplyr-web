@@ -340,7 +340,7 @@ class ManualConditionsComponent extends Component {
       },
       {
         headerName:   `${
-          this.props.user_settings?.translations?.quantity || "Quantity"
+          this.props.translations?.quantity || "Quantity"
         }`,
         field: "quantity",
         // filter: true,
@@ -538,7 +538,6 @@ class ManualConditionsComponent extends Component {
 
   render() {
     const { filters, rowData, columnDefs, defaultColDef } = this.state;
-    console.log(" ------ User Settings ------ ",this.props.user_settings.translations);
     return (
       <Row className="mt-2">
         <Col sm="12">
@@ -706,7 +705,7 @@ class ManualConditionsComponent extends Component {
 
 const mapStatesToProps = (state) => {
   return {
-    user_settings:state.auth?.userInfo?.profile?.user_settings
+    translations:state.auth?.userInfo?.profile?.translations
   }
 }
 
