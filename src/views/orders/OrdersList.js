@@ -41,7 +41,11 @@ class OrdersList extends Component {
 
   isBulkOrderProcessingEnabled = false;
   
-  isEditable = (status) => this.props.profile.order_status_options.find((option) => option.slug === status)
+  isEditable = (status) => {
+    const option = this.props.profile.order_status_options.find((option) => option.slug === status);
+    return option ?  option.editing_allowed : false;
+  }
+
   state = {
     filters: {},
     filtersApplied: undefined,
@@ -70,7 +74,7 @@ class OrdersList extends Component {
             <div>
               <span>{params.value} </span>
               {
-                this.isEditable(params?.data?.order_status).editing_allowed ? (
+                this.isEditable(params?.data?.order_status) ? (
                   <Edit3
                     size={20}
                     color="cadetblue"

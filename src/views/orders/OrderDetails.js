@@ -283,7 +283,10 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   }
   /* ------ Order Status Variable End ----- */
 
-  const isEditable = (status) => order_status_options.find((option) => option.slug === status);
+  const isEditable = (status) => {
+    const option = order_status_options.find((option) => option.slug === status);
+    return option ?  option.editing_allowed : false;
+  }
 
   const isAllowedToGenerateInvoice = (status) => {
     const index = order_status_options.sort((option) => option.sequence).findIndex((option) => option.slug === status)
@@ -522,13 +525,13 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
           {
             <>
               {
-                orderStatusChangeButtons.length > 0 ? (
+                orderStatusChangeButtons?.length > 0 ? (
                   <hr />
                 ):null
               }
 
               {
-                orderStatusChangeButtons.map(({button,status},index) => (
+                orderStatusChangeButtons?.map(({button,status},index) => (
                   <Button.Ripple
                     color={button.buttonClass}
                     block
@@ -540,56 +543,51 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
                     key={index}
                   >
                     {button.getIcon(18, 'white')}
-                    {/* {console.log(" Next status display data: ",nextStatusDisplayData)} */}
                     {" "}{button.buttonLabel }
                   </Button.Ripple>
                 ))
               }
 
-
-
-                
               {nextStatusVariables && (
-              <Modal
-                isOpen={isStateVariableModalVisible}
-                toggle={toggleStateVariableModal}
-                className="modal-dialog-centered"
-              >
-                <ModalHeader toggle={toggleStateVariableModal}>
-                  Add Relevant Information:
-                </ModalHeader>
-                <ModalBody>
-                    <DynamicForm
-                      schema={{
-                        fields: nextStatusVariables.map(sv => ({
-                          type: sv.data_type,
-                          name: sv.id,
-                          label: sv.name,
-                        }))
-                      }}
-                      save_button_label = {nextStatusDisplayData.buttonLabel}
-                      // initialValues={{
-                      //   business_name: '',}}
-                      errors= {{
-                          fields: {},
-                          global: "",
+                <Modal
+                  isOpen={isStateVariableModalVisible}
+                  toggle={toggleStateVariableModal}
+                  className="modal-dialog-centered"
+                >
+                  <ModalHeader toggle={toggleStateVariableModal}>
+                    Add Relevant Information:
+                  </ModalHeader>
+                  <ModalBody>
+                      <DynamicForm
+                        schema={{
+                          fields: nextStatusVariables.map(sv => ({
+                            type: sv.data_type,
+                            name: sv.id,
+                            label: sv.name,
+                          }))
                         }}
-                      onSubmit={(data, setSubmitting) => {
-                        // setSubmitting(true);
-                        changeOrderStatus(nextStatus, data)
-                        toggleStateVariableModal()
-                      }}
-                    />
+                        save_button_label = {nextStatusDisplayData.buttonLabel}
+                        // initialValues={{
+                        //   business_name: '',}}
+                        errors= {{
+                            fields: {},
+                            global: "",
+                          }}
+                        onSubmit={(data, setSubmitting) => {
+                          // setSubmitting(true);
+                          changeOrderStatus(nextStatus, data)
+                          toggleStateVariableModal()
+                        }}
+                      />
 
-                </ModalBody>
-              </Modal>
+                  </ModalBody>
+                </Modal>
               )}
  
             </>
           }
 
           {isAllowedToGenerateInvoice(invoice_options.generate_at_status).includes(orderData.order_status) &&
-              
               <Button.Ripple color="warning" block className="btn-block mt-2" onClick={handleGenerateInvoice}>
                 <BsReceipt size={20} color={"white"} />
                 {orderData?.invoice?.order ? " View Invoice" :" Generate Invoice" }
