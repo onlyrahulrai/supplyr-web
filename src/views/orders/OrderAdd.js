@@ -8,12 +8,12 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 const OrderAdd = () => {
-  const {orderId} = useOrderAddContext()
+  const {orderId,orderData} = useOrderAddContext()
   return (
     <div className="ecommerce-application">
       <BreadCrumbs
         breadCrumbTitle={orderId ? "EDIT ORDER" : "ADD NEW ORDER"}
-        breadCrumbActive={orderId ? orderId : "New Order"}
+        breadCrumbActive={orderId ? orderData.order_number : "New Order"}
         breadCrumbParent={<a href="#">All Orders</a>}
       />
 

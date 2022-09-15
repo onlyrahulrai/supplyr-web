@@ -32,6 +32,7 @@ export const OrderAddProvider = ({ children }) => {
   const [isMenuOpen,setIsMenuOpen] = useState(false)
   const [isBuyerLoaded,setIsBuyerLoaded] = useState(false)
   const order_status_options = useSelector((state) => state.auth.userInfo.profile.order_status_options)
+  const [orderData,setOrderData] = useState({})
 
   const isEditable = (status) => order_status_options.find((option) => option.slug === status);
 
@@ -42,6 +43,7 @@ export const OrderAddProvider = ({ children }) => {
         .then((response) => {
           const data = response.data;
 
+          setOrderData(data)
           if (
             !isEditable(data.order_status).editing_allowed
           ) {
@@ -107,12 +109,13 @@ export const OrderAddProvider = ({ children }) => {
   };
 
   const getTotalOfProducts = () => {
-    return products.reduce(
+    const totalPrice = products.reduce(
       (total, value) =>
         (parseFloat(total) + parseFloat(value.price)) *
         parseFloat(value.quantity),
       0
     );
+    return totalPrice.toFixed(2)
   };
 
   const getTotalExtraDiscount = useMemo(
@@ -177,6 +180,7 @@ export const OrderAddProvider = ({ children }) => {
   };
 
   const value = {
+    orderData,
     products,
     orderId: 1,
     onAddProductToCart,

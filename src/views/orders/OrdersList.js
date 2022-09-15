@@ -46,6 +46,10 @@ class OrdersList extends Component {
     return option ?  option.editing_allowed : false;
   }
 
+  orderStatus = (status) => {
+    const option = this.props.profile.order_status_options.find((option) => option.slug === status);
+    return option ? option.name : status
+  }
   state = {
     filters: {},
     filtersApplied: undefined,
@@ -81,7 +85,7 @@ class OrdersList extends Component {
                     title="Edit"
                     role="button"
                     className="pointer"
-                    onClick={() => history.push(`orders/update/${params.value}`)}
+                    onClick={() => history.push(`orders/update/${params.data.id}`)}
                   />
                 ) : null
               }
@@ -139,31 +143,31 @@ class OrdersList extends Component {
           // ["dispatched", "approved"].includes(params.value)
           const stock = params.value === "approved" ? (
             <div className="badge badge-pill badge-light-info">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) : params.value === "awaiting_approval" ? (
             <div className="badge badge-pill badge-light-secondary">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) : params.value === "delivered" ? (
             <div className="badge badge-pill badge-light-success">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) : params.value === "cancelled" ? (
             <div className="badge badge-pill badge-light-danger">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) : params.value === "dispatched" ? (
             <div className="badge badge-pill badge-light-warning">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ): params.value === "processed" ? (
             <div className="badge badge-pill badge-light-primary">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ): params.value === "returned" && (
             <div className="badge badge-pill badge-light-danger">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) ;
           return <div> {stock} </div>;

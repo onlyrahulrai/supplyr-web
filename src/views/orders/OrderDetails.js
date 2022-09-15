@@ -90,14 +90,13 @@ const statusDisplayDict = {
   }
 }
 
-function OrderStatus({status_code, size=16}) {
-
+function OrderStatus({status_code,name, size=16}) {
   const statusDisplayData = statusDisplayDict[status_code]
   return (
     <Row>
          <Col sm="auto">
           <span>{statusDisplayData.getIcon(size)} &nbsp;</span>
-          <span style={{fontSize: size, color: statusDisplayData.color}}>{statusDisplayData.name}</span>
+          <span style={{fontSize: size, color: statusDisplayData.color}}>{name}</span>
          </Col>
     </Row>
   )
@@ -288,6 +287,11 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     return option ?  option.editing_allowed : false;
   }
 
+  const orderStatus = (status) => {
+    const option = order_status_options.find((option) => option.slug === status);
+    return option ? option.name : status
+  }
+
   const isAllowedToGenerateInvoice = (status) => {
     const index = order_status_options.sort((option) => option.sequence).findIndex((option) => option.slug === status)
 
@@ -316,7 +320,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
         </Col>
         <Col sm="4" md="2" className="edit-order-btn">
             {
-              isEditable(orderData?.order_status).editing_allowed && (
+              isEditable(orderData?.order_status) && (
                 <Button.Ripple
                   color='primary'
                   outline
@@ -328,7 +332,6 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
                 </Button.Ripple>
               ) 
             }
-            
         </Col>
       </Row>
     <div className="list-view product-checkout">
@@ -422,7 +425,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
 
         <hr/>
         <h6 className="text-secondary">STATUS</h6>
-        <h3><OrderStatus status_code={orderData.order_status} /></h3>
+        <h3><OrderStatus status_code={orderData.order_status} name={orderStatus(orderData.order_status)} /></h3>
 
           <hr />
           <h6 className="text-secondary">SHIPPING ADDRESS</h6>
@@ -518,7 +521,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
           <hr />
           <div className="detail">
             <div className="detail-title detail-total">Final Price</div>
-            <div className="detail-amt total-amt"><PriceDisplay amount={totals.salePrice - (orderData?.total_extra_discount || 0)} /></div>
+            <div className="detail-amt total-amt"><PriceDisplay amount={(totals.salePrice - (orderData?.total_extra_discount || 0)).toFixed(2)} /></div>
           </div>
 
 
