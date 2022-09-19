@@ -90,14 +90,6 @@ const Invoice =  (props) => {
         />
         <Row>
           <Col className="mb-1 invoice-header" md="5" sm="12">
-            {/* <InputGroup>
-              <Input placeholder="Email" />
-              <InputGroupAddon addonType="append">
-                <Button.Ripple color="primary" outline>
-                  Send Invoice
-                </Button.Ripple>
-              </InputGroupAddon>
-            </InputGroup> */}
           </Col>
           <Col
             className="d-flex flex-column flex-md-row justify-content-end invoice-header mb-1"
@@ -181,17 +173,17 @@ const Invoice =  (props) => {
                                     <small><strong>Consignee:</strong></small> <br />
 
                                         <div>
-                                            <span><strong>{capitalizeString(orderData.buyer_name)}</strong></span>
+                                            <span><strong>{capitalizeString(orderData?.buyer_name)}</strong></span>
                                             <br />
-                                            <span><strong>{orderData.address.name.toUpperCase()}</strong></span>
+                                            <span><strong>{orderData?.address?.name?.toUpperCase()}</strong></span>
                                             <br />
-                                            <span><strong>{orderData.address.city.toUpperCase()}</strong></span>
+                                            <span><strong>{orderData?.address?.city?.toUpperCase()}</strong></span>
                                             <br />
-                                            <span><strong>{orderData.address.line1.toUpperCase()}</strong></span>
+                                            <span><strong>{orderData?.address?.line1?.toUpperCase()}</strong></span>
                                             <br />
-                                            <span><strong>{orderData.address.line2.toUpperCase()}</strong></span>
+                                            <span><strong>{orderData?.address?.line2?.toUpperCase()}</strong></span>
                                             <br />
-                                            <span><strong>{orderData.address.state.name.toUpperCase()}</strong></span>
+                                            <span><strong>{orderData?.address?.state?.name?.toUpperCase()}</strong></span>
                                         </div>
                                 </div>
                             </Col>
@@ -219,7 +211,7 @@ const Invoice =  (props) => {
                                             <small><strong>Country of final </strong></small> <br />
                                             <div>
                                                 <small><strong>Destination</strong></small> <br />
-                                                <span><strong>{orderData.address.state.name.toUpperCase()}</strong></span><br />
+                                                <span><strong>{orderData?.address?.state?.name?.toUpperCase()}</strong></span><br />
                                             </div>
                                         </div>   
                                     </Col>
@@ -266,7 +258,7 @@ const Invoice =  (props) => {
                                         <Col sm="8" className="px-0">
                                             <div className="border p-1 border-top-0 border-bottom-0">
                                                 <small><strong>Final Destinat.</strong></small> <br />
-                                                <span><strong>{`${orderData.address.name} (${orderData.address.state.name}) `}</strong></span><br />
+                                                <span><strong>{`${orderData?.address?.name} (${orderData?.address?.state?.name}) `}</strong></span><br />
                                             </div>
                                         </Col>
                                     </Row>
@@ -350,7 +342,7 @@ const Invoice =  (props) => {
                                         orderData.items.map((item,index) => (
                                             <tr key={index}>
                                                 <td><strong>{index + 1}</strong></td>
-                                                <td colSpan="2"><strong>{item.product_variant.product.title}</strong></td>
+                                                <td colSpan="2"><strong>{item?.product_variant?.product?.title}</strong></td>
                                                 <td><strong>{item.quantity}</strong></td>
                                                 <td><strong><PriceDisplay amount={item.price} /></strong></td>
                                                 <td><strong><PriceDisplay amount={item.quantity * item.price} /></strong></td>
