@@ -16,7 +16,7 @@ import { ArrowLeft } from "react-feather";
 import { history } from "../../../history";
 import GeneralSettings from "./GeneralSettings";
 import InvoiceSettings from "./InvoiceSettings";
-import ProductSettings from "./ProductSettings";
+import InvoiceTemplateSettings from "./InvoiceTemplateSettings";
 
 
 const Settings = () => {
@@ -84,7 +84,7 @@ const Settings = () => {
                     }}
                     style={{borderBottom:`${active === "3" && "2px solid white"}`}}
                   >
-                    Product Settings
+                    Invoice Template Settings
                   </NavLink>
                 </NavItem>
               </Nav>
@@ -102,7 +102,7 @@ const Settings = () => {
                   className="tab-border"
                   tabId="3"
                 >
-                  <ProductSettings />
+                  <InvoiceTemplateSettings />
                 </TabPane> 
               </TabContent>
             </Col>

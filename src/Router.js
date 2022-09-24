@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import Spinner from "./components/@vuexy/spinner/Loading-spinner";
 import { ContextLayout } from "./utility/context/Layout";
 import { OrderAddProvider } from "context/useOrderAddContext";
+import { InvoiceProvider } from "context/useInvoiceContext";
 
 // Route-based code splitting
 const Home = lazy(() => import("./views/pages/Home"));
@@ -248,7 +249,13 @@ class AppRouter extends React.Component {
           />
 
           <AppRoute path="/orders/:buyerId/update/:orderId" component={_OrderAdd} />
-          <AppRoute path="/orders/:orderId/invoice/:invoiceNumber" component={Invoice} />
+
+          <AppRoute path="/orders/:orderId/invoice/:invoiceNumber" component={() => (
+            <InvoiceProvider>
+              <Invoice />
+            </InvoiceProvider>
+          )} />
+
           <AppRoute path="/orders/:orderId" component={OrderDetails} />
           <AppRoute path="/orders" component={OrdersList} />
 
