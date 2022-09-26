@@ -13,6 +13,7 @@ import classnames from "classnames";
 import {_CurrenciesData} from "../../../assets/data/CurrenciesData"
 import InvoicePrefixSetting from "components/settings/invoice-settings/InvoicePrefixSetting";
 import { connect } from "react-redux";
+import InvoiceTemplateSetting from "../../../components/settings/invoice-settings/InvoiceTemplateSetting";
 
 const InvoiceSettings = ({profile}) => {
   const [active, setActive] = useState("1");
@@ -56,12 +57,26 @@ const InvoiceSettings = ({profile}) => {
             >
               Invoice Prefix
             </NavLink>
+            <NavLink
+              className={classnames({
+                active: active === "2",
+              })}
+              onClick={() => {
+                toggle("2");
+              }}
+              style={{ borderBottom: `${active === "2" && "1px solid white"}` }}
+            >
+              Invoice Templates
+            </NavLink>
           </NavItem>
         </Nav>
 
         <TabContent activeTab={active}>
           <TabPane tabId="1">
             <InvoicePrefixSetting profile={profile} />
+          </TabPane>
+          <TabPane tabId="2">
+            <InvoiceTemplateSetting profile={profile} />
           </TabPane>
         </TabContent>
       </div>
