@@ -22,7 +22,7 @@ const Invoice =  () => {
     const {template:template_name} = useSelector((state) => state.auth.userInfo.profile.invoice_options)
 
     const template = useMemo(() => {
-        return invoiceTemplateData.find((template) => template.slug === (template_name ? template_name : "default"))
+        return invoiceTemplateData.find((template) => template.slug ===  template_name)
     },[template_name])
 
     return (
