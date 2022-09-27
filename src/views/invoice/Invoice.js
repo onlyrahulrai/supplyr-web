@@ -13,7 +13,6 @@ import { history } from "../../history"
 
 import "../../assets/scss/pages/invoice.scss"
 import NetworkError from "components/common/NetworkError"
-import { ClassicTemplate, DefaultTemplate } from "components/invoice"
 import useInvoiceContext from "context/useInvoiceContext"
 import { useSelector } from "react-redux"
 import invoiceTemplateData from "../../assets/data/InvoiceTemplateData"
@@ -23,7 +22,7 @@ const Invoice =  () => {
     const {template:template_name} = useSelector((state) => state.auth.userInfo.profile.invoice_options)
 
     const template = useMemo(() => {
-        return invoiceTemplateData.find((template) => template.slug === template_name)
+        return invoiceTemplateData.find((template) => template.slug === (template_name ? template_name : "default"))
     },[template_name])
 
     return (
