@@ -208,7 +208,7 @@ const DefaultTemplate = () => {
           </Row>
         </Col>
       </Row>
-      {/* <Row className="ml-0 mr-0">
+      <Row className="ml-0 mr-0">
         <Col sm="7" className="px-0">
           <Row className="ml-0 mr-0">
             <Col sm="4" className="px-0">
@@ -318,7 +318,7 @@ const DefaultTemplate = () => {
             </div>
           </div>
         </Col>
-      </Row> */}
+      </Row>
 
       <Table responsive className="table-hover-animation">
         <thead>
