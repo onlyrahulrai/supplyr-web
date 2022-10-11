@@ -1,5 +1,5 @@
-import {ClassicImage,DefaultImage} from "../img";
-import {ClassicTemplate, DefaultTemplate } from "../../components/invoice"
+import {CrossBorderImage,DefaultImage} from "../img";
+import {CrossBorderTemplate, DefaultTemplate } from "../../components/invoice"
 
 const data = [
     {
@@ -11,10 +11,10 @@ const data = [
     },
     {
         id:2,
-        name:"Classic",
-        slug:"classic",
-        picture:ClassicImage,
-        component:<ClassicTemplate />
+        name:"Template 1: Cross Border",
+        slug:"template-1",
+        picture:CrossBorderImage,
+        component:<CrossBorderTemplate />
     },
 ]
 

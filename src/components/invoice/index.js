@@ -1,2 +1,2 @@
 export {default as DefaultTemplate} from "./DefaultTemplate";
-export {default as ClassicTemplate} from "./ClassicTemplate";
+export {default as CrossBorderTemplate} from "./CrossBorderTemplate";
