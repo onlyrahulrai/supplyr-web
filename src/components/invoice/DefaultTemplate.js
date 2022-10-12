@@ -2,12 +2,14 @@ import PriceDisplay from "components/utils/PriceDisplay";
 import useInvoiceContext from "context/useInvoiceContext";
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Col, Row, Table } from "reactstrap";
-import { capitalizeString } from "utility/general";
+import { Col, Row } from "reactstrap";
+import Consignee from "./Consignee";
+import Exporter from "./Exporter";
+import ProductLists from "./ProductLists";
 
 const DefaultTemplate = () => {
   const { orderId, invoice_number } = useParams();
-  const { orderData, totals, toWords, variables } = useInvoiceContext();
+  const { orderData, totals, toWords} = useInvoiceContext();
 
   const getDate = (date) => {
     let _date = new Date(date);
@@ -18,6 +20,8 @@ const DefaultTemplate = () => {
     });
   };
 
+  console.log(" ----- Order Data ----- ",orderData)
+
   return (
     <React.Fragment>
       <h3 className="text-center">
@@ -25,38 +29,7 @@ const DefaultTemplate = () => {
       </h3>
       <Row className="mt-3 ml-0 mr-0">
         <Col sm="5" className="border px-0">
-          <div className="p-1">
-            <small>
-              <strong>Exporter:</strong>
-            </small>{" "}
-            <br />
-            <div>
-              <span>
-                <strong>M/S. PAT GLOBAL INC.</strong>
-              </span>
-              <br />
-              <span>
-                <strong>NO.33 AND 34,, 8TH CROSS,</strong>
-              </span>
-              <br />
-              <span>
-                <strong>MUTHURAYASWAMY LAYOUT,</strong>
-              </span>
-              <br />
-              <span>
-                <strong>HULIMAVU,</strong>
-              </span>
-              <br />
-              <span>
-                <strong>BENGALURU</strong>
-              </span>
-              <br />
-              <span>
-                <strong>KARNATAKA -560076</strong>
-              </span>
-              <br />
-            </div>
-          </div>
+          <Exporter />
         </Col>
         <Col sm="7" className="px-0">
           <Row className="ml-0 mr-0">
@@ -114,42 +87,7 @@ const DefaultTemplate = () => {
       </Row>
       <Row className="ml-0 mr-0">
         <Col sm="4" className="px-0">
-          <div
-            className="border p-1 border-top-0"
-            style={{ minHeight: "180px" }}
-          >
-            <small>
-              <strong>Consignee:</strong>
-            </small>{" "}
-            <br />
-            <div>
-              <span>
-                <strong>{capitalizeString(orderData?.buyer_name)}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>{orderData?.address?.name?.toUpperCase()}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>{orderData?.address?.city?.toUpperCase()}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>{orderData?.address?.line1?.toUpperCase()}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>{orderData?.address?.line2?.toUpperCase()}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>
-                  {orderData?.address?.state?.name?.toUpperCase()}
-                </strong>
-              </span>
-            </div>
-          </div>
+          <Consignee buyer={orderData?.buyer_name ? orderData?.buyer_name : orderData?.buyer_business_name} address={orderData?.address} />
         </Col>
         <Col sm="8" className="pl-0 border">
           <div className="p-1 border-top-0">
@@ -208,200 +146,9 @@ const DefaultTemplate = () => {
           </Row>
         </Col>
       </Row>
-      {/* <Row className="ml-0 mr-0">
-        <Col sm="7" className="px-0">
-          <Row className="ml-0 mr-0">
-            <Col sm="4" className="px-0">
-              <div className="border p-1 border-top-0">
-                <small>
-                  <strong>Pre-Carriage by</strong>
-                </small>{" "}
-                <br />
-                <span>
-                  <strong>{variables?.precarriageby?.value ?? " "}</strong>
-                </span>
-                <br />
-                <br />
-              </div>
-            </Col>
-            <Col sm="8" className="px-0">
-              <div className="border p-1 border-top-0">
-                <small>
-                  <strong>Place of Receiptby Pre-carrier</strong>
-                </small>{" "}
-                <br />
-                <span>
-                  <strong>
-                    {variables?.placeofreceiptbyprecarrier?.value ?? " "}
-                  </strong>
-                </span>
-                <br />
-                <br />
-              </div>
-            </Col>
-          </Row>
-          <Row className="ml-0 mr-0">
-            <Col sm="4" className="px-0">
-              <div className="border p-1 border-top-0">
-                <small>
-                  <strong>Vessel No.</strong>
-                </small>{" "}
-                <br />
-                <span>
-                  <strong>{variables?.vesselno?.value ?? " "}</strong>
-                </span>
-                <br />
-                <br />
-              </div>
-            </Col>
-            <Col sm="8" className="px-0">
-              <div className="border p-1 border-top-0">
-                <small>
-                  <strong>Port of Loading</strong>
-                </small>{" "}
-                <br />
-                <span>
-                  <strong>{variables?.portofloading?.value || " "}</strong>
-                </span>
-                <br />
-                <br />
-              </div>
-            </Col>
-          </Row>
-          <Row className="ml-0 mr-0">
-            <Col sm="4" className="px-0">
-              <div className="border p-1 border-top-0 border-bottom-0">
-                <small>
-                  <strong>Port of Disch.</strong>
-                </small>{" "}
-                <br />
-                <span>
-                  <strong>{variables?.portofdisch?.value || " "}</strong>
-                </span>
-                <br />
-                <br />
-              </div>
-            </Col>
-            <Col sm="8" className="px-0">
-              <div className="border p-1 border-top-0 border-bottom-0">
-                <small>
-                  <strong>Final Destinat.</strong>
-                </small>{" "}
-                <br />
-                <span>
-                  <strong>{`${orderData?.address?.name ?? ""} ${
-                    orderData?.address?.state?.name
-                      ? `(${orderData?.address?.state?.name})`
-                      : ""
-                  } `}</strong>
-                </span>
-                <br />
-              </div>
-            </Col>
-          </Row>
-        </Col>
-        <Col sm="5" className="border px-0">
-          <div className=" p-1 border-top-0" style={{ minHeight: "90px" }}>
-            <small>
-              <strong>Terms of Delivery & Payment:</strong>
-            </small>{" "}
-            <br />
-            <br />
-            <div>
-              <strong className="pl-1"> C I F</strong> <br />
-              <br />
-              <span>
-                <strong>120 DAYS FROM THE DATE OF B/L ON D/A</strong>
-              </span>
-              <br />
-              <br />
-            </div>
-          </div>
-        </Col>
-      </Row> */}
 
-      <Table responsive className="table-hover-animation">
-        <thead>
-          <tr>
-            <th>
-              <small>
-                <strong>Marks & & </strong>
-              </small>
-              <div>
-                <span>
-                  <strong>Nos.</strong>
-                </span>
-              </div>
-            </th>
-            <th>
-              <small>
-                <strong>Title</strong>
-              </small>
-              <div>
-                <span>
-                  <strong>(Package Name)</strong>
-                </span>
-              </div>
-            </th>
-            <th></th>
-            <th>
-              <small>
-                <strong>Qty.</strong>
-              </small>
-              <div>
-                <span>
-                  <strong>(SQM.)</strong>
-                </span>
-              </div>
-            </th>
-            <th>
-              <small>
-                <strong>Rate/</strong>
-              </small>
-              <div>
-                <span>
-                  <strong>SQM (US $)</strong>
-                </span>
-              </div>
-            </th>
-            <th>
-              <small>
-                <strong>Amount </strong>
-              </small>
-              <div>
-                <span>
-                  <strong>(in US $)</strong>
-                </span>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {orderData.items.map((item, index) => (
-            <tr key={index}>
-              <td>
-                <strong>{index + 1}</strong>
-              </td>
-              <td colSpan="2">
-                <strong>{item?.product_variant?.product?.title}</strong>
-              </td>
-              <td>
-                <strong>{item.quantity}</strong>
-              </td>
-              <td>
-                <strong>
-                  <PriceDisplay amount={item.price} />
-                </strong>
-              </td>
-              <td>
-                <strong>
-                  <PriceDisplay amount={item.quantity * item.price} />
-                </strong>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <ProductLists products={orderData.items} />
+
       <Row
         className="border border-bottom-0 ml-0 mr-0"
         style={{ minHeight: "100px" }}

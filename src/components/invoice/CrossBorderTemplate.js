@@ -2,8 +2,10 @@ import PriceDisplay from "components/utils/PriceDisplay";
 import useInvoiceContext from "context/useInvoiceContext";
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Col, Row, Table } from "reactstrap";
-import { capitalizeString } from "utility/general";
+import { Col, Row } from "reactstrap";
+import Consignee from "./Consignee";
+import Exporter from "./Exporter";
+import ProductLists from "./ProductLists";
 
 const DefaultTemplate = () => {
   const { orderId, invoice_number } = useParams();
@@ -25,38 +27,7 @@ const DefaultTemplate = () => {
       </h3>
       <Row className="mt-3 ml-0 mr-0">
         <Col sm="5" className="border px-0">
-          <div className="p-1">
-            <small>
-              <strong>Exporter:</strong>
-            </small>{" "}
-            <br />
-            <div>
-              <span>
-                <strong>M/S. PAT GLOBAL INC.</strong>
-              </span>
-              <br />
-              <span>
-                <strong>NO.33 AND 34,, 8TH CROSS,</strong>
-              </span>
-              <br />
-              <span>
-                <strong>MUTHURAYASWAMY LAYOUT,</strong>
-              </span>
-              <br />
-              <span>
-                <strong>HULIMAVU,</strong>
-              </span>
-              <br />
-              <span>
-                <strong>BENGALURU</strong>
-              </span>
-              <br />
-              <span>
-                <strong>KARNATAKA -560076</strong>
-              </span>
-              <br />
-            </div>
-          </div>
+          <Exporter />
         </Col>
         <Col sm="7" className="px-0">
           <Row className="ml-0 mr-0">
@@ -114,42 +85,7 @@ const DefaultTemplate = () => {
       </Row>
       <Row className="ml-0 mr-0">
         <Col sm="4" className="px-0">
-          <div
-            className="border p-1 border-top-0"
-            style={{ minHeight: "180px" }}
-          >
-            <small>
-              <strong>Consignee:</strong>
-            </small>{" "}
-            <br />
-            <div>
-              <span>
-                <strong>{capitalizeString(orderData?.buyer_name)}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>{orderData?.address?.name?.toUpperCase()}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>{orderData?.address?.city?.toUpperCase()}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>{orderData?.address?.line1?.toUpperCase()}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>{orderData?.address?.line2?.toUpperCase()}</strong>
-              </span>
-              <br />
-              <span>
-                <strong>
-                  {orderData?.address?.state?.name?.toUpperCase()}
-                </strong>
-              </span>
-            </div>
-          </div>
+          <Consignee buyer={orderData?.buyer_name} address={orderData?.address} />
         </Col>
         <Col sm="8" className="pl-0 border">
           <div className="p-1 border-top-0">
@@ -320,88 +256,8 @@ const DefaultTemplate = () => {
         </Col>
       </Row>
 
-      <Table responsive className="table-hover-animation">
-        <thead>
-          <tr>
-            <th>
-              <small>
-                <strong>Marks & & </strong>
-              </small>
-              <div>
-                <span>
-                  <strong>Nos.</strong>
-                </span>
-              </div>
-            </th>
-            <th>
-              <small>
-                <strong>Title</strong>
-              </small>
-              <div>
-                <span>
-                  <strong>(Package Name)</strong>
-                </span>
-              </div>
-            </th>
-            <th></th>
-            <th>
-              <small>
-                <strong>Qty.</strong>
-              </small>
-              <div>
-                <span>
-                  <strong>(SQM.)</strong>
-                </span>
-              </div>
-            </th>
-            <th>
-              <small>
-                <strong>Rate/</strong>
-              </small>
-              <div>
-                <span>
-                  <strong>SQM (US $)</strong>
-                </span>
-              </div>
-            </th>
-            <th>
-              <small>
-                <strong>Amount </strong>
-              </small>
-              <div>
-                <span>
-                  <strong>(in US $)</strong>
-                </span>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {orderData.items.map((item, index) => (
-            <tr key={index}>
-              <td>
-                <strong>{index + 1}</strong>
-              </td>
-              <td colSpan="2">
-                <strong>{item?.product_variant?.product?.title}</strong>
-              </td>
-              <td>
-                <strong>{item.quantity}</strong>
-              </td>
-              <td>
-                <strong>
-                  <PriceDisplay amount={item.price} />
-                </strong>
-              </td>
-              <td>
-                <strong>
-                  <PriceDisplay amount={item.quantity * item.price} />
-                </strong>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      <ProductLists products={orderData.items} />
+
       <Row
         className="border border-bottom-0 ml-0 mr-0"
         style={{ minHeight: "100px" }}
