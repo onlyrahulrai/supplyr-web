@@ -5,7 +5,7 @@ const MultiVariantsIndicatorComponent = () => {
   return (
     <>
       <RiCheckboxMultipleBlankLine
-        className="ml-1"
+        className="ml-1 cursor-pointer"
         size={24}
         title="This product has multiple variants"
       />

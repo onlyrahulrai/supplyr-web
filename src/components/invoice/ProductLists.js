@@ -1,3 +1,4 @@
+import MultiVariantsIndicatorComponent from "components/common/MultiVariantsIndicatorComponent";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import React from "react";
@@ -88,7 +89,15 @@ const ProductLists = ({ products }) => {
               <strong>{index + 1}</strong>
             </td>
             <td colSpan="2">
-              <strong>{item?.product_variant?.product?.title}</strong>
+              <div className="d-flex align-items-center">
+                <strong>
+                  {item?.product_variant?.product?.title}
+
+                </strong>
+                {
+                  item.product_variant.product.has_multiple_variants ? <MultiVariantsIndicatorComponent /> : null
+                }
+              </div>
             </td>
             <td>
               <strong>{item.quantity}</strong>
