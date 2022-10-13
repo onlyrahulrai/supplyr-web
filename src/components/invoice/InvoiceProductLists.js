@@ -1,12 +1,11 @@
-import MultiVariantsIndicatorComponent from "components/common/MultiVariantsIndicatorComponent";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Table } from "reactstrap";
 
-const ProductLists = ({ products }) => {
-  const { default_currency, currency_representation } =
+const InvoiceProductLists = ({ products }) => {
+  const { default_currency } =
     useSelector((state) => state.auth.userInfo.profile);
 
   return (
@@ -42,7 +41,7 @@ const ProductLists = ({ products }) => {
             </small>
             <div>
               <span>
-                <strong>(SQM.)</strong>
+                <strong></strong>
               </span>
             </div>
           </th>
@@ -53,12 +52,9 @@ const ProductLists = ({ products }) => {
             <div>
               <span>
                 <strong>
-                  SQM (
-                  <Translatable
-                    text={currency_representation}
+                  (<Translatable
                     prefix={default_currency}
-                  />
-                  )
+                  />)
                 </strong>
               </span>
             </div>
@@ -70,12 +66,9 @@ const ProductLists = ({ products }) => {
             <div>
               <span>
                 <strong>
-                  (
-                  <Translatable
-                    text={currency_representation}
+                  (<Translatable
                     prefix={`in ${default_currency}`}
-                  />
-                  )
+                  />)
                 </strong>
               </span>
             </div>
@@ -92,11 +85,25 @@ const ProductLists = ({ products }) => {
               <div className="d-flex align-items-center">
                 <strong>
                   {item?.product_variant?.product?.title}
-
+                  {" - "}
+                  {
+                    item.product_variant.product.has_multiple_variants ? (
+                      <>
+                        (
+                          {
+                            item.product_variant.option1_name ? `${item.product_variant.option1_name.toUpperCase()}:${item.product_variant.option1_value.toUpperCase()}` : ''
+                          }
+                          {
+                            item.product_variant.option2_name ? `, ${item.product_variant.option2_name.toUpperCase()}:${item.product_variant.option2_value.toUpperCase()}` : ''
+                          }
+                          {
+                            item.product_variant.option3_name ? `, ${item.product_variant.option3_name.toUpperCase()}:${item.product_variant.option3_value.toUpperCase()}` : ''
+                          }
+                        )
+                      </>
+                    ) : null
+                  }
                 </strong>
-                {
-                  item.product_variant.product.has_multiple_variants ? <MultiVariantsIndicatorComponent /> : null
-                }
               </div>
             </td>
             <td>
@@ -119,4 +126,4 @@ const ProductLists = ({ products }) => {
   );
 };
 
-export default ProductLists;
+export default InvoiceProductLists;

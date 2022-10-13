@@ -5,10 +5,10 @@ import { useParams } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import Consignee from "./Consignee";
 import Exporter from "./Exporter";
-import ProductLists from "./ProductLists";
+import InvoiceProductLists from "./InvoiceProductLists";
 
 const DefaultTemplate = () => {
-  const { orderId, invoice_number } = useParams();
+  const { orderId, invoiceNumber:invoice_number } = useParams();
   const { orderData, totals, toWords, variables } = useInvoiceContext();
 
   const getDate = (date) => {
@@ -256,7 +256,7 @@ const DefaultTemplate = () => {
         </Col>
       </Row>
 
-      <ProductLists products={orderData.items} />
+      <InvoiceProductLists products={orderData.items} />
 
       <Row
         className="border border-bottom-0 ml-0 mr-0"

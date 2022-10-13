@@ -5,149 +5,70 @@ import { useParams } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import Consignee from "./Consignee";
 import Exporter from "./Exporter";
-import ProductLists from "./ProductLists";
+import InvoiceProductLists from "./InvoiceProductLists";
 
 const DefaultTemplate = () => {
-  const { orderId, invoice_number } = useParams();
+  const { orderId, invoiceNumber:invoice_number } = useParams();
   const { orderData, totals, toWords} = useInvoiceContext();
 
   const getDate = (date) => {
     let _date = new Date(date);
-    return _date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "numeric",
-      year: "numeric",
-    });
+    return _date.toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' });
   };
-
-  console.log(" ----- Order Data ----- ",orderData)
 
   return (
     <React.Fragment>
       <h3 className="text-center">
         <u>INVOICE</u>
       </h3>
-      <Row className="mt-3 ml-0 mr-0">
-        <Col sm="5" className="border px-0">
-          <Exporter />
+
+      <Row>
+        <Col md="5" className="border-right">
+          <Exporter default />
         </Col>
-        <Col sm="7" className="px-0">
-          <Row className="ml-0 mr-0">
-            <Col sm="6" className="px-0">
-              <div className="p-1 border">
-                <small>
-                  <strong>Invoice No. & Date:</strong>
-                </small>
-                <br />
-                <div>
-                  <strong>{invoice_number}</strong>
-                  <br />
-                  <strong>
-                    DT:&nbsp;
-                    {orderData?.invoice?.created_at &&
-                      getDate(orderData?.invoice?.created_at)}
-                  </strong>
-                  <br />
-                </div>
-              </div>
-            </Col>
-            <Col sm="6" className="pl-0 border">
-              <div className="p-1">
-                <small>
-                  <strong>Exporter's Ref,:</strong>
-                </small>
-                <br />
-                <br />
-                <br />
-              </div>
-            </Col>
-          </Row>
-          <Row className="ml-0 mr-0">
-            <Col sm="12" className="px-0 p-1  border">
-              <small>
-                <strong>Buyer's Order No.& Date</strong>
-              </small>
-              <div>
-                <span>
-                  <strong>
-                    {orderId}, DATED: {orderData?.order_date}
-                  </strong>
-                </span>
-              </div>
-            </Col>
-          </Row>
-          <Row className="ml-0 mr-0">
-            <Col sm="12" className="p-6 border">
-              <small>
-                <strong>Other Reference (s)</strong>
-              </small>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-      <Row className="ml-0 mr-0">
-        <Col sm="4" className="px-0">
-          <Consignee buyer={orderData?.buyer_name ? orderData?.buyer_name : orderData?.buyer_business_name} address={orderData?.address} />
-        </Col>
-        <Col sm="8" className="pl-0 border">
-          <div className="p-1 border-top-0">
+        <Col className="border-right">
+          <div className="p-1">
             <small>
-              IEC. NO. ----, <strong>GSTIN: ----</strong>
-            </small>{" "}
-            <br />
+              <strong>Invoice No. - {invoice_number}</strong>
+            </small>
             <div>
-              <span>
-                <strong>Buyer (If other than consignee)</strong>
-              </span>
+              <small>
+                <strong>
+                  DATE - &nbsp;
+                  {console.log(" ---- Date ---- ",orderData?.invoice?.created_at)}
+                  {orderData?.invoice?.created_at &&
+                    getDate(orderData?.invoice?.created_at)}
+                </strong>
+              </small>
+              <br />
               <br />
             </div>
           </div>
 
-          <Row className="border-top ml-0 mr-0">
-            <Col sm="6" className="px-0  border-right">
-              <div className="p-1 border-top-0">
-                <small>
-                  <strong>Country of Origin </strong>
-                </small>{" "}
-                <br />
-                <div>
-                  <small>
-                    <strong>of goods</strong>
-                  </small>
-                  <br />
-                  <span>
-                    <strong>INDIA</strong>
-                  </span>
-                  <br />
-                  <br />
-                </div>
-              </div>
-            </Col>
-            <Col sm="6" className="px-0">
-              <div className="p-1 border-top-0">
-                <small>
-                  <strong>Country of final </strong>
-                </small>{" "}
-                <br />
-                <div>
-                  <small>
-                    <strong>Destination</strong>
-                  </small>{" "}
-                  <br />
-                  <span>
-                    <strong>
-                      {orderData?.address?.state?.name?.toUpperCase()}
-                    </strong>
-                  </span>
-                  <br />
-                </div>
-              </div>
-            </Col>
-          </Row>
+          <div className="px-0 p-1 border-top">
+            <small>
+              <strong>Buyer's Order No. - {orderId}</strong>
+            </small>
+            <div>
+              <small>
+                <strong>
+                  DATE - {orderData?.order_date}
+                </strong>
+              </small>
+            </div>
+            <br />
+          </div>
+        </Col>
+        <Col>
+          <Consignee 
+            default
+            buyer={orderData?.buyer_name ? orderData?.buyer_name : orderData?.buyer_business_name} 
+            address={orderData?.address} 
+          />
         </Col>
       </Row>
-
-      <ProductLists products={orderData.items} />
+    
+      <InvoiceProductLists products={orderData.items} />
 
       <Row
         className="border border-bottom-0 ml-0 mr-0"

@@ -1,11 +1,11 @@
 import React from "react";
 import { capitalizeString } from "utility/general";
 
-const Consignee = ({buyer,address}) => {
+const Consignee = ({buyer,address,...rest}) => {
   return (
-    <div className="border p-1 border-top-0" style={{ minHeight: "180px" }}>
+    <div className="p-1 border-top-0" style={{ minHeight: "180px" }}>
       <small>
-        <strong>Consignee:</strong>
+        <strong>{ rest.default ? "Customer Info: "  : "Consignee: "}</strong>
       </small>{" "}
       <br />
       <div>
