@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Card,
-  CardBody,
   Nav,
   NavItem,
   NavLink,
@@ -15,6 +13,8 @@ import CurrencySetting from "components/settings/general-settings/CurrencySettin
 import TranslationSetting from "components/settings/general-settings/TranslationSetting";
 import { connect } from "react-redux";
 import OrderPrefixSetting from "components/settings/general-settings/OrderPrefixSetting";
+import GSTConfig from "components/settings/general-settings/GSTConfig";
+
 
 const GeneralSettings = ({profile}) => {
   const [active, setActive] = useState("1");
@@ -78,6 +78,17 @@ const GeneralSettings = ({profile}) => {
             >
               Order Number Prefix
             </NavLink>
+            <NavLink
+              className={classnames({
+                active:active === "4",
+              })}
+              onClick={() => {
+                toggle("4")
+              }}
+              style={{borderBottom:`${active === "4" && "1px solid white"}`}}
+            >
+              GST Config
+            </NavLink>
           </NavItem>
         </Nav>
         <TabContent activeTab={active}>
@@ -89,6 +100,9 @@ const GeneralSettings = ({profile}) => {
           </TabPane>
           <TabPane tabId="3" > 
             <OrderPrefixSetting {...profile} />
+          </TabPane>
+          <TabPane tabId="4" > 
+            <GSTConfig {...profile} />
           </TabPane>
         </TabContent>
       </div>
