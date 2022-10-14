@@ -4,7 +4,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Table } from "reactstrap";
 
-const InvoiceProductLists = ({ products }) => {
+const InvoiceProductLists = ({ products,...rest }) => {
   const { default_currency } =
     useSelector((state) => state.auth.userInfo.profile);
 
@@ -13,14 +13,27 @@ const InvoiceProductLists = ({ products }) => {
       <thead>
         <tr>
           <th>
-            <small>
-              <strong>Marks & & </strong>
-            </small>
-            <div>
-              <span>
-                <strong>Nos.</strong>
-              </span>
-            </div>
+            {
+              rest.default ? (
+                <small>
+                  <strong>
+                    S. No.
+                  </strong>
+                </small>
+              ):(
+                <>
+                  <small>
+                    <strong>Marks & & </strong>
+                  </small>
+                  <div>
+                    <span>
+                      <strong>Nos.</strong>
+                    </span>
+                  </div>
+                </>
+              )
+            }
+            
           </th>
           <th>
             <small>

@@ -68,7 +68,7 @@ const DefaultTemplate = () => {
         </Col>
       </Row>
     
-      <InvoiceProductLists products={orderData.items} />
+      <InvoiceProductLists products={orderData.items} default />
 
       <Row
         className="border border-bottom-0 ml-0 mr-0"
