@@ -13,7 +13,9 @@ import CurrencySetting from "components/settings/general-settings/CurrencySettin
 import TranslationSetting from "components/settings/general-settings/TranslationSetting";
 import { connect } from "react-redux";
 import OrderPrefixSetting from "components/settings/general-settings/OrderPrefixSetting";
-import GSTConfig from "components/settings/general-settings/GSTConfig";
+import GSTConfig from "components/settings/general-settings/gst-config";
+import SellerAddressComponent from "components/settings/general-settings/SellerAddressComponent";
+import { GstConfigSettingProvider } from "context/useGstConfigSettingContext";
 
 
 const GeneralSettings = ({profile}) => {
@@ -89,6 +91,17 @@ const GeneralSettings = ({profile}) => {
             >
               GST Config
             </NavLink>
+            <NavLink
+              className={classnames({
+                active:active === "5",
+              })}
+              onClick={() => {
+                toggle("5")
+              }}
+              style={{borderBottom:`${active === "5" && "1px solid white"}`}}
+            >
+              Seller Address
+            </NavLink>
           </NavItem>
         </Nav>
         <TabContent activeTab={active}>
@@ -102,7 +115,12 @@ const GeneralSettings = ({profile}) => {
             <OrderPrefixSetting {...profile} />
           </TabPane>
           <TabPane tabId="4" > 
-            <GSTConfig {...profile} />
+            <GstConfigSettingProvider>
+              <GSTConfig  />
+            </GstConfigSettingProvider>
+          </TabPane>
+          <TabPane tabId="5" > 
+            <SellerAddressComponent />
           </TabPane>
         </TabContent>
       </div>

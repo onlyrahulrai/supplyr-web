@@ -278,3 +278,14 @@ $misc-inner-max-width: 750px;
 .override.css-2613qy-menu{
   z-index: 1;
 }
+
+.position-center{
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+}
+
+.override-category  .css-1uccc91-singleValue{
+  width:100%;
+  padding-right: 16px;
+}
