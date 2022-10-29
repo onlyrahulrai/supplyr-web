@@ -360,7 +360,7 @@ const Sidebar = () => {
         <div className="detail">
           <div className="detail-title">Total MRP</div>
           <div className="detail-amt">
-            <PriceDisplay amount={getTotalOfProducts() ?? 0} />
+            <PriceDisplay amount={getTotalOfProducts ?? 0} />
           </div>
         </div>
         <div className="detail">
@@ -374,7 +374,7 @@ const Sidebar = () => {
           <div className="detail-title detail-total">Total</div>
           <div className="detail-amt total-amt">
             <PriceDisplay
-              amount={(getTotalOfProducts() - getTotalExtraDiscount).toFixed(2)}
+              amount={(getTotalOfProducts - getTotalExtraDiscount).toFixed(2)}
             />
           </div>
         </div>
