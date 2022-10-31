@@ -16,7 +16,7 @@ import { ArrowLeft } from "react-feather";
 import { history } from "../../../history";
 import GeneralSettings from "./GeneralSettings";
 import InvoiceSettings from "./InvoiceSettings";
-import ProductSettings from "./ProductSettings";
+
 
 
 const Settings = () => {
@@ -74,19 +74,6 @@ const Settings = () => {
                     Invoice Settings
                   </NavLink>
                 </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={classnames({
-                      active: active === "3",
-                    })}
-                    onClick={() => {
-                      toggle("3");
-                    }}
-                    style={{borderBottom:`${active === "3" && "2px solid white"}`}}
-                  >
-                    Product Settings
-                  </NavLink>
-                </NavItem>
               </Nav>
               <TabContent activeTab={active}>
                 <TabPane tabId="1" className="tab-border">
@@ -98,12 +85,6 @@ const Settings = () => {
                 >
                   <InvoiceSettings />
                 </TabPane>
-                <TabPane
-                  className="tab-border"
-                  tabId="3"
-                >
-                  <ProductSettings />
-                </TabPane> 
               </TabContent>
             </Col>
           </Row>

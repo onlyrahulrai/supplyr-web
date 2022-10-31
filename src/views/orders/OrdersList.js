@@ -41,6 +41,15 @@ class OrdersList extends Component {
 
   isBulkOrderProcessingEnabled = false;
   
+  isEditable = (status) => {
+    const option = this.props.profile.order_status_options.find((option) => option.slug === status);
+    return option ?  option.editing_allowed : false;
+  }
+
+  orderStatus = (status) => {
+    const option = this.props.profile.order_status_options.find((option) => option.slug === status);
+    return option ? option.name : status
+  }
   state = {
     filters: {},
     filtersApplied: undefined,
@@ -67,19 +76,18 @@ class OrdersList extends Component {
         cellRendererFramework: (params) => {
           return (
             <div>
-              {console.log("buyers details :::: >>>> ",params.data)}
               <span>{params.value} </span>
               {
-                (params?.data?.order_status === "awaiting_approval" || params?.data?.order_status === "approved") && (
+                this.isEditable(params?.data?.order_status) ? (
                   <Edit3
                     size={20}
                     color="cadetblue"
                     title="Edit"
                     role="button"
                     className="pointer"
-                    onClick={() => history.push(`orders/update/${params.value}`)}
+                    onClick={() => history.push(`orders/update/${params.data.id}`)}
                   />
-                ) 
+                ) : null
               }
               
             </div>
@@ -135,31 +143,31 @@ class OrdersList extends Component {
           // ["dispatched", "approved"].includes(params.value)
           const stock = params.value === "approved" ? (
             <div className="badge badge-pill badge-light-info">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) : params.value === "awaiting_approval" ? (
             <div className="badge badge-pill badge-light-secondary">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) : params.value === "delivered" ? (
             <div className="badge badge-pill badge-light-success">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) : params.value === "cancelled" ? (
             <div className="badge badge-pill badge-light-danger">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) : params.value === "dispatched" ? (
             <div className="badge badge-pill badge-light-warning">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ): params.value === "processed" ? (
             <div className="badge badge-pill badge-light-primary">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ): params.value === "returned" && (
             <div className="badge badge-pill badge-light-danger">
-              <b>{params.value}</b>
+              <b>{this.orderStatus(params.value)}</b>
             </div>
           ) ;
           return <div> {stock} </div>;
@@ -321,10 +329,6 @@ class OrdersList extends Component {
   render() {
     const { rowData, columnDefs, defaultColDef } = this.state;
     const { filters, filtersApplied } = this.state;
-    console.log(
-      "buyer data is ",
-      this.state.buyersData
-    );
     return (
       <Row className="">
         <Col sm="12">
@@ -565,8 +569,10 @@ class OrdersList extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  profile: state.auth.userInfo.profile,
-});
+const mapStateToProps = (state) => {
+  return {
+    profile: state.auth.userInfo.profile,
+    order_status_options:state.auth.userInfo.profile.order_status_options
+}};
 
 export default connect(mapStateToProps)(OrdersList);

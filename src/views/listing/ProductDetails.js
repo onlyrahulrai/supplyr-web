@@ -110,7 +110,7 @@ function DetailPage(props) {
 
         <>
           <>
-            <Button.Ripple className="mr-1 mb-1" color="warning" onClick={e => history.push('/product/' + productData.slug + '/edit/')}>
+            <Button.Ripple className="mr-1 mb-1" color="warning" onClick={e => history.push('/products/' + productData.slug + '/edit/')}>
               <Edit3 size={15} />
               <span className="align-middle ml-50">Edit</span>
             </Button.Ripple>
@@ -130,7 +130,7 @@ function DetailPage(props) {
                   })
                     .then(result => {
                       if (result.data.success) {
-                        history.push('/inventory')
+                        history.push('/products')
                         Swal.fire("Product Deleted !")
                       }
                     })

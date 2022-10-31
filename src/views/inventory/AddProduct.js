@@ -150,7 +150,7 @@ function VariantFields(props) {
             onChange={(e) =>
               props.onChange("minimum_order_quantity", e.target.value)
             }
-            value={variantData.minimum_order_quantity ?? ""}
+            value={variantData.minimum_order_quantity ?? 1}
             min="1"
           />
         </Col>

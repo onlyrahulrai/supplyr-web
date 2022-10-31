@@ -15,11 +15,11 @@ const DescriptionComponent = (props) => {
     }
 
     if(ledger.transaction_type === "order_cancelled"){
-        description = <p>Order <Link to={`/orders/${ledger.order.id}`}>#{ledger.order.id}</Link> cancelled by {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
+        description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> cancelled by {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
     }
 
     if(ledger.transaction_type === "order_created"){
-        description = <p>Order <Link to={`/orders/${ledger.order.id}`}>#{ledger.order.id}</Link> created by {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
+        description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> created by {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
     }
 
   return description;

@@ -90,20 +90,19 @@ const statusDisplayDict = {
   }
 }
 
-function OrderStatus({status_code, size=16}) {
-
+function OrderStatus({status_code,name, size=16}) {
   const statusDisplayData = statusDisplayDict[status_code]
   return (
     <Row>
          <Col sm="auto">
           <span>{statusDisplayData.getIcon(size)} &nbsp;</span>
-          <span style={{fontSize: size, color: statusDisplayData.color}}>{statusDisplayData.name}</span>
+          <span style={{fontSize: size, color: statusDisplayData.color}}>{name}</span>
          </Col>
     </Row>
   )
 }
 
-function OrderDetails({order_status_variables,order_status_options}) {
+function OrderDetails({order_status_variables,order_status_options,invoice_options}) {
 
   const {orderId} = useParams()
   // console.log({orderId})
@@ -161,14 +160,15 @@ function OrderDetails({order_status_variables,order_status_options}) {
   const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered',"cancelled"] // Skipped 'cancelled' here as it has separate control
 
   // order status change Start
-  const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
+  // const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
+
+  const [nextStatus,setNextStatus] = useState(null);
   const orderCurrentStatusOptions = order_status_options.find((so) => so.slug === orderData?.order_status)
   // order status change End
   
   const orderStatusChangeButtons = orderCurrentStatusOptions?.transitions_possible.map((possibility) => ({button:statusDisplayDict[possibility],status:possibility}))
   const nextStatusDisplayData = statusDisplayDict[nextStatus]
   const nextStatusVariables = order_status_variables[nextStatus] 
-  const [isHiddenControlsVisible, setIsHiddenControlsVisible] = useState(null)
 
   const [isStateVariableModalVisible, setIsStateVariableModalVisible] = useState(false)
   const toggleStateVariableModal = () => setIsStateVariableModalVisible(!isStateVariableModalVisible)
@@ -193,27 +193,6 @@ function OrderDetails({order_status_variables,order_status_options}) {
       throw err
     })
 
-  }
-
-
-
-  const onCancel = () => {
-    Swal.fire({
-      title: 'Are you sure you want to cancel this order?',
-      text: "You won't be able to revert this!",
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      confirmButtonText: 'Yes, Cancel Order!'
-    }).then(result => {
-      if (result.value){
-        OrdersApi.cancel(orderId)
-          .then(r => {
-            fetchOrderData()
-          })
-      }
-      return false;
-    })
   }
 
   const handleGenerateInvoice = async () => {
@@ -303,6 +282,22 @@ function OrderDetails({order_status_variables,order_status_options}) {
   }
   /* ------ Order Status Variable End ----- */
 
+  const isEditable = (status) => {
+    const option = order_status_options.find((option) => option.slug === status);
+    return option ?  option.editing_allowed : false;
+  }
+
+  const orderStatus = (status) => {
+    const option = order_status_options.find((option) => option.slug === status);
+    return option ? option.name : status
+  }
+
+  const isAllowedToGenerateInvoice = (status) => {
+    const index = order_status_options.sort((option) => option.sequence).findIndex((option) => option.slug === status)
+
+    return order_status_options.slice(index).map((option) => option.slug).filter((status) => !['returned','cancelled'].includes(status))
+  }
+
   return <>
   {isLoading &&
     <Spinner />
@@ -325,7 +320,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
         </Col>
         <Col sm="4" md="2" className="edit-order-btn">
             {
-              (orderData?.order_status === "awaiting_approval" || orderData?.order_status === "approved") && (
+              isEditable(orderData?.order_status) && (
                 <Button.Ripple
                   color='primary'
                   outline
@@ -337,7 +332,6 @@ function OrderDetails({order_status_variables,order_status_options}) {
                 </Button.Ripple>
               ) 
             }
-            
         </Col>
       </Row>
     <div className="list-view product-checkout">
@@ -431,7 +425,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
 
         <hr/>
         <h6 className="text-secondary">STATUS</h6>
-        <h3><OrderStatus status_code={orderData.order_status} /></h3>
+        <h3><OrderStatus status_code={orderData.order_status} name={orderStatus(orderData.order_status)} /></h3>
 
           <hr />
           <h6 className="text-secondary">SHIPPING ADDRESS</h6>
@@ -519,122 +513,84 @@ function OrderDetails({order_status_variables,order_status_options}) {
             <div className="detail-title">Price</div>
             <div className="detail-amt"><PriceDisplay amount={totals.salePrice} /></div>
           </div>
-          {/* <div className="detail">
-            <div className="detail-title">Discount</div>
-            <div className="detail-amt discount-amt"><PriceDisplay amount={totals.actualPrice - totals.salePrice} /></div>
-          </div> */}
-
-          
-
-          
-              <div className="detail">
-                <div className="detail-title">Extra Discount</div>
-                <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
-              </div>
+          <div className="detail">
+            <div className="detail-title">Extra Discount</div>
+            <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
+          </div>
            
-          
-
           <hr />
           <div className="detail">
             <div className="detail-title detail-total">Final Price</div>
-            <div className="detail-amt total-amt"><PriceDisplay amount={totals.salePrice - (orderData?.total_extra_discount || 0)} /></div>
+            <div className="detail-amt total-amt"><PriceDisplay amount={(totals.salePrice - (orderData?.total_extra_discount || 0)).toFixed(2)} /></div>
           </div>
 
-          <hr />
+
           {
             <>
               {
-                orderStatusChangeButtons.map(({button,status},index) => (
+                orderStatusChangeButtons?.length > 0 ? (
+                  <hr />
+                ):null
+              }
+
+              {
+                orderStatusChangeButtons?.map(({button,status},index) => (
                   <Button.Ripple
                     color={button.buttonClass}
                     block
                     className="btn-block mt-1"
-                    onClick={e => onChangeStatusButtonPress(status)}
+                    onClick={e => {
+                      setNextStatus(status)
+                      onChangeStatusButtonPress(status)
+                    }}
                     key={index}
                   >
                     {button.getIcon(18, 'white')}
-                    {/* {console.log(" Next status display data: ",nextStatusDisplayData)} */}
                     {" "}{button.buttonLabel }
                   </Button.Ripple>
                 ))
               }
 
-
-
-                
               {nextStatusVariables && (
-              <Modal
-                isOpen={isStateVariableModalVisible}
-                toggle={toggleStateVariableModal}
-                className="modal-dialog-centered"
-              >
-                <ModalHeader toggle={toggleStateVariableModal}>
-                  Add Relevant Information:
-                </ModalHeader>
-                <ModalBody>
-                    <DynamicForm
-                      schema={{
-                        fields: nextStatusVariables.map(sv => ({
-                          type: sv.data_type,
-                          name: sv.id,
-                          label: sv.name,
-                        }))
-                      }}
-                      save_button_label = {nextStatusDisplayData.buttonLabel}
-                      // initialValues={{
-                      //   business_name: '',}}
-                      errors= {{
-                          fields: {},
-                          global: "",
+                <Modal
+                  isOpen={isStateVariableModalVisible}
+                  toggle={toggleStateVariableModal}
+                  className="modal-dialog-centered"
+                >
+                  <ModalHeader toggle={toggleStateVariableModal}>
+                    Add Relevant Information:
+                  </ModalHeader>
+                  <ModalBody>
+                      <DynamicForm
+                        schema={{
+                          fields: nextStatusVariables.map(sv => ({
+                            type: sv.data_type,
+                            name: sv.id,
+                            label: sv.name,
+                          }))
                         }}
-                      onSubmit={(data, setSubmitting) => {
-                        // setSubmitting(true);
-                        changeOrderStatus(nextStatus, data)
-                        toggleStateVariableModal()
-                      }}
-                    />
+                        save_button_label = {nextStatusDisplayData.buttonLabel}
+                        // initialValues={{
+                        //   business_name: '',}}
+                        errors= {{
+                            fields: {},
+                            global: "",
+                          }}
+                        onSubmit={(data, setSubmitting) => {
+                          // setSubmitting(true);
+                          changeOrderStatus(nextStatus, data)
+                          toggleStateVariableModal()
+                        }}
+                      />
 
-                </ModalBody>
-              </Modal>
+                  </ModalBody>
+                </Modal>
               )}
  
-              {isHiddenControlsVisible && 
-                <Row>
-                {orderStatuses.filter(status => status!==nextStatus && status !=orderData?.order_status).map(status => {
-                  const _displayData = statusDisplayDict[status]  
-                  return (
-                  <Col>
-                  <Button.Ripple
-                    color={_displayData.buttonClass}
-                    block
-                    className="btn-block mb-1"
-                    onClick={e => onAction('change_status', status)}
-                  >
-                    {_displayData.getIcon(18, 'white')}
-                    {" "}{_displayData.buttonLabel}
-                  </Button.Ripple>
-                  </Col>
-                )}
-                )}
-                <Col>
-                  <Button.Ripple
-                    color='danger'
-                    block
-                    className="btn-block"
-                    onClick={onCancel}
-                  >
-                    {statusDisplayDict['cancelled'].getIcon(18, 'white')}
-                    {" "}{statusDisplayDict['cancelled'].buttonLabel}
-                  </Button.Ripple>
-                </Col>
-                </Row>
-              }
-
             </>
           }
 
-          {['processed', 'dispatched', 'delivered'].includes(orderData.order_status) &&
-              
+          {isAllowedToGenerateInvoice(invoice_options.generate_at_status).includes(orderData.order_status) &&
               <Button.Ripple color="warning" block className="btn-block mt-2" onClick={handleGenerateInvoice}>
                 <BsReceipt size={20} color={"white"} />
                 {orderData?.invoice?.order ? " View Invoice" :" Generate Invoice" }
@@ -655,6 +611,7 @@ function OrderDetails({order_status_variables,order_status_options}) {
 const mapStateToProps = (state) => ({
   order_status_variables: state.auth.userInfo.profile.order_status_variables,
   order_status_options : state.auth.userInfo.profile.order_status_options,
+  invoice_options:state.auth.userInfo.profile.invoice_options
 });
 
 export default connect(mapStateToProps)(OrderDetails);

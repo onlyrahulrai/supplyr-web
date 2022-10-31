@@ -15,6 +15,7 @@ import {
 import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
 import { _products } from "./Main";
 import {toast} from "react-toastify";
+import Translatable from "components/utils/Translatable";
 
 const Product = (props) => {
   const { id, variant, quantity, price, extra_discount, item_note } =
@@ -103,7 +104,7 @@ const Product = (props) => {
             <h4>{variant?.product?.title}</h4>
             <p className={`${variant.quantity > 0 ? 'stock-status-in' : 'text-danger'}`}>{variant.quantity > 0 ? "In Stock" : "Out of stock"}</p>
             <div className="item-quantity">
-              <p className="quantity-title">Quantity: {quantity}</p>
+              <p className="quantity-title"><Translatable text="quantity" />: {quantity}</p>
             </div>
             <div className="delivery-date mt-1 rounded d-flex align-items-center">
               <div

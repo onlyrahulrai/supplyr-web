@@ -103,7 +103,8 @@ const Sidebar = () => {
     setBuyerSearchInput,
     isMenuOpen,
     setIsMenuOpen,
-    isBuyerLoaded
+    isBuyerLoaded,
+    orderData
   } = useOrderAddContext();
   const [isOpenBuyerAddresses, setIsOpenBuyerAddresses] = useState(false);
 
@@ -198,7 +199,7 @@ const Sidebar = () => {
         <div className="coupons">
           <div className="coupons-title">
             <p>Order ID</p>
-            <h2 className="text-light">#{orderId ? orderId : "New"}</h2>
+            <h2 className="text-light">#{orderId ? orderData.order_number : "New"}</h2>
           </div>
           {buyer ? (
             <div className="apply-coupon cursor-auto">
@@ -373,7 +374,7 @@ const Sidebar = () => {
           <div className="detail-title detail-total">Total</div>
           <div className="detail-amt total-amt">
             <PriceDisplay
-              amount={getTotalOfProducts() - getTotalExtraDiscount}
+              amount={(getTotalOfProducts() - getTotalExtraDiscount).toFixed(2)}
             />
           </div>
         </div>
