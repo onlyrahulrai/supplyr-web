@@ -108,15 +108,15 @@ export const OrderAddProvider = ({ children }) => {
     setSelectedProduct(data);
   };
 
-  const getTotalOfProducts = () => {
+  const getTotalOfProducts = useMemo(() => {
     const totalPrice = products.reduce(
       (total, value) =>
-        (parseFloat(total) + parseFloat(value.price)) *
-        parseFloat(value.quantity),
+        (parseFloat(total) + (parseFloat(value.price)) *
+        parseFloat(value.quantity)),
       0
     );
     return totalPrice.toFixed(2)
-  };
+  },[products])
 
   const getTotalExtraDiscount = useMemo(
     () => {

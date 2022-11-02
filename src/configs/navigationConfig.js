@@ -67,7 +67,7 @@ const navigationConfig = [
     icon: <MdInput size={20} />,
     // permissions: ["admin", "editor"],
     navLink: "/orders",
-    parentOf:["/orders/:buyerId/add","/orders/:buyerId/update/:orderId","/orders/:orderId"]
+    parentOf:["/orders/add","/orders/update/:orderId","/orders/:orderId","/orders/:orderId/invoice/:invoiceNumber"]
   },
   {
     id: "ledger",

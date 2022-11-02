@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Card,
-  CardBody,
   Nav,
   NavItem,
   NavLink,
@@ -15,6 +13,10 @@ import CurrencySetting from "components/settings/general-settings/CurrencySettin
 import TranslationSetting from "components/settings/general-settings/TranslationSetting";
 import { connect } from "react-redux";
 import OrderPrefixSetting from "components/settings/general-settings/OrderPrefixSetting";
+import GSTConfig from "components/settings/general-settings/gst-config";
+import SellerAddressComponent from "components/settings/general-settings/SellerAddressComponent";
+import { GstConfigSettingProvider } from "context/useGstConfigSettingContext";
+
 
 const GeneralSettings = ({profile}) => {
   const [active, setActive] = useState("1");
@@ -78,6 +80,28 @@ const GeneralSettings = ({profile}) => {
             >
               Order Number Prefix
             </NavLink>
+            <NavLink
+              className={classnames({
+                active:active === "4",
+              })}
+              onClick={() => {
+                toggle("4")
+              }}
+              style={{borderBottom:`${active === "4" && "1px solid white"}`}}
+            >
+              GST Config
+            </NavLink>
+            <NavLink
+              className={classnames({
+                active:active === "5",
+              })}
+              onClick={() => {
+                toggle("5")
+              }}
+              style={{borderBottom:`${active === "5" && "1px solid white"}`}}
+            >
+              Seller Address
+            </NavLink>
           </NavItem>
         </Nav>
         <TabContent activeTab={active}>
@@ -89,6 +113,14 @@ const GeneralSettings = ({profile}) => {
           </TabPane>
           <TabPane tabId="3" > 
             <OrderPrefixSetting {...profile} />
+          </TabPane>
+          <TabPane tabId="4" > 
+            <GstConfigSettingProvider>
+              <GSTConfig  />
+            </GstConfigSettingProvider>
+          </TabPane>
+          <TabPane tabId="5" > 
+            <SellerAddressComponent />
           </TabPane>
         </TabContent>
       </div>

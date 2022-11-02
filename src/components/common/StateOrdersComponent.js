@@ -245,7 +245,7 @@ const StateOrdersComponent = (props) => {
                                   .reverse()
                                   .map((order) => (
                                     <tr key={order.state}>
-                                      <td>{order.state}, {order.country_code}</td>
+                                      <td>{order.state} {order.country_code && `, ${order.country_code}`}</td>
                                       <td>{order.state_orders_count}</td>
                                     </tr>
                                   ))}

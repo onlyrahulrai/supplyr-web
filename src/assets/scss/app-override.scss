@@ -255,14 +255,33 @@ $misc-inner-max-width: 750px;
   background-color: #f6f6f6 !important;
 }
 
-.edit-order-btn{
-  z-index: -1;
-}
-
 .edit-order-btn .react-ripples{
-  z-index: 99 !important;
+  z-index: 9999 !important;
 }
 
 .cursor-auto{
   cursor: auto !important;
+}
+
+.default_gst_rate  h5{
+  margin-bottom: 0 !important;
+}
+
+.float-right{
+  float:right !important;
+}
+
+.override.css-2613qy-menu{
+  z-index: 1;
+}
+
+.position-center{
+  top:50%;
+  left:50%;
+  transform: translate(-50%,-50%);
+}
+
+.override-category  .css-1uccc91-singleValue{
+  width:100%;
+  padding-right: 16px;
 }
