@@ -1,3 +1,5 @@
+import { capitalizeString } from "utility/general"
+
 export default function VariantLabel({variantData, colorTheme = 'light'}) {
     const colorScheme = {
       'dark': {
@@ -28,21 +30,21 @@ export default function VariantLabel({variantData, colorTheme = 'light'}) {
     )
     
     return (
-      <>
+      <div className="pt-half">
         {labelData.map((data, index) => {
           return (
-            <div key={index}>
+            <div key={index} className="d-inline">
               <span style={{fontWeight: 'bold', color: colorScheme.optionName}}>
-                {data.name}
+                {capitalizeString(data.name)}
                 {': '}
               </span>
               <span style={{color: colorScheme.optionValue}}>
                 {data.value}
-                {index !== (labelData.length - 1) ? ', ' : null }
+                {index !== (labelData.length - 1) ? ",\t" : null }
               </span>
             </div>
           )
         })}
-      </>
+      </div>
     )
   }

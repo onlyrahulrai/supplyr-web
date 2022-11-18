@@ -94,7 +94,9 @@ const Form = ({ onToggleForm }) => {
     onChangeProduct,
     product,
     products,
-    buyer
+    isSellerAndBuyerFromTheSameState,
+    getValidGstRate,
+    calculateGstRate
   } = useOrderAddContext();
 
   const isProductSelected = useMemo(
@@ -103,6 +105,7 @@ const Form = ({ onToggleForm }) => {
   );
 
   const onSelectproduct = (data) => {
+    
     if (selectedProduct?.set_focus) {
       data["set_focus"] = selectedProduct?.set_focus;
     }
@@ -123,6 +126,13 @@ const Form = ({ onToggleForm }) => {
       minimum_order_quantity: quantity,
     } = variant;
 
+    console.log(" ---- Data ---- ",getValidGstRate(data.sub_categories))
+    console.log(" ---- Get GST Data ---- ",calculateGstRate(getValidGstRate(data.sub_categories)))
+
+    const totalTaxableAmount = parseFloat((parseFloat(price) * Object.values(calculateGstRate(getValidGstRate(data.sub_categories))).reduce((sum,value) => sum + value,0))/100)
+
+    console.log(" ---- Total Taxable Amount ---- ",totalTaxableAmount,price,Object.values(calculateGstRate(getValidGstRate(data.sub_categories))).reduce((sum,value) => sum + value,0))
+
     onChangeProduct({
       variant_id:id,
       id:null,
@@ -132,6 +142,8 @@ const Form = ({ onToggleForm }) => {
       quantity:quantity,
       item_note: product?.item_note,
       extra_discount: product?.extra_discount ?? 0,
+      taxable_amount:totalTaxableAmount * parseFloat(quantity),
+      ...calculateGstRate(getValidGstRate(data.sub_categories))
     });
   };
 

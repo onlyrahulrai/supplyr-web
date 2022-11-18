@@ -1,6 +1,6 @@
 import "assets/scss/pages/app-ecommerce-shop.scss";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   Button, Card,
@@ -117,6 +117,10 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   const [isFormLoading,setIsFormLoading] = useState(false)
   /* ------ Order Status Variable End ----- */
 
+  const totalTaxableAmount = useMemo(() => {
+    return orderData ? orderData.items.reduce((sum,value) => sum + parseFloat(value?.taxable_amount),0) : 0;
+  },[orderData])
+
   const fetchOrderData = () => {
     OrdersApi.retrieve(orderId)
     .then(response => {
@@ -127,7 +131,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
       const data = {...response.data,address:_address};
 
 
-      setOrderData(data)
+      setOrderData(response.data)
       // console.log("sds ", response.data)
     })
     .catch(error => {
@@ -173,6 +177,9 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   const [isStateVariableModalVisible, setIsStateVariableModalVisible] = useState(false)
   const toggleStateVariableModal = () => setIsStateVariableModalVisible(!isStateVariableModalVisible)
 
+  const getAddress = useMemo(() => {
+    return {...orderData?.address,state:orderData?.address?.state?.name} 
+  },[orderData])
 
   const onAction = (operation, data) => {
 
@@ -298,6 +305,8 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     return order_status_options.slice(index).map((option) => option.slug).filter((status) => !['returned','cancelled'].includes(status))
   }
 
+
+
   return <>
   {isLoading &&
     <Spinner />
@@ -348,16 +357,16 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
                 <h3>{item.product_variant.product.title}</h3>
                 </a>
 
-
                 <div className="d-flex">
                   <span className="border-right pr-1"><Translatable text="quantity" />: {item?.quantity}</span>
 
-                  {
-                    Math.floor(item?.extra_discount) ? (
+                  {/* {
+                    Math.floor(item?.extra_discount) ? ( */}
                       <span className="ml-1">Extra Discount: <PriceDisplay amount={item?.extra_discount || 0} /></span>
-                    ):("")
-                  }
+                    {/* ):("")
+                  } */}
                 </div>
+
                 {item.product_variant.product.has_multiple_variants &&
                   <div className="item-company">
                     <div className="company-name">
@@ -367,21 +376,23 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
                       </div>
                   </div>
                 }
+
+                {!!item?.item_note &&
+                  <div className="item-note pt-half">
+                    <b style={{color: '#000'}}><i>Item Note:</i> </b> &nbsp; {item.item_note}
+                  </div>
+                }
               </div>
 
-              {!!item?.item_note &&
-                <div className="item-note">
-                  <b style={{color: '#000'}}><i>Item Note:</i> </b> &nbsp; {item.item_note}
-                </div>
-                }
+              
             </CardBody>
             <div className="item-options m-auto">
               <div className="item-wrapper">
-                <div className="item-cost">
-                  <h5 className=""><PriceDisplay amount={item.price} /></h5>
-                  { item.actual_price !== item.price &&
-                    <h6><del className="strikethrough text-secondary"><PriceDisplay amount={item.actual_price} /></del></h6>
-                  }
+                <div className="item-cost text-center">
+                  <h5 className=""> <strong><PriceDisplay amount={parseFloat(item?.quantity) * parseFloat(item.price)} /></strong> </h5>
+
+                  <h5 className=""><strong style={{color:"#626262"}}>(<PriceDisplay amount={item.price} /> x {`${(item?.quantity > 1 && item?.quantity !== 0)  ? `${item?.quantity} units` : `${item?.quantity} Unit` }`})</strong> </h5>
+
                 </div>
               </div>
             </div>
@@ -430,9 +441,12 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
           <hr />
           <h6 className="text-secondary">SHIPPING ADDRESS</h6>
           {
+            console.log(" ----- ----- ",orderData.address)
+          }
+          {
             (orderData.address) ? (
               <Address
-                {...orderData.address}
+                {...getAddress}
               />
             ):(
               <div className="mt-1">
@@ -513,6 +527,14 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
             <div className="detail-title">Price</div>
             <div className="detail-amt"><PriceDisplay amount={totals.salePrice} /></div>
           </div>
+
+          <div className="detail">
+            <div className="detail-title">Taxable Amount</div>
+            <div className="detail-amt discount-amt">
+              <PriceDisplay amount={totalTaxableAmount ?? 0} />
+            </div>
+          </div>
+
           <div className="detail">
             <div className="detail-title">Extra Discount</div>
             <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
@@ -521,7 +543,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
           <hr />
           <div className="detail">
             <div className="detail-title detail-total">Final Price</div>
-            <div className="detail-amt total-amt"><PriceDisplay amount={(totals.salePrice - (orderData?.total_extra_discount || 0)).toFixed(2)} /></div>
+            <div className="detail-amt total-amt"><PriceDisplay amount={((parseFloat(totals.salePrice) + parseFloat(totalTaxableAmount)) - (orderData?.total_extra_discount || 0)).toFixed(2)} /></div>
           </div>
 
 

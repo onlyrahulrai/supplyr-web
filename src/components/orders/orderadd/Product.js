@@ -2,15 +2,17 @@ import apiClient from "api/base";
 import { getApiURL } from "api/utils";
 import PriceDisplay from "components/utils/PriceDisplay";
 import useOrderAddContext from "context/useOrderAddContext";
-import React, { memo, useState } from "react";
+import React, { memo, useMemo, useState } from "react";
 import { Check, Clipboard, Edit3, X } from "react-feather";
 import {
   Button,
   Card,
   CardBody,
+  Col,
   FormGroup,
   Input,
   Label,
+  Row,
 } from "reactstrap";
 import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
 import { _products } from "./Main";
@@ -18,7 +20,7 @@ import {toast} from "react-toastify";
 import Translatable from "components/utils/Translatable";
 
 const Product = (props) => {
-  const { id, variant, quantity, price, extra_discount, item_note } =
+  const { id, variant, quantity, price, extra_discount, item_note,igst,cgst,sgst,taxable_amount } =
     props.product;
   const { position } = props;
 
@@ -30,6 +32,7 @@ const Product = (props) => {
     setProduct,
     product,
     setProducts,
+    sumOfObjectValue
   } = useOrderAddContext();
   const [fieldName, setFieldName] = useState(null);
 
@@ -82,6 +85,9 @@ const Product = (props) => {
     setFieldName(null);
   };
 
+  const getProductTaxesPercentage = useMemo(() => {
+    return sumOfObjectValue({igst:parseFloat(igst),sgst:parseFloat(sgst),cgst:parseFloat(cgst)})
+  },[props.product])
   return (
     <Card className="ecommerce-card">
       <div
@@ -148,6 +154,38 @@ const Product = (props) => {
                 </div>
               ) : null}
             </div>
+
+            <Row>
+              <Col className="delivery-date mt-1 rounded d-flex align-items-center">
+                <div
+                  className="d-flex align-items-center"
+                >
+                  <b style={{ color: "#000" }}>
+                    <i>Tax Percentage:</i>{" "}
+                  </b>
+
+                  <span className="offers ml-1">
+                    {`${getProductTaxesPercentage}%`}
+                  </span>
+                </div>
+              </Col>
+
+              <Col  className="delivery-date mt-1 rounded d-flex align-items-center">
+                  <div
+                    className="d-flex align-items-center"
+                    style={{ width: "65%" }}
+                  >
+                    <b style={{ color: "#000" }}>
+                      <i>Tax Amount:</i>{" "}
+                    </b>
+
+                    <span className="offers ml-1">
+                      <PriceDisplay amount={taxable_amount ? taxable_amount : 0} />
+                    </span>
+                  </div>
+              </Col>
+            </Row>
+
             <div className="delivery-date mt-1 w-100 d-flex align-items-center">
               {!fieldName || fieldName !== "item_note" ? (
                 <>
@@ -216,6 +254,16 @@ const Product = (props) => {
                 (<PriceDisplay amount={price} /> x {quantity > 1 ? `${quantity} Units` : `${quantity} Unit` }) 
               </span>
             </div>
+
+
+            {/* <div className="item-cost">
+              <h5 className="item-price border-top mt-2 pt-1">Total Price</h5>
+
+              <span className="item-price">
+                (<PriceDisplay amount={parseFloat(taxable_amount) + (parseFloat(price) * parseFloat(quantity))} />) 
+              </span>
+            </div> */}
+
           </div>
           <div className="wishlist">
             <Button.Ripple color="primary" onClick={() => onClickUpdateProduct(variant?.id)}>

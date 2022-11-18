@@ -104,7 +104,15 @@ const Sidebar = () => {
     isMenuOpen,
     setIsMenuOpen,
     isBuyerLoaded,
-    orderData
+    orderData,
+    getAddressWithStateName,
+    totalTaxAmount,
+    totalIGST,
+    totalCGST,
+    totalSGST,
+    setProducts,
+    calculateGstRate,
+    getValidGstRate
   } = useOrderAddContext();
   const [isOpenBuyerAddresses, setIsOpenBuyerAddresses] = useState(false);
 
@@ -169,6 +177,10 @@ const Sidebar = () => {
         buyer_id: orderInfo.buyer_id,
         address: orderInfo?.address?.id,
         total_extra_discount: getTotalExtraDiscount,
+        taxable_amount:totalTaxAmount,
+        igst:totalIGST,
+        cgst:totalCGST,
+        sgst:totalSGST
       };
 
       let url = "/orders/";
@@ -248,6 +260,23 @@ const Sidebar = () => {
                           buyer_id: data?.id,
                     });
                     setBuyer(data);
+
+                    const getExtraDiscount = (price, discount) => {
+                      return discount.discount_type === "percentage"
+                        ? (parseFloat(price) * parseFloat(discount.discount_value)) / 100
+                        : discount.discount_type === "amount" ? parseFloat(discount.discount_value) : 0;
+                    };
+
+                    setProducts((products) => products.map((product) => {
+                      const discount = data.product_discounts.find((discount) => discount.product.id === product.variant.product.id)
+
+                      const _product = {...product,...calculateGstRate(getValidGstRate(product.variant.product.sub_categories))}
+        
+                      if(discount){
+                          return {..._product,extra_discount:getExtraDiscount(_product.price,discount)}
+                      }
+                      return _product
+                    }))
                   })
                   .catch((error) =>  {
                     toast.error("Failed to select this buyer.")
@@ -345,7 +374,7 @@ const Sidebar = () => {
 
           {orderInfo?.address ? (
             <>
-              <Address {...orderInfo?.address} />
+              <Address {...getAddressWithStateName} />
 
               <SelectBuyerModal
                 isOpen={isOpenBuyerAddresses}
@@ -364,6 +393,12 @@ const Sidebar = () => {
           </div>
         </div>
         <div className="detail">
+          <div className="detail-title">Total Taxable Amount</div>
+          <div className="detail-amt">
+            <PriceDisplay amount={totalTaxAmount ?? 0} />
+          </div>
+        </div>
+        <div className="detail">
           <div className="detail-title">Extra Discount</div>
           <div className="detail-amt discount-amt">
             -<PriceDisplay amount={getTotalExtraDiscount ?? 0} />
@@ -374,7 +409,7 @@ const Sidebar = () => {
           <div className="detail-title detail-total">Total</div>
           <div className="detail-amt total-amt">
             <PriceDisplay
-              amount={(getTotalOfProducts - getTotalExtraDiscount).toFixed(2)}
+              amount={((parseFloat(getTotalOfProducts) + totalTaxAmount) - getTotalExtraDiscount).toFixed(2)}
             />
           </div>
         </div>

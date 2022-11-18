@@ -31,7 +31,7 @@ const GSTCategoryOptionLabel = (props) => {
         <span>{props.name}</span> {" "}
         {
           addedCategoryDefaultGstRate ? (
-            <BsDot size={24} color="lime" />
+            <BsDot size={24} color="#ea5455" />
           ):null
         }
       </div>

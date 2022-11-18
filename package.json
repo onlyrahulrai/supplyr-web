@@ -22,6 +22,7 @@
     "formik": "2.2.9",
     "history": "^4.10.1",
     "html-to-draftjs": "^1.5.0",
+    "india-location-details": "^1.0.0",
     "jquery": "3.6.0",
     "jsonwebtoken": "~8.5.1",
     "leaflet": "^1.7.1",

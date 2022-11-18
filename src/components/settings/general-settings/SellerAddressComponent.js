@@ -17,6 +17,7 @@ import {
 } from "reactstrap";
 import Swal from "../../utils/Swal";
 import Select from "react-select";
+import { fetchPinCodeDetails } from "api/utils";
 
 const initialData = {
   line1: "",
@@ -72,6 +73,16 @@ const SellerAddressComponent = () => {
 
   const onChange = (e) => {
     setData((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
+
+    if(e.target.name === "pin_code" && (e.target.value.trim().length === 6) && data.country === "IN"){
+      fetchPinCodeDetails(e.target.value)
+        .then(data => {
+          const state = states.find(({name,...rest}) => name.toLowerCase() === data.state.toLowerCase())
+
+          setData((prevState) => ({...prevState,city:data.district,state_id:state?.id || ""}))
+        })
+        .catch((err) => {console.log("ERR ", err)})
+    }
   };
 
   const onSubmit = async () => {
