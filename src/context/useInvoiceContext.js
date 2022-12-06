@@ -1,5 +1,6 @@
 import { OrdersApi } from "api/endpoints";
 import React, { useContext, createContext, useState, useCallback, useEffect, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { ToWords } from 'to-words';
 
@@ -10,6 +11,17 @@ export const InvoiceProvider = ({ children }) => {
   const { orderId, invoice_number } = useParams();
   const [loadingError, setLoadingError] = useState(null);
   const [orderData, setOrderData] = useState(null);
+  const { addresses: seller_address} = useSelector(
+    (state) => state.auth.userInfo.profile
+  );
+
+  const isIgstDisplayed = useMemo(() => {
+    return seller_address?.state?.id !== orderData?.address?.state?.id;
+  },[seller_address,orderData])
+
+  const isCgstSgstDisplayed = useMemo(() => {
+    return seller_address?.state?.id === orderData?.address?.state?.id;
+  },[seller_address,orderData])
 
   const fetchOrder = useCallback(async () => {
     await OrdersApi.retrieve(orderId)
@@ -103,7 +115,9 @@ export const InvoiceProvider = ({ children }) => {
     getDate,
     toWords,
     orderData,
-    getTotals
+    getTotals,
+    isIgstDisplayed,
+    isCgstSgstDisplayed
   };
   return (
     <InvoiceContext.Provider value={value}>{children}</InvoiceContext.Provider>

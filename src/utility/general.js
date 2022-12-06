@@ -99,3 +99,4 @@ export const regx = new Object( {
   email: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
   mobileNumber: /^(\+91|0)?\s?\d{10}$/,
 })
+export const getTwoDecimalDigit = (digit) => parseFloat(digit.toFixed(2));

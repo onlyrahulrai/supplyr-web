@@ -6,7 +6,7 @@ import React, { useState } from "react";
 import { Edit3 } from "react-feather";
 import { MdCreate } from "react-icons/md";
 import { Button, Card, CardBody, Spinner } from "reactstrap";
-import { regx } from "utility/general";
+import { getTwoDecimalDigit, regx } from "utility/general";
 import CreateBuyerAddressModal from "./CreateBuyerAddressModal";
 import SelectBuyerModal from "./SelectBuyerModal";
 import { components } from "react-select";
@@ -111,7 +111,6 @@ const Sidebar = () => {
     getValidAddress,
     getValidGstRate,
     seller_address,
-    getTwoDecimalDigit,
   } = useOrderAddContext();
   const [isOpenBuyerAddresses, setIsOpenBuyerAddresses] = useState(false);
   const [isBuyerLoading,setIsBuyerLoading] = useState(false)

@@ -4,11 +4,13 @@ import useInvoiceContext from "context/useInvoiceContext";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Table } from "reactstrap";
+import { getTwoDecimalDigit } from "utility/general";
 
 const InvoiceProductLists = ({ products,...rest }) => {
-  const { default_currency } =
+  const { default_currency,product_price_includes_taxes } =
     useSelector((state) => state.auth.userInfo.profile);
-  const {getTotals,orderData} = useInvoiceContext()
+  const {getTotals,orderData,isIgstDisplayed,
+    isCgstSgstDisplayed} = useInvoiceContext()
 
   return (
     <Table responsive className="table-hover-animation">
@@ -17,16 +19,12 @@ const InvoiceProductLists = ({ products,...rest }) => {
           <th>
             {
               rest.default ? (
-                <small>
                   <strong>
                     S. No.
                   </strong>
-                </small>
               ):(
                 <>
-                  <small>
                     <strong>Marks & & </strong>
-                  </small>
                   <div>
                     <span>
                       <strong>Nos.</strong>
@@ -38,9 +36,7 @@ const InvoiceProductLists = ({ products,...rest }) => {
             
           </th>
           <th>
-            <small>
               <strong>Title</strong>
-            </small>
             <div>
               <span>
                 <strong>(Package Name)</strong>
@@ -49,11 +45,9 @@ const InvoiceProductLists = ({ products,...rest }) => {
           </th>
           <th></th>
           <th>
-            <small>
-              <strong>
-                <Translatable text="quantity" />
-              </strong>
-            </small>
+            <strong>
+              <Translatable text="quantity" />
+            </strong>
             <div>
               <span>
                 <strong></strong>
@@ -61,7 +55,7 @@ const InvoiceProductLists = ({ products,...rest }) => {
             </div>
           </th>
           <th>
-            <small><strong>Unit Price</strong></small>
+            <strong>Unit Price</strong>
             <div>
             <span>
                 <strong>
@@ -75,14 +69,23 @@ const InvoiceProductLists = ({ products,...rest }) => {
           <th>Gross Amount:</th>
           <th>Discount:</th>
           <th>Taxable Amount:</th>
-          <th>IGST:</th>
-          <th>CGST:</th>
-          <th>SGST:</th>
+          {
+            isIgstDisplayed ? (
+              <th>IGST:</th>
+            ):null
+          }
+
+          {
+            isCgstSgstDisplayed ? (
+              <>
+                <th>CGST:</th>
+                <th>SGST:</th>
+              </>
+            ):null
+          }
            
           <th>
-            <small>
-              <strong>Total Amount </strong>
-            </small>
+            <strong>Total Amount</strong>
             <div>
               <span>
                 <strong>
@@ -96,9 +99,6 @@ const InvoiceProductLists = ({ products,...rest }) => {
         </tr>
       </thead>
       <tbody>
-        {
-          console.log(" ----- Products ----- ",products)
-        }
         {products.map((item, index) => (
           <tr key={index}>
             <td>
@@ -148,17 +148,28 @@ const InvoiceProductLists = ({ products,...rest }) => {
             <td>
               <strong><PriceDisplay amount={item.taxable_amount} /></strong>
             </td>
+            {
+              isIgstDisplayed ? (
+                <td>
+                  <strong><PriceDisplay amount={item.igst} /></strong>
+                </td>
+              ):null
+            }
+
+            {
+              isCgstSgstDisplayed ? (
+                <>
+                  <td>
+                    <strong><PriceDisplay amount={item.cgst} /></strong>
+                  </td>
+                  <td>
+                    <strong><PriceDisplay amount={item.sgst} /></strong>
+                  </td>
+                </>
+              ):null
+            }
             <td>
-              <strong><PriceDisplay amount={item.igst} /></strong>
-            </td>
-            <td>
-              <strong><PriceDisplay amount={item.cgst} /></strong>
-            </td>
-            <td>
-              <strong><PriceDisplay amount={item.sgst} /></strong>
-            </td>
-            <td>
-              <strong><PriceDisplay amount={(item.taxable_amount + item.tax_amount)} /></strong>  
+              <strong><PriceDisplay amount={product_price_includes_taxes ?  getTwoDecimalDigit((item.quantity * item.price) - item.extra_discount) : (item.taxable_amount + item.tax_amount)} /></strong>  
             </td>
           </tr>
         ))}
@@ -187,21 +198,32 @@ const InvoiceProductLists = ({ products,...rest }) => {
               <PriceDisplay amount={orderData?.taxable_amount} />
             </strong>
           </td>
-          <td>
-            <strong>
-              <PriceDisplay amount={orderData?.igst} />
-            </strong>
-          </td>
-          <td>
-            <strong>
-              <PriceDisplay amount={orderData?.cgst} />
-            </strong>
-          </td>
-          <td>
-            <strong>
-              <PriceDisplay amount={orderData?.sgst} />
-            </strong>
-          </td>
+          {
+            isIgstDisplayed ? (
+                <td>
+                  <strong>
+                    <PriceDisplay amount={orderData?.igst} />
+                  </strong>
+                </td>
+            ):null
+          }
+
+          {
+            isCgstSgstDisplayed ? (
+              <>
+                <td>
+                  <strong>
+                    <PriceDisplay amount={orderData?.cgst} />
+                  </strong>
+                </td>
+                <td>
+                  <strong>
+                    <PriceDisplay amount={orderData?.sgst} />
+                  </strong>
+                </td>
+              </>
+            ):null
+          }
           <td>
             <strong>
               <PriceDisplay amount={orderData?.total_amount} />

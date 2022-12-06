@@ -11,9 +11,8 @@ import React, {
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Card, CardBody, Spinner } from "reactstrap";
+import { getTwoDecimalDigit } from "utility/general";
 import { history } from "../history";
-
-const getTwoDecimalDigit = (digit) => parseFloat(digit.toFixed(2));
 
 const LoaderComponent = () => (
   <Card>
