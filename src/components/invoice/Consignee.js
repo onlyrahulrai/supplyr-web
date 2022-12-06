@@ -1,7 +1,7 @@
 import React from "react";
 import { capitalizeString } from "utility/general";
 
-const Consignee = ({buyer,address,...rest}) => {
+const Consignee = ({name,address,...rest}) => {
   return (
     <div className="p-1 border-top-0" style={{ minHeight: "180px" }}>
       <small>
@@ -10,7 +10,7 @@ const Consignee = ({buyer,address,...rest}) => {
       <br />
       <div>
         <span>
-          <strong>{capitalizeString(buyer)}</strong>
+          <strong>{capitalizeString(name)}</strong>
         </span>
         <br />
         <span>

@@ -1,11 +1,11 @@
 import useGstConfigSettingContext from "context/useGstConfigSettingContext";
 import React from "react";
 import Radio from "components/@vuexy/radio/RadioVuexy";
-import { Col, FormGroup, Input, Label, Row } from "reactstrap";
+import { Col, FormGroup, Input, Label, Row,CustomInput } from "reactstrap";
 import { FaRegMoneyBillAlt } from "react-icons/fa";
 
 const GSTFormComponent = () => {
-  const { data, onChange } = useGstConfigSettingContext();
+  const { data, onChange,isProductPriceIncludesTaxes,setIsProductPriceIncludesTaxes } = useGstConfigSettingContext();
 
   return (
     <Row>
@@ -29,6 +29,17 @@ const GSTFormComponent = () => {
                 <FaRegMoneyBillAlt />
               </div>
             </FormGroup>
+          </Col>
+          <Col sm="12" className="d-flex align-items-center py-1">
+            <Label for="is_tax_included">Product Price Includes Taxes</Label> &nbsp;&nbsp;&nbsp;
+            <CustomInput
+              type="switch"
+              id="is_tax_included"
+              name="is_tax_included"
+              inline
+              checked={isProductPriceIncludesTaxes}
+              onChange={() => setIsProductPriceIncludesTaxes((prevState) => !prevState)}
+            ></CustomInput>
           </Col>
           <Col sm="12">
             <Label for="default_gst_rate">Default GST Rate</Label>

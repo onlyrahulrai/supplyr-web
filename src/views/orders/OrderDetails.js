@@ -35,6 +35,7 @@ import { connect } from "react-redux";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import {GiReturnArrow} from "react-icons/gi"
+import ShowTaxesComponent from "components/orders/_orderadd/ShowTaxesComponent";
 
 // import { productsList } from "./cartData";
 
@@ -117,8 +118,8 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   const [isFormLoading,setIsFormLoading] = useState(false)
   /* ------ Order Status Variable End ----- */
 
-  const totalTaxableAmount = useMemo(() => {
-    return orderData ? orderData.items.reduce((sum,value) => sum + parseFloat(value?.taxable_amount),0) : 0;
+  const sumOfTotalItemsPrice = useMemo(() => {
+    return orderData ? orderData.items.map(({price,quantity,...rest}) => price * quantity).reduce((sum,value) => (sum + value),0) : 0
   },[orderData])
 
   const fetchOrderData = () => {
@@ -145,21 +146,6 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   useEffect(() => {
     fetchOrderData()
   }, [])
-
-  let totals = orderData?.items.reduce((sum, item) => {
-    const actualPrice = parseFloat(item.actual_price) * item.quantity
-    const salePrice = parseFloat(item.price) * item.quantity
-    const _sum = {
-      actualPrice: sum.actualPrice + actualPrice,
-      salePrice: sum.salePrice + salePrice,
-    }
-    return _sum
-  },
-    {
-      actualPrice: 0,
-      salePrice: 0
-    }
-  );
 
   const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered',"cancelled"] // Skipped 'cancelled' here as it has separate control
 
@@ -347,52 +333,75 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     <div className="checkout-items">
       {orderData?.items.map((item, i) => (
         <Card className="ecommerce-card" key={i}>
-          <div className="card-content" style={{gridTemplateColumns: "0.5fr 3fr 1fr"}}>
+          <div
+            className="card-content"
+            style={{ gridTemplateColumns: "1fr 3fr 1.5fr" }}
+          >
             <div className="item-img text-center">
-              <img src={item.product_variant.featured_image ? getMediaURL(item.product_variant.featured_image) : ProductDummyImage} className="img-fluid img-100" alt="Product" />
+              <img
+                src={item.product_variant.featured_image ? getMediaURL(item.product_variant.featured_image) : ProductDummyImage} 
+                alt="Product"
+                className="img-fluid img-100 rounded"
+              />
             </div>
             <CardBody>
               <div className="item-name">
-                <a href="#" onClick={e => {e.preventDefault(); history.push(`/product/${item.product_variant.product.id}`)}}>
-                <h3>{item.product_variant.product.title}</h3>
-                </a>
+                <h4>{item.product_variant.product.title}</h4>
 
-                <div className="d-flex">
-                  <span className="border-right pr-1"><Translatable text="quantity" />: {item?.quantity}</span>
+                <p
+                  className={`${
+                    item.product_variant.quantity > 0 ? "stock-status-in" : "text-danger"
+                  }`}
+                >
+                  {item.product_variant.quantity > 0 ? "In Stock" : "Out of stock"}
+                </p>
 
-                  {/* {
-                    Math.floor(item?.extra_discount) ? ( */}
-                      <span className="ml-1">Extra Discount: <PriceDisplay amount={item?.extra_discount || 0} /></span>
-                    {/* ):("")
-                  } */}
+                <div className="item-quantity">
+                  <p className="quantity-title">
+                    <Translatable text="quantity" />: {item.quantity}
+                  </p>
                 </div>
+                <div className="item-quantity">
+                  <p className="quantity-title mb-0">
+                    Item Price (Per Unit): <PriceDisplay amount={item.price} />
+                  </p>
+                </div>
+                
+                <div className="delivery-date mt-half w-100 d-flex flex-column" style={{marginTop:"0.5rem"}}>
 
-                {item.product_variant.product.has_multiple_variants &&
-                  <div className="item-company">
-                    <div className="company-name">
-                      <VariantLabel
-                        variantData={item.product_variant}
-                        />
+                  {
+                    item.product_variant.product.has_multiple_variants ? (
+                      <div className="item-company mb-half">
+                        <div className="company-name">
+                          <VariantLabel
+                            variantData={item.product_variant}
+                            />
+                          </div>
                       </div>
-                  </div>
-                }
+                    ):null
+                  }
 
-                {!!item?.item_note &&
-                  <div className="item-note pt-half">
-                    <b style={{color: '#000'}}><i>Item Note:</i> </b> &nbsp; {item.item_note}
+                  <div className="item-note mb-half">
+                    <b style={{ color: "#000" }}>
+                      <i>Item Note:</i>{" "}
+                    </b>{" "}
+                    &nbsp; {item.item_note}
                   </div>
-                }
+                    
+                </div>
               </div>
-
-              
             </CardBody>
-            <div className="item-options m-auto">
+            <div className="item-options text-center">
               <div className="item-wrapper">
-                <div className="item-cost text-center">
-                  <h5 className=""> <strong><PriceDisplay amount={parseFloat(item?.quantity) * parseFloat(item.price)} /></strong> </h5>
-
-                  <h5 className=""><strong style={{color:"#626262"}}>(<PriceDisplay amount={item.price} /> x {`${(item?.quantity > 1 && item?.quantity !== 0)  ? `${item?.quantity} units` : `${item?.quantity} Unit` }`})</strong> </h5>
-
+                <div className="item-cost">
+                  <span className="item-price">
+                    <small style={{fontWeight:"bold"}}>Price: <PriceDisplay amount={item.price * item.quantity} /></small>
+                  </span><br />
+                  <span className="item-price">
+                      <small style={{fontWeight:"bold"}}>
+                        Extra Discount: <PriceDisplay amount={item.extra_discount ? item.extra_discount : 0} />
+                      </small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -440,9 +449,6 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
 
           <hr />
           <h6 className="text-secondary">SHIPPING ADDRESS</h6>
-          {
-            console.log(" ----- ----- ",orderData.address)
-          }
           {
             (orderData.address) ? (
               <Address
@@ -524,26 +530,35 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
             <p>Price Details</p>
           </div>
           <div className="detail">
-            <div className="detail-title">Price</div>
-            <div className="detail-amt"><PriceDisplay amount={totals.salePrice} /></div>
-          </div>
-
-          <div className="detail">
-            <div className="detail-title">Taxable Amount</div>
-            <div className="detail-amt discount-amt">
-              <PriceDisplay amount={totalTaxableAmount ?? 0} />
-            </div>
+            <div className="detail-title">Subtotal</div>
+            <div className="detail-amt"><PriceDisplay amount={sumOfTotalItemsPrice} /></div>
           </div>
 
           <div className="detail">
             <div className="detail-title">Extra Discount</div>
             <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
           </div>
-           
+
+          <div className="detail">
+            <div className="detail-title">Taxable Amount</div>
+            <div className="detail-amt discount-amt">
+              <PriceDisplay amount={orderData?.taxable_amount ?? 0} />
+            </div>
+          </div>
+
+          <div className="detail">
+            <div className="detail-title">
+              Tax Amount&nbsp;<ShowTaxesComponent taxes={{igst:orderData?.igst,cgst:orderData?.cgst,sgst:orderData?.sgst}} />:
+            </div>
+            <div className="detail-amt">
+              <PriceDisplay amount={orderData?.tax_amount} />
+            </div>
+        </div>
+
           <hr />
           <div className="detail">
             <div className="detail-title detail-total">Final Price</div>
-            <div className="detail-amt total-amt"><PriceDisplay amount={((parseFloat(totals.salePrice) + parseFloat(totalTaxableAmount)) - (orderData?.total_extra_discount || 0)).toFixed(2)} /></div>
+            <div className="detail-amt total-amt"><PriceDisplay amount={orderData?.total_amount} /></div>
           </div>
 
 

@@ -30,11 +30,11 @@ export default function VariantLabel({variantData, colorTheme = 'light'}) {
     )
     
     return (
-      <div className="pt-half">
+      <div>
         {labelData.map((data, index) => {
           return (
             <div key={index} className="d-inline">
-              <span style={{fontWeight: 'bold', color: colorScheme.optionName}}>
+              <span style={{fontWeight: 'bold'}} className="text-dark">
                 {capitalizeString(data.name)}
                 {': '}
               </span>

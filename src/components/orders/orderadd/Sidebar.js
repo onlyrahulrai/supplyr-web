@@ -47,6 +47,9 @@ const NoOptionsMessage = (props) => {
           await apiClient.post('/profile/sellers/',requestData)
           .then((response) => {
             const data = response.data;
+
+            console.log(" ---- Data ---- ",data)
+
             onChangeOrderInfo({
               address: data?.address[0],
               buyer_id: data?.id,
@@ -255,6 +258,9 @@ const Sidebar = () => {
                   .then((response) => {
                     setIsMenuOpen(false)
                     const data = response.data;
+
+                    console.log(" ---- Data ---- ",data)
+
                     onChangeOrderInfo({
                           address: data?.address[0],
                           buyer_id: data?.id,
@@ -270,7 +276,7 @@ const Sidebar = () => {
                     setProducts((products) => products.map((product) => {
                       const discount = data.product_discounts.find((discount) => discount.product.id === product.variant.product.id)
 
-                      const _product = {...product,...calculateGstRate(getValidGstRate(product.variant.product.sub_categories))}
+                      const _product = {...product,...calculateGstRate(getValidGstRate(product.price,product.variant.product.sub_categories))}
         
                       if(discount){
                           return {..._product,extra_discount:getExtraDiscount(_product.price,discount)}

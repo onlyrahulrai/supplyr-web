@@ -84,9 +84,14 @@ export const GstConfigSettingProvider = ({ children }) => {
   const [isOverideGSTEnabled, setIsOverideGSTEnabled] = useState(
     state.override_categories.length > 0 || false
   );
+  const [isProductPriceIncludesTaxes, setIsProductPriceIncludesTaxes] =
+    useState(profile.product_price_includes_taxes);
 
   useEffect(() => {
     if (override_categories.length > 0) {
+
+      console.log(" ----- Override categories ----- ",override_categories)
+
       dispatch({
         type: "UPDATE_OVERRIDE_CATEGORY",
         payload: override_categories,
@@ -125,10 +130,11 @@ export const GstConfigSettingProvider = ({ children }) => {
           category: override_category.category.id,
         })
       ),
+      product_price_includes_taxes: isProductPriceIncludesTaxes,
     };
 
     await apiClient
-      .post("/profile/gst-config-setting/",requestedData)
+      .post("/profile/gst-config-setting/", requestedData)
       .then((response) => {
         Swal.fire({
           icon: "success",
@@ -157,6 +163,8 @@ export const GstConfigSettingProvider = ({ children }) => {
     onSave,
     state,
     dispatch,
+    isProductPriceIncludesTaxes,
+    setIsProductPriceIncludesTaxes,
   };
   return (
     <GstConfigSettingContext.Provider value={value}>

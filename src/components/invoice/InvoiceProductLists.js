@@ -1,5 +1,6 @@
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
+import useInvoiceContext from "context/useInvoiceContext";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Table } from "reactstrap";
@@ -7,6 +8,7 @@ import { Table } from "reactstrap";
 const InvoiceProductLists = ({ products,...rest }) => {
   const { default_currency } =
     useSelector((state) => state.auth.userInfo.profile);
+  const {getTotals,orderData} = useInvoiceContext()
 
   return (
     <Table responsive className="table-hover-animation">
@@ -59,11 +61,9 @@ const InvoiceProductLists = ({ products,...rest }) => {
             </div>
           </th>
           <th>
-            <small>
-              <strong>Rate/</strong>
-            </small>
+            <small><strong>Unit Price</strong></small>
             <div>
-              <span>
+            <span>
                 <strong>
                   (<Translatable
                     prefix={default_currency}
@@ -72,9 +72,16 @@ const InvoiceProductLists = ({ products,...rest }) => {
               </span>
             </div>
           </th>
+          <th>Gross Amount:</th>
+          <th>Discount:</th>
+          <th>Taxable Amount:</th>
+          <th>IGST:</th>
+          <th>CGST:</th>
+          <th>SGST:</th>
+           
           <th>
             <small>
-              <strong>Amount </strong>
+              <strong>Total Amount </strong>
             </small>
             <div>
               <span>
@@ -89,6 +96,9 @@ const InvoiceProductLists = ({ products,...rest }) => {
         </tr>
       </thead>
       <tbody>
+        {
+          console.log(" ----- Products ----- ",products)
+        }
         {products.map((item, index) => (
           <tr key={index}>
             <td>
@@ -132,8 +142,72 @@ const InvoiceProductLists = ({ products,...rest }) => {
                 <PriceDisplay amount={item.quantity * item.price} />
               </strong>
             </td>
+            <td>
+              <strong><PriceDisplay amount={item.extra_discount} /></strong>
+            </td>
+            <td>
+              <strong><PriceDisplay amount={item.taxable_amount} /></strong>
+            </td>
+            <td>
+              <strong><PriceDisplay amount={item.igst} /></strong>
+            </td>
+            <td>
+              <strong><PriceDisplay amount={item.cgst} /></strong>
+            </td>
+            <td>
+              <strong><PriceDisplay amount={item.sgst} /></strong>
+            </td>
+            <td>
+              <strong><PriceDisplay amount={(item.taxable_amount + item.tax_amount)} /></strong>  
+            </td>
           </tr>
         ))}
+        <tr className="border-top">
+          <td colSpan="3"></td>
+          <td>
+            <strong> {getTotals?.quantity}  </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={getTotals?.unit_price} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={getTotals?.gross_amount} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.total_extra_discount} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.taxable_amount} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.igst} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.cgst} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.sgst} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.total_amount} />
+            </strong>
+          </td>
+        </tr>
       </tbody>
     </Table>
   );

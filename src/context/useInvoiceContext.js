@@ -1,5 +1,5 @@
 import { OrdersApi } from "api/endpoints";
-import React, { useContext, createContext, useState, useCallback, useEffect } from "react";
+import React, { useContext, createContext, useState, useCallback, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ToWords } from 'to-words';
 
@@ -30,23 +30,23 @@ export const InvoiceProvider = ({ children }) => {
     }
   }, [orderId, fetchOrder]);
 
-  const totals = orderData?.items.reduce(
-    (sum, item) => {
-      const actualPrice = parseFloat(item.price) * item.quantity;
-      const salePrice = parseFloat(item.actual_price) * item.quantity;
+  // const totals = orderData?.items.reduce(
+  //   (sum, item) => {
+  //     const actualPrice = parseFloat(item.price) * item.quantity;
+  //     const salePrice = parseFloat(item.actual_price) * item.quantity;
 
-      const _sum = {
-        actualPrice: sum.actualPrice + actualPrice,
-        salePrice: sum.salePrice + salePrice,
-      };
+  //     const _sum = {
+  //       actualPrice: sum.actualPrice + actualPrice,
+  //       salePrice: sum.salePrice + salePrice,
+  //     };
 
-      return _sum;
-    },
-    {
-      actualPrice: 0,
-      salePrice: 0,
-    }
-  );
+  //     return _sum;
+  //   },
+  //   {
+  //     actualPrice: 0,
+  //     salePrice: 0,
+  //   }
+  // );
 
   const toWords = new ToWords();
 
@@ -64,16 +64,46 @@ export const InvoiceProvider = ({ children }) => {
     {}
   ); // We Are generate an object by using a list of objects coming from the order details API. to use as custom invoice variables.
 
+  const getTotals = useMemo(() => {
+    return orderData?.items
+      ?.map(
+        ({
+          price,
+          product_variant,
+          quantity,
+          ...rest
+        }) => ({
+          unit_price: product_variant.price,
+          gross_amount: price * quantity,
+          quantity
+        })
+      )
+      ?.reduce(
+        (sum, object) => {
+          for (let [key, value] of Object.entries(object)) {
+            sum[key] += value;
+          }
+  
+          return sum;
+        },
+        {
+          unit_price: 0,
+          gross_amount: 0,
+          quantity:0
+        }
+      );
+  }, [orderData]);
+  
   const value = {
     orderId,
     invoice_number,
     loading,
     loadingError,
-    totals,
     variables,
     getDate,
     toWords,
-    orderData
+    orderData,
+    getTotals
   };
   return (
     <InvoiceContext.Provider value={value}>{children}</InvoiceContext.Provider>

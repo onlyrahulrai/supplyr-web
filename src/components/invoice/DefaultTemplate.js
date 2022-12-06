@@ -9,7 +9,7 @@ import InvoiceProductLists from "./InvoiceProductLists";
 
 const DefaultTemplate = () => {
   const { orderId, invoiceNumber:invoice_number } = useParams();
-  const { orderData, totals, toWords} = useInvoiceContext();
+  const { orderData, getTotals, toWords} = useInvoiceContext();
 
   const getDate = (date) => {
     let _date = new Date(date);
@@ -62,7 +62,7 @@ const DefaultTemplate = () => {
         <Col>
           <Consignee 
             default
-            buyer={orderData?.buyer_name ? orderData?.buyer_name : orderData?.buyer_business_name} 
+            name={orderData?.buyer_name ? orderData?.buyer_name : orderData?.buyer_business_name} 
             address={orderData?.address} 
           />
         </Col>
@@ -79,19 +79,20 @@ const DefaultTemplate = () => {
             <strong>Amount Chargeable (In Words)</strong>
           </small>
           <br />
-          <strong>- {toWords.convert(totals?.actualPrice ?? "0")}</strong>
+          <strong>- {toWords.convert(orderData?.total_amount ?? "0")}</strong>
         </Col>
-        <Col sm="4" className="border border-left-0">
-          <small>
-            <strong>Total:</strong>
-          </small>
-          <br />
-          <span>
-            <strong>
-              {"  "}
-              <PriceDisplay amount={totals?.actualPrice} />
-            </strong>
-          </span>
+        <Col sm="4" className="border border-left-0 py-1">
+          <div className="text-right">
+            <small>
+              <strong>Final Amount:</strong>
+            </small>&nbsp;
+            <span>
+              <strong>
+                {"  "}
+                <PriceDisplay amount={orderData?.total_amount} />
+              </strong>
+            </span>
+          </div>
         </Col>
       </Row>
       <Row className="border-top-0 border ml-0 mr-0">
