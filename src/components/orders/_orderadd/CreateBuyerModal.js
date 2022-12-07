@@ -58,7 +58,7 @@ const CreateBuyerModal = ({ isOpen, onToggleModal,searchInput }) => {
         address_id:address?.id
       }
 
-      dispatchCart({type:"ON_UPDATE_CART",payload:extraOptions})
+      dispatchCart({type:"ON_CREATE_BUYER",payload:extraOptions})
 
       setData(defaultOptions)
       onToggleModal()

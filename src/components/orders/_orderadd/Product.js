@@ -5,21 +5,18 @@ import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import React, { useEffect, useState } from "react";
 import { Clipboard, Check, Edit3, X } from "react-feather";
-import { useSelector } from "react-redux";
 import {
   Button,
   Card,
   CardBody,
-  Col,
   FormGroup,
   Input,
   Label,
-  Row,
 } from "reactstrap";
 import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
 import useOrderAddContext from "../../../context/useOrderAddContext2.0";
 import EditExtraDiscountComponent from "./EditExtraDiscountComponent";
-import ShowTaxesComponent from "./ShowTaxesComponent";
+
 
 const Product = (props) => {
   const { cart, dispatchCart, dispatchCartItem,getValidGstRate } = useOrderAddContext();
@@ -29,21 +26,15 @@ const Product = (props) => {
     variant,
     price,
     quantity,
-    taxable_amount,
     extra_discount,
     item_note,
-    igst,
-    sgst,
-    cgst
   } = props.product;
 
   const [extraDiscount, setExtraDiscount] = useState(0);
   const [itemNote, setItemNote] = useState(item_note);
 
   useEffect(() => {
-    if(extra_discount){
       setExtraDiscount(extra_discount)
-    }
   },[props])
 
   const onClickUpdateProduct = async (id) => {
@@ -69,7 +60,7 @@ const Product = (props) => {
   const onUpdateExtraDiscount = () => {
     const items = cart.items.map((item, index) => {
       if (index === props.position) {
-        const _item = { ...item, extra_discount: extraDiscount}
+        const _item = { ...item, extra_discount: (extraDiscount || 0) }
 
         return {..._item,...getValidGstRate(_item)}
       }
@@ -210,7 +201,7 @@ const Product = (props) => {
                 <small style={{fontWeight:"bold"}}>Price: <PriceDisplay amount={price * quantity} /></small>
               </span><br />
               <span className="item-price">
-                  <small style={{fontWeight:"bold"}}>Extra Discount: <PriceDisplay amount={extra_discount ? extra_discount : 0} /></small>{!fieldName || fieldName !== "extra_discount" ? (
+                  <small style={{fontWeight:"bold"}}>Extra Discount: <PriceDisplay amount={extraDiscount ? extraDiscount : 0} /></small>{!fieldName || fieldName !== "extra_discount" ? (
                     <Edit3
                       size={24}
                       onClick={() => setFieldName("extra_discount")}

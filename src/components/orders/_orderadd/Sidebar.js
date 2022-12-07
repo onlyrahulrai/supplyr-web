@@ -8,7 +8,6 @@ import { MdCreate } from "react-icons/md";
 import { Button, Card, CardBody, Spinner } from "reactstrap";
 import { getTwoDecimalDigit, regx } from "utility/general";
 import CreateBuyerAddressModal from "./CreateBuyerAddressModal";
-import SelectBuyerModal from "./SelectBuyerModal";
 import { components } from "react-select";
 import { toast } from "react-toastify";
 import Address from "components/inventory/Address";
@@ -16,6 +15,7 @@ import CreateBuyerModal from "./CreateBuyerModal";
 import Swal from "components/utils/Swal";
 import { history } from "../../../history";
 import ShowTaxesComponent from "./ShowTaxesComponent";
+import SelectBuyerAddressModal from "./SelectBuyerAddressModal";
 
 
 export const customStyles = {
@@ -152,7 +152,7 @@ const Sidebar = () => {
 
     const {id,items,isFormOpen,buyer,address_id,price,tax_amount,...rest} = cart;
     
-    const variants = items.map(({product,set_focus,variant,...rest}) => ({...rest,variant_id:variant.id})) 
+    const variants = items.map(({product,set_focus,variant,tax_amount,...rest}) => ({...rest,variant_id:variant.id})) 
     
     if (isValid) {
 
@@ -198,9 +198,9 @@ const Sidebar = () => {
             <div className="apply-coupon cursor-auto">
               <p className="text-right text-dark">From</p>
               <div className="text-right text-secondary">
-                <span>Rahul Rai</span>
+                <span>{`${cart?.buyer?.name ? `(${cart?.buyer.name})` : ""}`}</span>
               </div>
-              <h4 className="text-light">Rahul Grocery Store</h4>
+              <h4 className="text-light">{cart?.buyer?.business_name}</h4>
             </div>
           ) : null}
         </div>
@@ -238,7 +238,7 @@ const Sidebar = () => {
                   .then((response) => {
                     const data = response.data;
                     
-                    const address = data.address.shift()
+                    const address = data.address[0]
 
                       dispatchCart({
                         type: "ON_SELECT_BUYER",
@@ -261,8 +261,6 @@ const Sidebar = () => {
                         const isSellerAndBuyerFromSameOrigin = seller_address.state.id === address?.state?.id;
 
                         let extra_discount = discount ? getExtraDiscount(item.price,discount) * item.quantity : 0;
-
-                        console.log(" *----& Get Valid Gst Rate  &----* ",getValidGstRate(item,isSellerAndBuyerFromSameOrigin))
 
                         return {
                           ...item,
@@ -371,7 +369,7 @@ const Sidebar = () => {
             <div className="mt-2">
               <div className="d-flex justify-content-between align-items-center">
                 <h6 className="text-secondary">SHIPPING ADDRESS</h6>
-                {cart?.address ? (
+                {(cart?.address || cart?.buyer?.address.length > 0) ? (
                   <span>
                     <Edit3
                       size="20"
@@ -432,14 +430,15 @@ const Sidebar = () => {
                 {...getValidAddress(cart.address)}
               />
 
-              <SelectBuyerModal
-                isOpen={isOpenBuyerAddresses}
-                onToggleModal={() =>
-                  setIsOpenBuyerAddresses(!isOpenBuyerAddresses)
-                }
-              />
             </>
           ) : null}
+
+            <SelectBuyerAddressModal
+              isOpen={isOpenBuyerAddresses}
+              onToggleModal={() =>
+                  setIsOpenBuyerAddresses(!isOpenBuyerAddresses)
+              }
+            />
         </div>
         <hr />
         <div className="detail">

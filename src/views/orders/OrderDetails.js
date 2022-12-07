@@ -438,8 +438,11 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
             <h6>{orderData.order_date}</h6>
           </Col>
           <Col sm="auto" className="ml-auto text-right">
-            <h6 className='text-secondary'>From</h6>
-            <h3>{orderData.buyer_name}</h3>
+            <p className='text-secondary'>From</p>
+            <div className="text-right text-secondary">
+              <span>{`${orderData?.buyer?.name ? `(${orderData?.buyer.name})` : ""}`}</span>
+              <strong className="text-light">{orderData?.buyer?.business_name}</strong>
+            </div>
           </Col>
         </Row>
 

@@ -40,7 +40,7 @@ const Exporter = (props) => {
             </span>
           </>
         ) : (
-          <Address {...{...address,state:address.state.name}} bold />
+          <Address {...{...address,state:address?.state?.name}} bold />
         )}
 
         <br />

@@ -167,6 +167,7 @@ const cartReducer = (state, action) => {
         ...action.payload,
       };
     case "ON_LOAD_ORDER_DATA":
+    case "ON_CREATE_BUYER":
       return {
         ...state,
         ...action.payload,
@@ -313,7 +314,7 @@ export const OrderAddProvider = ({ children }) => {
       : (price * percentage) / 100;
 
   const getValidGstRate = (product, address = null) => {
-    const sellerAndBuyerFromTheSameState = address
+    const sellerAndBuyerFromTheSameState = (address !== null)
       ? address
       : isSellerAndBuyerFromTheSameState;
 
@@ -337,7 +338,6 @@ export const OrderAddProvider = ({ children }) => {
 
     let tax_amount = getTwoDecimalDigit(getGstRate(price, gstRate));
 
-    console.log(" ---- GST Rate ---- ",tax_amount)
 
     let taxable_amount = productPriceIncludesTaxes ? getTwoDecimalDigit(price - tax_amount) : getTwoDecimalDigit(price)
 

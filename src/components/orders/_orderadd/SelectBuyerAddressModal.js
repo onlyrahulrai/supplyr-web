@@ -11,13 +11,38 @@ import {
 import useOrderAddContext from "context/useOrderAddContext2.0";
 
 const Address = (props) => {
-  const {cart,dispatchCart,getValidAddress} = useOrderAddContext();
+  const {cart,dispatchCart,getValidAddress,seller_address,getExtraDiscount,getValidGstRate} = useOrderAddContext();
   const { id, name, line1, line2, pin, city, state} = getValidAddress(props.address);
 
-  console.log(" ----- Address ------ ",props.address)
+  const onUpdateAddress = () => {
+
+    const items = cart.items.map((item) => {
+      const discount = cart?.buyer?.product_discounts.find(
+        (discount) =>
+          discount.product.variants.includes(item.variant.id)
+      );
+
+      const isSellerAndBuyerFromSameOrigin = seller_address.state.id === props.address?.state?.id;
+
+      console.log(" ----- Is Seller And Buyer From Same Origin ----- ",isSellerAndBuyerFromSameOrigin)
+
+      let extra_discount = discount ? getExtraDiscount(item.price,discount) * item.quantity : 0;
+
+      return {
+        ...item,
+        extra_discount,
+        ...getValidGstRate({...item,extra_discount},isSellerAndBuyerFromSameOrigin)
+      }
+    });
+
+    
+
+    dispatchCart({type:"ON_UPDATE_ADDRESS",payload:{address:props.address,address_id:id}})
+    dispatchCart({type:"ON_UPDATE_CART_ITEMS",payload:items})
+  }
 
   return (
-    <Col md="6" onClick={() => dispatchCart({type:"ON_UPDATE_ADDRESS",payload:{address:props.address,address_id:id}})} className={`cursor-pointer`}>
+    <Col md="6" onClick={onUpdateAddress} className={`cursor-pointer`}>
       <Card className={`${cart.address_id === id && "bg-danger text-white"}`}>
         <CardBody>
           <div>
@@ -51,8 +76,9 @@ const Address = (props) => {
   );
 };
 
-const SelectBuyerModal = ({ isOpen, onToggleModal }) => {
+const SelectBuyerAddressModal = ({ isOpen, onToggleModal }) => {
   const {cart,getValidAddress} = useOrderAddContext()
+
   return (
     <Modal
       isOpen={isOpen}
@@ -81,4 +107,4 @@ const SelectBuyerModal = ({ isOpen, onToggleModal }) => {
   );
 };
 
-export default SelectBuyerModal;
+export default SelectBuyerAddressModal;
