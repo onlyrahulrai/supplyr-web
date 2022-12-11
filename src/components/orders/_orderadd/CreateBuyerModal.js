@@ -24,8 +24,7 @@ const defaultOptions = {
 const CreateBuyerModal = ({ isOpen, onToggleModal,searchInput }) => {  
   const [data, setData] = useState(defaultOptions);
   const [loading,setLoading] = useState(false);
-  const {cart,dispatchCart} = useOrderAddContext()
-
+  const {dispatchCart,setIsOpenBuyerAddressCreateModal} = useOrderAddContext()
   useEffect(() => {
     if(searchInput){
       const object = new Object();
@@ -62,6 +61,7 @@ const CreateBuyerModal = ({ isOpen, onToggleModal,searchInput }) => {
 
       setData(defaultOptions)
       onToggleModal()
+      setIsOpenBuyerAddressCreateModal((prevState) => !prevState)
       setLoading(false);
       toast.success("Buyer has created successfully.")
     })
