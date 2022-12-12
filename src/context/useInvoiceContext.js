@@ -81,11 +81,9 @@ export const InvoiceProvider = ({ children }) => {
       ?.map(
         ({
           price,
-          product_variant,
           quantity,
           ...rest
         }) => ({
-          unit_price: product_variant.price,
           gross_amount: price * quantity,
           quantity
         })
@@ -99,7 +97,6 @@ export const InvoiceProvider = ({ children }) => {
           return sum;
         },
         {
-          unit_price: 0,
           gross_amount: 0,
           quantity:0
         }

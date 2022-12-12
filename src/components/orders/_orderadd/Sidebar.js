@@ -233,6 +233,9 @@ const Sidebar = () => {
                 value={cart.buyer}
                 onChange={async (data) => {
                   setIsBuyerLoading(true)
+
+                  console.log(" ----- Data ----- ",data)
+
                   await apiClient
                   .get(`/inventory/seller-buyers/${data?.id}`)
                   .then((response) => {
@@ -244,7 +247,7 @@ const Sidebar = () => {
                         type: "ON_SELECT_BUYER",
                         payload: {
                           buyer: data,
-                          buyer_id: data.id,
+                          buyer_id: data?.id,
                           address: address,
                           address_id:address?.id
                         },
@@ -255,10 +258,10 @@ const Sidebar = () => {
                       const items = cart.items.map((item) => {
                         const discount = data.product_discounts.find(
                           (discount) =>
-                            discount.product.variants.includes(item.variant.id)
+                            discount.product.variants.includes(item?.variant?.id)
                         );
 
-                        const isSellerAndBuyerFromSameOrigin = seller_address.state.id === address?.state?.id;
+                        const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
 
                         let extra_discount = discount ? getExtraDiscount(item.price,discount) * item.quantity : 0;
 

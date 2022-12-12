@@ -173,15 +173,12 @@ const InvoiceProductLists = ({ products,...rest }) => {
             </td>
           </tr>
         ))}
-        <tr className="border-top">
+        <tr style={{borderTop:"6px solid #ededed "}}>
           <td colSpan="3"></td>
           <td>
-            <strong> {getTotals?.quantity}  </strong>
+            <strong></strong>
           </td>
           <td>
-            <strong>
-              <PriceDisplay amount={getTotals?.unit_price} />
-            </strong>
           </td>
           <td>
             <strong>

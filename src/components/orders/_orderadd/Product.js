@@ -126,14 +126,13 @@ const Product = (props) => {
                 <>
                   {!itemNote ? (
                     <div
-                      className="d-flex text-primary align-items-center"
+                      className="d-flex text-primary align-items-center cursor-pointer"
                       style={{ width: "60%" }}
+                      onClick={() => setFieldName("item_note")}
                     >
                       <span>
                         <Clipboard
                           size={24}
-                          onClick={() => setFieldName("item_note")}
-                          className="cursor-pointer"
                         />
                         &nbsp;
                         <strong>ADD AN NOTE ITEM</strong>
