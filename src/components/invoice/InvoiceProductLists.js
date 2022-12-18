@@ -102,11 +102,10 @@ const InvoiceProductLists = ({ products,...rest }) => {
         {products.map((item, index) => (
           <tr key={index}>
             <td>
-              <strong>{index + 1}</strong>
+              {index + 1}
             </td>
             <td colSpan="2">
               <div className="d-flex align-items-center">
-                <strong>
                   {item?.product_variant?.product?.title}
                   {" - "}
                   {
@@ -126,32 +125,27 @@ const InvoiceProductLists = ({ products,...rest }) => {
                       </>
                     ) : null
                   }
-                </strong>
               </div>
             </td>
             <td>
-              <strong>{item.quantity}</strong>
+              {item.quantity}
             </td>
             <td>
-              <strong>
-                <PriceDisplay amount={item.price} />
-              </strong>
+              <PriceDisplay amount={item.price} />
             </td>
             <td>
-              <strong>
-                <PriceDisplay amount={item.quantity * item.price} />
-              </strong>
+              <PriceDisplay amount={item.quantity * item.price} />
             </td>
             <td>
-              <strong><PriceDisplay amount={item.extra_discount} /></strong>
+              <PriceDisplay amount={item.extra_discount} />
             </td>
             <td>
-              <strong><PriceDisplay amount={item.taxable_amount} /></strong>
+              <PriceDisplay amount={item.taxable_amount} />
             </td>
             {
               isIgstDisplayed ? (
                 <td>
-                  <strong><PriceDisplay amount={item.igst} /></strong>
+                  <PriceDisplay amount={item.igst} />
                 </td>
               ):null
             }
@@ -160,23 +154,24 @@ const InvoiceProductLists = ({ products,...rest }) => {
               isCgstSgstDisplayed ? (
                 <>
                   <td>
-                    <strong><PriceDisplay amount={item.cgst} /></strong>
+                    <PriceDisplay amount={item.cgst} />
                   </td>
                   <td>
-                    <strong><PriceDisplay amount={item.sgst} /></strong>
+                    <PriceDisplay amount={item.sgst} />
                   </td>
                 </>
               ):null
             }
             <td>
-              <strong><PriceDisplay amount={product_price_includes_taxes ?  getTwoDecimalDigit((item.quantity * item.price) - item.extra_discount) : (item.taxable_amount + item.tax_amount)} /></strong>  
+              <PriceDisplay amount={product_price_includes_taxes ?  getTwoDecimalDigit((item.quantity * item.price) - item.extra_discount) : (item.taxable_amount + item.tax_amount)} />
             </td>
           </tr>
         ))}
         <tr style={{borderTop:"6px solid #ededed "}}>
-          <td colSpan="3"></td>
+          <td colSpan="3">
+            <strong>Total</strong>
+          </td>
           <td>
-            <strong></strong>
           </td>
           <td>
           </td>
