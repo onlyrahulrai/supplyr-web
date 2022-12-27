@@ -14,12 +14,20 @@ const DescriptionComponent = (props) => {
         description = <p>Payment added. Payment ID: {ledger.payment.id}</p>
     }
 
-    if(ledger.transaction_type === "order_cancelled"){
-        description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> cancelled by {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
+    else if(ledger.transaction_type === "order_cancelled"){
+        description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> <strong>cancelled by</strong> {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
     }
 
-    if(ledger.transaction_type === "order_created"){
-        description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> created by {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
+    else if(ledger.transaction_type === "order_created"){
+        description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> <strong>created by</strong> {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
+    }
+
+    else if(ledger.transaction_type === "order_paid"){
+        description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> <strong>marked as paid</strong> by {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
+    }
+
+    else{
+        description = "Ledger created successfully"
     }
 
   return description;

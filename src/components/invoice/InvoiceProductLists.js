@@ -9,8 +9,7 @@ import { getTwoDecimalDigit } from "utility/general";
 const InvoiceProductLists = ({ products,...rest }) => {
   const { default_currency,product_price_includes_taxes } =
     useSelector((state) => state.auth.userInfo.profile);
-  const {getTotals,orderData,isIgstDisplayed,
-    isCgstSgstDisplayed} = useInvoiceContext()
+  const {getTotals,orderData} = useInvoiceContext()
 
   return (
     <Table responsive className="table-hover-animation">
@@ -54,7 +53,7 @@ const InvoiceProductLists = ({ products,...rest }) => {
               </span>
             </div>
           </th>
-          <th>
+          {/* <th>
             <strong>Unit Price</strong>
             <div>
             <span>
@@ -65,24 +64,9 @@ const InvoiceProductLists = ({ products,...rest }) => {
                 </strong>
               </span>
             </div>
-          </th>
-          <th>Gross Amount:</th>
-          <th>Discount:</th>
-          <th>Taxable Amount:</th>
-          {
-            isIgstDisplayed ? (
-              <th>IGST:</th>
-            ):null
-          }
-
-          {
-            isCgstSgstDisplayed ? (
-              <>
-                <th>CGST:</th>
-                <th>SGST:</th>
-              </>
-            ):null
-          }
+          </th> */}
+          <th>Amount:</th>
+          <th>Tax:</th>
            
           <th>
             <strong>Total Amount</strong>
@@ -131,44 +115,19 @@ const InvoiceProductLists = ({ products,...rest }) => {
               {item.quantity}
             </td>
             <td>
-              <PriceDisplay amount={item.price} />
-            </td>
-            <td>
-              <PriceDisplay amount={item.quantity * item.price} />
-            </td>
-            <td>
-              <PriceDisplay amount={item.extra_discount} />
-            </td>
-            <td>
               <PriceDisplay amount={item.taxable_amount} />
             </td>
-            {
-              isIgstDisplayed ? (
-                <td>
-                  <PriceDisplay amount={item.igst} />
-                </td>
-              ):null
-            }
-
-            {
-              isCgstSgstDisplayed ? (
-                <>
-                  <td>
-                    <PriceDisplay amount={item.cgst} />
-                  </td>
-                  <td>
-                    <PriceDisplay amount={item.sgst} />
-                  </td>
-                </>
-              ):null
-            }
+            <td>
+              <PriceDisplay amount={item.igst + item.cgst + item.sgst} />
+            </td>
+              
             <td>
               <PriceDisplay amount={product_price_includes_taxes ?  getTwoDecimalDigit((item.quantity * item.price) - item.extra_discount) : (item.taxable_amount + item.tax_amount)} />
             </td>
           </tr>
         ))}
         <tr style={{borderTop:"6px solid #ededed "}}>
-          <td colSpan="3">
+          <td colSpan="2">
             <strong>Total</strong>
           </td>
           <td>
@@ -177,45 +136,14 @@ const InvoiceProductLists = ({ products,...rest }) => {
           </td>
           <td>
             <strong>
-              <PriceDisplay amount={getTotals?.gross_amount} />
-            </strong>
-          </td>
-          <td>
-            <strong>
-              <PriceDisplay amount={orderData?.total_extra_discount} />
-            </strong>
-          </td>
-          <td>
-            <strong>
               <PriceDisplay amount={orderData?.taxable_amount} />
             </strong>
           </td>
-          {
-            isIgstDisplayed ? (
-                <td>
-                  <strong>
-                    <PriceDisplay amount={orderData?.igst} />
-                  </strong>
-                </td>
-            ):null
-          }
-
-          {
-            isCgstSgstDisplayed ? (
-              <>
-                <td>
-                  <strong>
-                    <PriceDisplay amount={orderData?.cgst} />
-                  </strong>
-                </td>
-                <td>
-                  <strong>
-                    <PriceDisplay amount={orderData?.sgst} />
-                  </strong>
-                </td>
-              </>
-            ):null
-          }
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.igst + orderData?.cgst + orderData?.sgst} />
+            </strong>
+          </td>
           <td>
             <strong>
               <PriceDisplay amount={orderData?.total_amount} />

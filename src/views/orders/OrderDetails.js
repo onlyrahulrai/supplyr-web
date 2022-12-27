@@ -14,14 +14,13 @@ import {
   ModalHeader,
   Row
 } from "reactstrap";
-
 import { history } from "../../history"
 import {OrdersApi} from "api/endpoints"
 import {getMediaURL} from "api/utils"
 import VariantLabel from "components/inventory/VariantLabel"
 import Address from "components/inventory/Address"
 import ProductDummyImage from "assets/img/svg/cart.svg"
-import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsReceipt, BsPencil} from "react-icons/bs"
+import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsReceipt, BsPencil, BsCheck2Circle} from "react-icons/bs"
 import {AiOutlineEdit} from "react-icons/ai"
 import {RiTruckLine} from "react-icons/ri"
 import Swal from "utility/sweetalert"
@@ -36,6 +35,10 @@ import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import {GiReturnArrow} from "react-icons/gi"
 import ShowTaxesComponent from "components/orders/_orderadd/ShowTaxesComponent";
+import Checkbox from "../../components/@vuexy/checkbox/CheckboxesVuexy";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 // import { productsList } from "./cartData";
 
@@ -111,6 +114,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   const [orderData, setOrderData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingError, setLoadingError] = useState(null)
+  const [isMarkedPaid,setIsMarkedPaid] = useState(false);
 
   /* ------ Order Status Variable Start ----- */
   const [orderStatusVariableData,setOrderStatusVariableData] = useState(null);
@@ -129,7 +133,8 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
       // replace the order state object to order state name
       const state_name = response.data?.address?.state.name;
       const _address = response.data.address ? {...response.data.address,state:state_name} : null;
-      const data = {...response.data,address:_address};
+      
+      setIsMarkedPaid(response.data.is_paid);
 
 
       setOrderData(response.data)
@@ -564,14 +569,49 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
             <div className="detail-amt total-amt"><PriceDisplay amount={orderData?.total_amount} /></div>
           </div>
 
+            <hr />
 
-          {
-            <>
-              {
-                orderStatusChangeButtons?.length > 0 ? (
-                  <hr />
-                ):null
-              }
+            <div className="detail">
+              <div className="detail-title detail-total"></div>
+              
+              <div className="detail-amt total-amt mark-as-paid">
+                <Checkbox
+                  color="success"
+                  icon={<BsCheck2Circle color="white" size={16} />}
+                  checked={isMarkedPaid}
+                  disabled={isMarkedPaid}
+                  onChange={(e) => {
+                    Swal.fire({
+                      title:"Are you sure?",
+                      text:`Do you want to mark this order as paid.`,
+                      icon:"warning",
+                      showCancelButton:true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: `Mark as paid`
+                    }).then(async (result) => {
+                      if(result.isConfirmed){
+                        await apiClient.put(`orders/${orderId}/mark-as-paid/`,{
+                          is_paid:true
+                        })
+                        .then((response) => {
+                          setIsMarkedPaid(true);
+                          toast.success("Order is marked as paid")
+                        })
+                        .catch((error) => {
+                          toast.error("Failed to mark order as paid.")
+                        })
+                      }
+                    })
+                  }}
+                  label={isMarkedPaid ? "Marked as paid" : "Mark as paid"}
+                />
+              </div>
+            </div>
+
+            
+
+          {            <>              {                orderStatusChangeButtons?.length > 0 ? (                  <hr />                ):null              }
 
               {
                 orderStatusChangeButtons?.map(({button,status},index) => (
@@ -644,6 +684,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   </div>
   )
   }
+    <ToastContainer />
   </>
 }
 
