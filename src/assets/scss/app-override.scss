@@ -256,7 +256,7 @@ $misc-inner-max-width: 750px;
 }
 
 .edit-order-btn{
-  z-index: 1 !important;
+  z-index: 9 !important;
 }
 
 .cursor-auto{
@@ -304,4 +304,8 @@ $misc-inner-max-width: 750px;
 
 .swal2-actions{
   gap:12px !important;
+}
+
+.header-navbar-shadow{
+  z-index: -1 !important;
 }

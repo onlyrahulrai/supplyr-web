@@ -247,6 +247,8 @@ export const OrderAddProvider = ({ children }) => {
 
           if (!isEditable(data.order_status).editing_allowed) {
             history.push("/orders");
+          }else if(data.is_paid){
+            history.push(`/orders/${orderId}/`);
           }
 
           const {
@@ -387,8 +389,6 @@ export const OrderAddProvider = ({ children }) => {
   const getValidTaxableAmount = (taxes) => {
     return Object.values(taxes).reduce((sum, value) => sum + value, 0);
   };
-
-  console.log(" ---- cart ---- ",cart)
 
   const value = {
     cart,

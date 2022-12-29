@@ -132,7 +132,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
 
       // replace the order state object to order state name
       const state_name = response.data?.address?.state.name;
-      const _address = response.data.address ? {...response.data.address,state:state_name} : null;
+      // const _address = response.data.address ? {...response.data.address,state:state_name} : null;
       
       setIsMarkedPaid(response.data.is_paid);
 
@@ -320,12 +320,12 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
         </Col>
         <Col sm="4" md="2" className="edit-order-btn">
             {
-              isEditable(orderData?.order_status) && (
+              (isEditable(orderData?.order_status) && !orderData?.is_paid) && (
                 <Button.Ripple
                   color='primary'
                   outline
                   block
-                  className="btn-block"
+                  className="btn-block cursor-pointer"
                   onClick={() => history.push(`/orders/update/${orderId}`)}
                 >
                   <BsPencil size={16} color={"primary"} /> Edit Order

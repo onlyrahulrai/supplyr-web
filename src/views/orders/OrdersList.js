@@ -78,7 +78,7 @@ class OrdersList extends Component {
             <div>
               <span>{params.value} </span>
               {
-                this.isEditable(params?.data?.order_status) ? (
+                (this.isEditable(params?.data?.order_status) && !params.data.is_paid) ? (
                   <Edit3
                     size={20}
                     color="cadetblue"
