@@ -29,11 +29,13 @@ const NoOptionsMessage = (props) => {
   const {
     setIsOpenBuyerCreateModal,
     buyerSearchInput,
-    onChangeOrderInfo,
-    setBuyer,
+    dispatchCart,
     setIsMenuOpen,
     setBuyerSearchInput,
-    setIsBuyerLoaded,
+    cart,
+    seller_address,
+    getExtraDiscount,
+    getValidGstRate
   } = useOrderAddContext();
 
   const onToggleModal = async () => {
@@ -49,22 +51,48 @@ const NoOptionsMessage = (props) => {
           if (response.data.length === 0) {
             setIsOpenBuyerCreateModal((prevState) => !prevState);
           } else {
-            setIsBuyerLoaded(true);
             const requestData = { buyer_id: response.data[0].id };
             await apiClient
               .post("/profile/sellers/", requestData)
               .then((response) => {
                 const data = response.data;
 
-                console.log(" ---- Data ---- ", data);
+                const address = data.address[0]
 
-                onChangeOrderInfo({
-                  address: data?.address[0],
-                  buyer_id: data?.id,
+                dispatchCart({
+                  type: "ON_SELECT_BUYER",
+                  payload: {
+                    buyer: data,
+                    buyer_id: data?.id,
+                    address: address,
+                    address_id:address?.id
+                  },
                 });
-                setBuyer(data);
+
+
+                const items = cart.items.map((item) => {
+                  const discount = data.product_discounts.find(
+                    (discount) =>
+                      discount.product.variants.includes(item?.variant?.id)
+                  );
+
+                  const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
+
+                  let extra_discount = discount ? getExtraDiscount(item.price,discount) * item.quantity : 0;
+
+                  return {
+                    ...item,
+                    extra_discount,
+                    ...getValidGstRate({...item,extra_discount},isSellerAndBuyerFromSameOrigin)
+                  }
+                });
+
+                dispatchCart({
+                  type: "ON_UPDATE_CART_ITEMS",
+                  payload: items,
+                });
                 setBuyerSearchInput("");
-                setIsBuyerLoaded(false);
+                
                 toast.success(
                   `Seller connected with buyer (${data.business_name})`
                 );
@@ -74,7 +102,7 @@ const NoOptionsMessage = (props) => {
               });
           }
         })
-        .catch((error) => console.log(" ----- Failed to search buyer ----- "));
+        .catch((error) => console.log(" ----- Failed to search buyer ----- ",error));
     } else {
       setIsOpenBuyerCreateModal((prevState) => !prevState);
     }
@@ -281,62 +309,7 @@ const Sidebar = () => {
                     })
                     .catch((error) => console.log(" ---- Error ---- ",error));
                 }}
-                // onChange={async (data) => {
-                //   await apiClient
-                //     .get(`/inventory/seller-buyers/${data?.id}`)
-                //     .then((response) => {
-                //       setIsMenuOpen(false);
-                //       const data = response.data;
 
-                //       onChangeOrderInfo({
-                //         address: data?.address[0],
-                //         buyer_id: data?.id,
-                //       });
-                //       setBuyer(data);
-
-                //       const getExtraDiscount = (price, discount) => {
-                //         return discount.discount_type === "percentage"
-                //           ? (parseFloat(price) *
-                //               parseFloat(discount.discount_value)) /
-                //               100
-                //           : discount.discount_type === "amount"
-                //           ? parseFloat(discount.discount_value)
-                //           : 0;
-                //       };
-
-                //       setProducts((products) =>
-                //         products.map((product) => {
-                //           const discount = data.product_discounts.find(
-                //             (discount) =>
-                //               discount.product.id === product.variant.product.id
-                //           );
-
-                //           const _product = {
-                //             ...product,
-                //             ...calculateGstRate(
-                //               getValidGstRate(
-                //                 product.variant.product.sub_categories
-                //               )
-                //             ),
-                //           };
-
-                //           if (discount) {
-                //             return {
-                //               ..._product,
-                //               extra_discount: getExtraDiscount(
-                //                 _product.price,
-                //                 discount
-                //               ),
-                //             };
-                //           }
-                //           return _product;
-                //         })
-                //       );
-                //     })
-                //     .catch((error) => {
-                //       toast.error("Failed to select this buyer.");
-                //     });
-                // }}
                 menuIsOpen={isMenuOpen}
                 styles={{
                   noOptionsMessage: (base) => ({ ...base }),

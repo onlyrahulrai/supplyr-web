@@ -596,6 +596,9 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
                         })
                         .then((response) => {
                           setIsMarkedPaid(true);
+
+                          setOrderData((prevState) => ({...prevState,is_paid:true}))
+
                           toast.success("Order is marked as paid")
                         })
                         .catch((error) => {

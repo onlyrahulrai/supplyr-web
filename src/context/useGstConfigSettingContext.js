@@ -120,7 +120,7 @@ export const GstConfigSettingProvider = ({ children }) => {
   };
 
   const onSave = async () => {
-    if (!data.gst_number || !data.default_gst_rate) return;
+    if (!data.gst_number || (data.default_gst_rate !== 0 && !data.default_gst_rate)) return;
 
     const requestedData = {
       ...data,

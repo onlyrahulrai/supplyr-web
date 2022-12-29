@@ -22,7 +22,7 @@ const Address = (props) => {
           discount.product.variants.includes(item.variant.id)
       );
 
-      const isSellerAndBuyerFromSameOrigin = seller_address.state.id === props.address?.state?.id;
+      const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === props.address?.state?.id;
 
       console.log(" ----- Is Seller And Buyer From Same Origin ----- ",isSellerAndBuyerFromSameOrigin)
 
