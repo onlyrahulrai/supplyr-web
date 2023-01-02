@@ -16,6 +16,7 @@ const EditExtraDiscountComponent = ({
   onToggleModal,
   onSave,
   extraDiscount,
+  productPrice,
   setExtraDiscount,
 }) => {
   return (
@@ -31,7 +32,7 @@ const EditExtraDiscountComponent = ({
               placeholder="Extra discount..."
               value={extraDiscount}
               name="extra_discount"
-              onChange={(e) => setExtraDiscount(e.target.value)}
+              onChange={(e) => setExtraDiscount((parseInt(e.target.value) > productPrice) ? productPrice : e.target.value)}
               type="number"
               min={0}
               style={{ width: "55%", marginLeft: "5px" }}
@@ -52,11 +53,6 @@ const EditExtraDiscountComponent = ({
             <Edit3 size={16} /> Save
           </span>
         </Button.Ripple>
-
-        {/* <span className="text-primary cursor-pointer" onClick={onSave}>
-          &nbsp;&nbsp;
-          <Edit3 size={16} /> Save
-        </span> */}
       </ModalFooter>
     </Modal>
   );

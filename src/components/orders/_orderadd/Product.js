@@ -210,7 +210,14 @@ const Product = (props) => {
                 ) : null}
               </span>
 
-              <EditExtraDiscountComponent isOpen={(fieldName === "extra_discount")} onToggleModal={() => setFieldName("")} onSave={onUpdateExtraDiscount} extraDiscount={extraDiscount} setExtraDiscount={setExtraDiscount} />
+              <EditExtraDiscountComponent 
+                isOpen={(fieldName === "extra_discount")} 
+                productPrice={price * quantity}
+                onToggleModal={() => setFieldName("")} 
+                onSave={onUpdateExtraDiscount} 
+                extraDiscount={extraDiscount} 
+                setExtraDiscount={setExtraDiscount} 
+              />
             </div>
           </div>
           <div className="wishlist">

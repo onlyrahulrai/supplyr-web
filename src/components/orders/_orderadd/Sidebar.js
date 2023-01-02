@@ -439,7 +439,7 @@ const Sidebar = () => {
         </div>
         <div className="detail">
           <div className="detail-title">
-            Tax Amount&nbsp;<ShowTaxesComponent taxes={{igst,cgst,sgst}} />:
+            Tax Amount&nbsp;<ShowTaxesComponent taxes={{cgst,igst,sgst}} />:
           </div>
           <div className="detail-amt">
             <PriceDisplay amount={cart.tax_amount} />

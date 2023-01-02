@@ -1,5 +1,4 @@
 import PriceDisplay from "components/utils/PriceDisplay";
-import useOrderAddContext from "context/useOrderAddContext2.0";
 import React from "react";
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledButtonDropdown } from "reactstrap";
 
@@ -22,7 +21,7 @@ const ShowTaxesComponent = (props) => {
           Object.entries(props.taxes || {}).map(([key,value],index) => (
             <div key={index}>
               {
-                value ? (
+                (value !== null) ? (
                   <DropdownItem tag="a" className="p-0 text-uppercase">{key.split("_").join("  ")} : <PriceDisplay amount={value} /></DropdownItem>
                 ):null
               }
