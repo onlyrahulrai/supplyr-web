@@ -1,6 +1,6 @@
 import "assets/scss/pages/app-ecommerce-shop.scss";
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
   Button, Card,
@@ -14,14 +14,13 @@ import {
   ModalHeader,
   Row
 } from "reactstrap";
-
 import { history } from "../../history"
 import {OrdersApi} from "api/endpoints"
 import {getMediaURL} from "api/utils"
 import VariantLabel from "components/inventory/VariantLabel"
 import Address from "components/inventory/Address"
 import ProductDummyImage from "assets/img/svg/cart.svg"
-import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsReceipt, BsPencil} from "react-icons/bs"
+import {BsClockHistory, BsCheckAll, BsCheck, BsTrash, BsReceipt, BsPencil, BsCheck2Circle} from "react-icons/bs"
 import {AiOutlineEdit} from "react-icons/ai"
 import {RiTruckLine} from "react-icons/ri"
 import Swal from "utility/sweetalert"
@@ -35,6 +34,11 @@ import { connect } from "react-redux";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import {GiReturnArrow} from "react-icons/gi"
+import ShowTaxesComponent from "components/orders/_orderadd/ShowTaxesComponent";
+import Checkbox from "../../components/@vuexy/checkbox/CheckboxesVuexy";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 // import { productsList } from "./cartData";
 
@@ -110,6 +114,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   const [orderData, setOrderData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [loadingError, setLoadingError] = useState(null)
+  const [isMarkedPaid,setIsMarkedPaid] = useState(false);
 
   /* ------ Order Status Variable Start ----- */
   const [orderStatusVariableData,setOrderStatusVariableData] = useState(null);
@@ -117,17 +122,22 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   const [isFormLoading,setIsFormLoading] = useState(false)
   /* ------ Order Status Variable End ----- */
 
+  const sumOfTotalItemsPrice = useMemo(() => {
+    return orderData ? orderData.items.map(({price,quantity,...rest}) => price * quantity).reduce((sum,value) => (sum + value),0) : 0
+  },[orderData])
+
   const fetchOrderData = () => {
     OrdersApi.retrieve(orderId)
     .then(response => {
 
       // replace the order state object to order state name
       const state_name = response.data?.address?.state.name;
-      const _address = response.data.address ? {...response.data.address,state:state_name} : null;
-      const data = {...response.data,address:_address};
+      // const _address = response.data.address ? {...response.data.address,state:state_name} : null;
+      
+      setIsMarkedPaid(response.data.is_paid);
 
 
-      setOrderData(data)
+      setOrderData(response.data)
       // console.log("sds ", response.data)
     })
     .catch(error => {
@@ -141,21 +151,6 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   useEffect(() => {
     fetchOrderData()
   }, [])
-
-  let totals = orderData?.items.reduce((sum, item) => {
-    const actualPrice = parseFloat(item.actual_price) * item.quantity
-    const salePrice = parseFloat(item.price) * item.quantity
-    const _sum = {
-      actualPrice: sum.actualPrice + actualPrice,
-      salePrice: sum.salePrice + salePrice,
-    }
-    return _sum
-  },
-    {
-      actualPrice: 0,
-      salePrice: 0
-    }
-  );
 
   const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered',"cancelled"] // Skipped 'cancelled' here as it has separate control
 
@@ -173,6 +168,9 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   const [isStateVariableModalVisible, setIsStateVariableModalVisible] = useState(false)
   const toggleStateVariableModal = () => setIsStateVariableModalVisible(!isStateVariableModalVisible)
 
+  const getAddress = useMemo(() => {
+    return {...orderData?.address,state:orderData?.address?.state?.name} 
+  },[orderData])
 
   const onAction = (operation, data) => {
 
@@ -298,6 +296,8 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     return order_status_options.slice(index).map((option) => option.slug).filter((status) => !['returned','cancelled'].includes(status))
   }
 
+
+
   return <>
   {isLoading &&
     <Spinner />
@@ -320,12 +320,12 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
         </Col>
         <Col sm="4" md="2" className="edit-order-btn">
             {
-              isEditable(orderData?.order_status) && (
+              (isEditable(orderData?.order_status) && !orderData?.is_paid) && (
                 <Button.Ripple
                   color='primary'
                   outline
                   block
-                  className="btn-block"
+                  className="btn-block cursor-pointer"
                   onClick={() => history.push(`/orders/update/${orderId}`)}
                 >
                   <BsPencil size={16} color={"primary"} /> Edit Order
@@ -338,50 +338,75 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     <div className="checkout-items">
       {orderData?.items.map((item, i) => (
         <Card className="ecommerce-card" key={i}>
-          <div className="card-content" style={{gridTemplateColumns: "0.5fr 3fr 1fr"}}>
+          <div
+            className="card-content"
+            style={{ gridTemplateColumns: "1fr 3fr 1.5fr" }}
+          >
             <div className="item-img text-center">
-              <img src={item.product_variant.featured_image ? getMediaURL(item.product_variant.featured_image) : ProductDummyImage} className="img-fluid img-100" alt="Product" />
+              <img
+                src={item.product_variant.featured_image ? getMediaURL(item.product_variant.featured_image) : ProductDummyImage} 
+                alt="Product"
+                className="img-fluid img-100 rounded"
+              />
             </div>
             <CardBody>
               <div className="item-name">
-                <a href="#" onClick={e => {e.preventDefault(); history.push(`/product/${item.product_variant.product.id}`)}}>
-                <h3>{item.product_variant.product.title}</h3>
-                </a>
+                <h4>{item.product_variant.product.title}</h4>
 
+                <p
+                  className={`${
+                    item.product_variant.quantity > 0 ? "stock-status-in" : "text-danger"
+                  }`}
+                >
+                  {item.product_variant.quantity > 0 ? "In Stock" : "Out of stock"}
+                </p>
 
-                <div className="d-flex">
-                  <span className="border-right pr-1"><Translatable text="quantity" />: {item?.quantity}</span>
+                <div className="item-quantity">
+                  <p className="quantity-title">
+                    <Translatable text="quantity" />: {item.quantity}
+                  </p>
+                </div>
+                <div className="item-quantity">
+                  <p className="quantity-title mb-0">
+                    Item Price (Per Unit): <PriceDisplay amount={item.price} />
+                  </p>
+                </div>
+                
+                <div className="delivery-date mt-half w-100 d-flex flex-column" style={{marginTop:"0.5rem"}}>
 
                   {
-                    Math.floor(item?.extra_discount) ? (
-                      <span className="ml-1">Extra Discount: <PriceDisplay amount={item?.extra_discount || 0} /></span>
-                    ):("")
-                  }
-                </div>
-                {item.product_variant.product.has_multiple_variants &&
-                  <div className="item-company">
-                    <div className="company-name">
-                      <VariantLabel
-                        variantData={item.product_variant}
-                        />
+                    item.product_variant.product.has_multiple_variants ? (
+                      <div className="item-company mb-half">
+                        <div className="company-name">
+                          <VariantLabel
+                            variantData={item.product_variant}
+                            />
+                          </div>
                       </div>
-                  </div>
-                }
-              </div>
+                    ):null
+                  }
 
-              {!!item?.item_note &&
-                <div className="item-note">
-                  <b style={{color: '#000'}}><i>Item Note:</i> </b> &nbsp; {item.item_note}
+                  <div className="item-note mb-half">
+                    <b style={{ color: "#000" }}>
+                      <i>Item Note:</i>{" "}
+                    </b>{" "}
+                    &nbsp; {item.item_note}
+                  </div>
+                    
                 </div>
-                }
+              </div>
             </CardBody>
-            <div className="item-options m-auto">
+            <div className="item-options text-center">
               <div className="item-wrapper">
                 <div className="item-cost">
-                  <h5 className=""><PriceDisplay amount={item.price} /></h5>
-                  { item.actual_price !== item.price &&
-                    <h6><del className="strikethrough text-secondary"><PriceDisplay amount={item.actual_price} /></del></h6>
-                  }
+                  <span className="item-price">
+                    <small style={{fontWeight:"bold"}}>Price: <PriceDisplay amount={item.price * item.quantity} /></small>
+                  </span><br />
+                  <span className="item-price">
+                      <small style={{fontWeight:"bold"}}>
+                        Extra Discount: <PriceDisplay amount={item.extra_discount ? item.extra_discount : 0} />
+                      </small>
+                  </span>
                 </div>
               </div>
             </div>
@@ -418,8 +443,11 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
             <h6>{orderData.order_date}</h6>
           </Col>
           <Col sm="auto" className="ml-auto text-right">
-            <h6 className='text-secondary'>From</h6>
-            <h3>{orderData.buyer_name}</h3>
+            <p className='text-secondary'>From</p>
+            <div className="text-right text-secondary">
+              <span>{`${orderData?.buyer?.name ? `(${orderData?.buyer.name})` : ""}`}</span>
+              <strong className="text-light">{orderData?.buyer?.business_name}</strong>
+            </div>
           </Col>
         </Row>
 
@@ -432,7 +460,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
           {
             (orderData.address) ? (
               <Address
-                {...orderData.address}
+                {...getAddress}
               />
             ):(
               <div className="mt-1">
@@ -510,28 +538,83 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
             <p>Price Details</p>
           </div>
           <div className="detail">
-            <div className="detail-title">Price</div>
-            <div className="detail-amt"><PriceDisplay amount={totals.salePrice} /></div>
+            <div className="detail-title">Subtotal</div>
+            <div className="detail-amt"><PriceDisplay amount={sumOfTotalItemsPrice} /></div>
           </div>
+
           <div className="detail">
             <div className="detail-title">Extra Discount</div>
             <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
           </div>
-           
+
+          <div className="detail">
+            <div className="detail-title">Taxable Amount</div>
+            <div className="detail-amt discount-amt">
+              <PriceDisplay amount={orderData?.taxable_amount ?? 0} />
+            </div>
+          </div>
+
+          <div className="detail">
+            <div className="detail-title">
+              Tax Amount&nbsp;<ShowTaxesComponent taxes={{igst:orderData?.igst,cgst:orderData?.cgst,sgst:orderData?.sgst}} />:
+            </div>
+            <div className="detail-amt">
+              <PriceDisplay amount={orderData?.tax_amount} />
+            </div>
+        </div>
+
           <hr />
           <div className="detail">
             <div className="detail-title detail-total">Final Price</div>
-            <div className="detail-amt total-amt"><PriceDisplay amount={(totals.salePrice - (orderData?.total_extra_discount || 0)).toFixed(2)} /></div>
+            <div className="detail-amt total-amt"><PriceDisplay amount={orderData?.total_amount} /></div>
           </div>
 
+            <hr />
 
-          {
-            <>
-              {
-                orderStatusChangeButtons?.length > 0 ? (
-                  <hr />
-                ):null
-              }
+            <div className="detail">
+              <div className="detail-title detail-total"></div>
+              
+              <div className="detail-amt total-amt mark-as-paid">
+                <Checkbox
+                  color="success"
+                  icon={<BsCheck2Circle color="white" size={16} />}
+                  checked={isMarkedPaid}
+                  disabled={isMarkedPaid}
+                  onChange={(e) => {
+                    Swal.fire({
+                      title:"Are you sure?",
+                      text:`Do you want to mark this order as paid.`,
+                      icon:"warning",
+                      showCancelButton:true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: `Mark as paid`
+                    }).then(async (result) => {
+                      if(result.isConfirmed){
+                        await apiClient.put(`orders/${orderId}/mark-as-paid/`,{
+                          is_paid:true
+                        })
+                        .then((response) => {
+                          setIsMarkedPaid(true);
+
+                          setOrderData((prevState) => ({...prevState,is_paid:true}))
+
+                          toast.success("Order is marked as paid")
+                        })
+                        .catch((error) => {
+                          toast.error("Failed to mark order as paid.")
+                        })
+                      }
+                    })
+                  }}
+                  label={isMarkedPaid ? "Marked as paid" : "Mark as paid"}
+                />
+              </div>
+            </div>
+
+            
+
+          {            <>              {                orderStatusChangeButtons?.length > 0 ? (                  <hr />                ):null              }
 
               {
                 orderStatusChangeButtons?.map(({button,status},index) => (
@@ -604,6 +687,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   </div>
   )
   }
+    <ToastContainer />
   </>
 }
 

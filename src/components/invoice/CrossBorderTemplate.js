@@ -6,10 +6,11 @@ import { Col, Row } from "reactstrap";
 import Consignee from "./Consignee";
 import Exporter from "./Exporter";
 import InvoiceProductLists from "./InvoiceProductLists";
+import InvoiceSummary from "./InvoiceSummary";
 
 const DefaultTemplate = () => {
   const { orderId, invoiceNumber:invoice_number } = useParams();
-  const { orderData, totals, toWords, variables } = useInvoiceContext();
+  const { orderData,toWords, variables } = useInvoiceContext();
 
   const getDate = (date) => {
     let _date = new Date(date);
@@ -85,7 +86,7 @@ const DefaultTemplate = () => {
       </Row>
       <Row className="ml-0 mr-0">
         <Col sm="4" className="px-0">
-          <Consignee buyer={orderData?.buyer_name} address={orderData?.address} />
+          <Consignee name={orderData?.buyer_name ? orderData?.buyer_name : orderData?.buyer_business_name} address={orderData?.address} />
         </Col>
         <Col sm="8" className="pl-0 border">
           <div className="p-1 border-top-0">
@@ -262,24 +263,15 @@ const DefaultTemplate = () => {
         className="border border-bottom-0 ml-0 mr-0"
         style={{ minHeight: "100px" }}
       >
-        <Col sm="8">
+        <Col sm="8" className="p-2">
           <small>
             <strong>Amount Chargeable (In Words)</strong>
           </small>
           <br />
-          <strong>- {toWords.convert(totals?.actualPrice ?? "0")}</strong>
+          <strong>- {toWords.convert(orderData?.total_amount ?? "0")}</strong>
         </Col>
-        <Col sm="4" className="border border-left-0">
-          <small>
-            <strong>Total:</strong>
-          </small>
-          <br />
-          <span>
-            <strong>
-              {"  "}
-              <PriceDisplay amount={totals?.actualPrice} />
-            </strong>
-          </span>
+        <Col sm="4" className="border border-left-0 p-2">
+          <InvoiceSummary />
         </Col>
       </Row>
       <Row className="border-top-0 border ml-0 mr-0">

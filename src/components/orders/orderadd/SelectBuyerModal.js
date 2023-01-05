@@ -69,7 +69,7 @@ const SelectBuyerModal = ({ isOpen, onToggleModal }) => {
         <Row>
           {buyer &&
             buyer.address.map((address, index) => (
-              <Address address={address} key={index} onClick={(id) => onAddressClick(id)} />
+              <Address address={{...address,state:address.state.name}} key={index} onClick={(id) => onAddressClick(id)} />
             ))}
         </Row>
       </ModalBody>

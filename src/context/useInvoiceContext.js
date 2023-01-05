@@ -1,5 +1,6 @@
 import { OrdersApi } from "api/endpoints";
-import React, { useContext, createContext, useState, useCallback, useEffect } from "react";
+import React, { useContext, createContext, useState, useCallback, useEffect, useMemo } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { ToWords } from 'to-words';
 
@@ -10,6 +11,17 @@ export const InvoiceProvider = ({ children }) => {
   const { orderId, invoice_number } = useParams();
   const [loadingError, setLoadingError] = useState(null);
   const [orderData, setOrderData] = useState(null);
+  const { addresses: seller_address} = useSelector(
+    (state) => state.auth.userInfo.profile
+  );
+
+  const isIgstDisplayed = useMemo(() => {
+    return seller_address?.state?.id !== orderData?.address?.state?.id;
+  },[seller_address,orderData])
+
+  const isCgstSgstDisplayed = useMemo(() => {
+    return seller_address?.state?.id === orderData?.address?.state?.id;
+  },[seller_address,orderData])
 
   const fetchOrder = useCallback(async () => {
     await OrdersApi.retrieve(orderId)
@@ -30,23 +42,23 @@ export const InvoiceProvider = ({ children }) => {
     }
   }, [orderId, fetchOrder]);
 
-  const totals = orderData?.items.reduce(
-    (sum, item) => {
-      const actualPrice = parseFloat(item.price) * item.quantity;
-      const salePrice = parseFloat(item.actual_price) * item.quantity;
+  // const totals = orderData?.items.reduce(
+  //   (sum, item) => {
+  //     const actualPrice = parseFloat(item.price) * item.quantity;
+  //     const salePrice = parseFloat(item.actual_price) * item.quantity;
 
-      const _sum = {
-        actualPrice: sum.actualPrice + actualPrice,
-        salePrice: sum.salePrice + salePrice,
-      };
+  //     const _sum = {
+  //       actualPrice: sum.actualPrice + actualPrice,
+  //       salePrice: sum.salePrice + salePrice,
+  //     };
 
-      return _sum;
-    },
-    {
-      actualPrice: 0,
-      salePrice: 0,
-    }
-  );
+  //     return _sum;
+  //   },
+  //   {
+  //     actualPrice: 0,
+  //     salePrice: 0,
+  //   }
+  // );
 
   const toWords = new ToWords();
 
@@ -64,16 +76,45 @@ export const InvoiceProvider = ({ children }) => {
     {}
   ); // We Are generate an object by using a list of objects coming from the order details API. to use as custom invoice variables.
 
+  const getTotals = useMemo(() => {
+    return orderData?.items
+      ?.map(
+        ({
+          price,
+          quantity,
+          ...rest
+        }) => ({
+          gross_amount: price * quantity,
+          quantity
+        })
+      )
+      ?.reduce(
+        (sum, object) => {
+          for (let [key, value] of Object.entries(object)) {
+            sum[key] += value;
+          }
+  
+          return sum;
+        },
+        {
+          gross_amount: 0,
+          quantity:0
+        }
+      );
+  }, [orderData]);
+  
   const value = {
     orderId,
     invoice_number,
     loading,
     loadingError,
-    totals,
     variables,
     getDate,
     toWords,
-    orderData
+    orderData,
+    getTotals,
+    isIgstDisplayed,
+    isCgstSgstDisplayed
   };
   return (
     <InvoiceContext.Provider value={value}>{children}</InvoiceContext.Provider>

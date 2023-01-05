@@ -255,8 +255,8 @@ $misc-inner-max-width: 750px;
   background-color: #f6f6f6 !important;
 }
 
-.edit-order-btn .react-ripples{
-  z-index: 9999 !important;
+.edit-order-btn{
+  z-index: 9 !important;
 }
 
 .cursor-auto{
@@ -284,4 +284,28 @@ $misc-inner-max-width: 750px;
 .override-category  .css-1uccc91-singleValue{
   width:100%;
   padding-right: 16px;
+}
+
+.pt-half{
+  padding-top: 0.5rem !important;
+}
+
+.h-75{
+  height: 85vh !important;
+}
+
+.mb-half{
+  margin-bottom: 0.5rem !important;
+}
+
+.mt-half{
+  margin-bottom: 0.5rem !important;
+}
+
+.swal2-actions{
+  gap:12px !important;
+}
+
+.header-navbar-shadow{
+  z-index: -1 !important;
 }

@@ -1,9 +1,9 @@
+import Address from "components/inventory/Address";
 import React from "react";
 import { useSelector } from "react-redux";
 
 const Exporter = (props) => {
-  const { business_name } = useSelector((state) => state.auth.userInfo.profile);
-
+  const { business_name,addresses:address } = useSelector((state) => state.auth.userInfo.profile);
 
   return (
     <div className="p-1">
@@ -39,7 +39,9 @@ const Exporter = (props) => {
               <strong>KARNATAKA -560076</strong>
             </span>
           </>
-        ) : null}
+        ) : (
+          <Address {...{...address,state:address?.state?.name}} bold />
+        )}
 
         <br />
       </div>

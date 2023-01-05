@@ -17,6 +17,12 @@ const Swal = withReactContent(_Swal);
 
 const OrderAddContext = createContext();
 
+const intialGSTOptions = {
+  sgst:0,
+  igst:0,
+  cgst:0
+}
+
 export const OrderAddProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -33,6 +39,31 @@ export const OrderAddProvider = ({ children }) => {
   const [isBuyerLoaded,setIsBuyerLoaded] = useState(false)
   const order_status_options = useSelector((state) => state.auth.userInfo.profile.order_status_options)
   const [orderData,setOrderData] = useState({})
+
+  const {profile:{default_gst_rate,addresses:seller_addresses},profiling_data:{categories_data:{override_categories:override_categories}}} = useSelector((state) => state.auth.userInfo)
+
+  const getAddressWithStateName = useMemo(() => {
+    return {...orderInfo?.address,state:orderInfo?.address?.state?.name}
+  },[orderInfo])
+
+  const isSellerAndBuyerFromTheSameState = useMemo(() => {
+    return seller_addresses?.state?.id === orderInfo?.address?.state?.id
+  },[seller_addresses,orderInfo])
+
+  // Getting the Valid Gst Rate according to the product categories added. When categories added to product is overrided for gst rate than we keep taking the category whose gst rate is higher. 
+  const getValidGstRate = (sub_categories) => {
+
+    const override_category = override_categories.filter((option) => sub_categories.includes(option.category.id)).sort((option1,option2) => option2.default_gst_rate - option1.default_gst_rate).shift()
+
+    return override_category ? parseFloat(override_category?.default_gst_rate) : parseFloat(default_gst_rate)
+  }
+
+  const calculateGstRate = (gstRate) => {
+    if(isSellerAndBuyerFromTheSameState){
+      return {...intialGSTOptions,cgst:(gstRate/2),sgst:(gstRate/2)} 
+    }
+    return {...intialGSTOptions,igst:gstRate}
+  }
 
   const isEditable = (status) => order_status_options.find((option) => option.slug === status);
 
@@ -85,24 +116,6 @@ export const OrderAddProvider = ({ children }) => {
         });
     }
   }, [orderId]);
-
-  useEffect(() => {
-    if(buyer){
-      const getExtraDiscount = (price, discount) => {
-        return discount.discount_type === "percentage"
-          ? (parseFloat(price) * parseFloat(discount.discount_value)) / 100
-          : discount.discount_type === "amount" ? parseFloat(discount.discount_value) : 0;
-      };
-      
-      setProducts((products) => products.map((product) => {
-        const discount = buyer.product_discounts.find((discount) => discount.product.id === product.variant.product.id)
-        if(discount){
-            return {...product,extra_discount:getExtraDiscount(product.price,discount)}
-        }
-        return {...product,extra_discount:0};
-      }))
-    }
-  },[buyer])
 
   const onChangeSelectedProduct = (data) => {
     setSelectedProduct(data);
@@ -160,13 +173,17 @@ export const OrderAddProvider = ({ children }) => {
     
     const extra_discount = discount ? Math.min(calculateExtraDiscount(product?.variant,discount),Math.max(product.extra_discount,calculateExtraDiscount(product?.variant,discount))) : product.extra_discount;
 
+    const totalTaxableAmount = parseFloat((parseFloat(product.price) * Object.values(calculateGstRate(getValidGstRate(product.variant.product.sub_categories))).reduce((sum,value) => sum + value,0))/100)
+
+    const _product = {...product,taxable_amount:totalTaxableAmount * parseFloat(product.quantity)}
+
     if (!selectedProduct.set_focus) {
-      _products.push({...product,extra_discount:extra_discount});
+      _products.push({..._product,extra_discount:extra_discount});
     } else {
       const { set_focus, ...rest } = selectedProduct;
       const position = getProductIndexById(set_focus);
 
-      _products[position] = { ...product,extra_discount:extra_discount};
+      _products[position] = { ..._product,extra_discount:extra_discount};
     }
 
     setProduct({});
@@ -178,6 +195,26 @@ export const OrderAddProvider = ({ children }) => {
     const _products = products.filter((product) => product?.variant?.id !== id);
     setProducts(_products);
   };
+
+  const sumOfObjectValue = (object) => {
+    return Object.values(object).reduce((sum,value) => sum + parseFloat(value),0)
+  }
+
+  const totalTaxAmount = useMemo(() => {
+    return parseFloat(products.map(({taxable_amount,...rest}) => parseFloat(taxable_amount)).reduce((sum,value)=> sum + value  ,0).toFixed(2))
+  },[products])
+
+  const totalIGST = useMemo(() => {
+    return products.map(({igst,quantity,...rest}) => parseFloat(igst) * parseFloat(quantity)).reduce((sum,value) => sum + value,0)
+  },[products])
+
+  const totalCGST = useMemo(() => {
+    return products.map(({cgst,quantity,...rest}) => parseFloat(cgst) * parseFloat(quantity)).reduce((sum,value) => sum + value,0)
+  },[products])
+
+  const totalSGST = useMemo(() => {
+    return products.map(({sgst,quantity,...rest}) => parseFloat(sgst) * parseFloat(quantity)).reduce((sum,value) => sum + value,0)
+  },[products])
 
   const value = {
     orderData,
@@ -215,7 +252,18 @@ export const OrderAddProvider = ({ children }) => {
     isMenuOpen,
     setIsMenuOpen,
     isBuyerLoaded,
-    setIsBuyerLoaded
+    setIsBuyerLoaded,
+
+    getValidGstRate,
+    isSellerAndBuyerFromTheSameState,
+    getAddressWithStateName,
+    calculateGstRate,
+
+    totalTaxAmount,
+    totalIGST,
+    totalCGST,
+    totalSGST,
+    sumOfObjectValue
   };
   return (
     <OrderAddContext.Provider value={value}>

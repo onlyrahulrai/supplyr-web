@@ -1,6 +1,6 @@
 import CustomAsyncPaginate from "components/common/CustomAsyncPaginate";
 import useGstConfigSettingContext from "context/useGstConfigSettingContext";
-import React, { useMemo, useReducer } from "react";
+import React, { useMemo } from "react";
 import {
   Button,
   Row,
@@ -31,7 +31,7 @@ const GSTCategoryOptionLabel = (props) => {
         <span>{props.name}</span> {" "}
         {
           addedCategoryDefaultGstRate ? (
-            <BsDot size={24} color="lime" />
+            <BsDot size={24} color="#ea5455" />
           ):null
         }
       </div>
@@ -133,11 +133,6 @@ const CategoryOverrideGstFormComponent = () => {
       });
     }
   };
-
-
-  
-
-  // console.log(" ------ STate Override categories ------ ",state.override_categories.find((override_category) => override_category.category.id === ))
 
   return (
     <Row>

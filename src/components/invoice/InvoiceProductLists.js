@@ -1,12 +1,15 @@
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
+import useInvoiceContext from "context/useInvoiceContext";
 import React from "react";
 import { useSelector } from "react-redux";
 import { Table } from "reactstrap";
+import { getTwoDecimalDigit } from "utility/general";
 
 const InvoiceProductLists = ({ products,...rest }) => {
-  const { default_currency } =
+  const { default_currency,product_price_includes_taxes } =
     useSelector((state) => state.auth.userInfo.profile);
+  const {getTotals,orderData} = useInvoiceContext()
 
   return (
     <Table responsive className="table-hover-animation">
@@ -15,16 +18,12 @@ const InvoiceProductLists = ({ products,...rest }) => {
           <th>
             {
               rest.default ? (
-                <small>
                   <strong>
                     S. No.
                   </strong>
-                </small>
               ):(
                 <>
-                  <small>
                     <strong>Marks & & </strong>
-                  </small>
                   <div>
                     <span>
                       <strong>Nos.</strong>
@@ -36,9 +35,7 @@ const InvoiceProductLists = ({ products,...rest }) => {
             
           </th>
           <th>
-            <small>
               <strong>Title</strong>
-            </small>
             <div>
               <span>
                 <strong>(Package Name)</strong>
@@ -47,23 +44,19 @@ const InvoiceProductLists = ({ products,...rest }) => {
           </th>
           <th></th>
           <th>
-            <small>
-              <strong>
-                <Translatable text="quantity" />
-              </strong>
-            </small>
+            <strong>
+              <Translatable text="quantity" />
+            </strong>
             <div>
               <span>
                 <strong></strong>
               </span>
             </div>
           </th>
-          <th>
-            <small>
-              <strong>Rate/</strong>
-            </small>
+          {/* <th>
+            <strong>Unit Price</strong>
             <div>
-              <span>
+            <span>
                 <strong>
                   (<Translatable
                     prefix={default_currency}
@@ -71,11 +64,12 @@ const InvoiceProductLists = ({ products,...rest }) => {
                 </strong>
               </span>
             </div>
-          </th>
+          </th> */}
+          <th>Amount:</th>
+          <th>Tax:</th>
+           
           <th>
-            <small>
-              <strong>Amount </strong>
-            </small>
+            <strong>Total Amount</strong>
             <div>
               <span>
                 <strong>
@@ -92,11 +86,10 @@ const InvoiceProductLists = ({ products,...rest }) => {
         {products.map((item, index) => (
           <tr key={index}>
             <td>
-              <strong>{index + 1}</strong>
+              {index + 1}
             </td>
             <td colSpan="2">
               <div className="d-flex align-items-center">
-                <strong>
                   {item?.product_variant?.product?.title}
                   {" - "}
                   {
@@ -116,24 +109,47 @@ const InvoiceProductLists = ({ products,...rest }) => {
                       </>
                     ) : null
                   }
-                </strong>
               </div>
             </td>
             <td>
-              <strong>{item.quantity}</strong>
+              {item.quantity}
             </td>
             <td>
-              <strong>
-                <PriceDisplay amount={item.price} />
-              </strong>
+              <PriceDisplay amount={item.taxable_amount} />
             </td>
             <td>
-              <strong>
-                <PriceDisplay amount={item.quantity * item.price} />
-              </strong>
+              <PriceDisplay amount={item.igst + item.cgst + item.sgst} />
+            </td>
+              
+            <td>
+              <PriceDisplay amount={product_price_includes_taxes ?  getTwoDecimalDigit((item.quantity * item.price) - item.extra_discount) : (item.taxable_amount + item.tax_amount)} />
             </td>
           </tr>
         ))}
+        <tr style={{borderTop:"6px solid #ededed "}}>
+          <td colSpan="2">
+            <strong>Total</strong>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.taxable_amount} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.igst + orderData?.cgst + orderData?.sgst} />
+            </strong>
+          </td>
+          <td>
+            <strong>
+              <PriceDisplay amount={orderData?.total_amount} />
+            </strong>
+          </td>
+        </tr>
       </tbody>
     </Table>
   );
