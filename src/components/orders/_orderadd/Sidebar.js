@@ -176,11 +176,10 @@ const Sidebar = () => {
   };
 
   const onSubmit = async () => {
-    // const isValid = validateForm();
-    const isValid = false;
+    const isValid = validateForm();
 
     const {id,items,isFormOpen,buyer,address_id,price,tax_amount,...rest} = cart;
-    
+
     const variants = items.map(({product,set_focus,variant,tax_amount,...rest}) => ({...rest,variant_id:variant.id})) 
     
     if (isValid) {
