@@ -30,7 +30,7 @@ const DefaultTemplate = () => {
         <Col className="border-right">
           <div className="p-1">
             <small>
-              <strong>Invoice No. - {invoice_number}</strong>
+              <strong>Invoice No. - {orderData?.invoice?.invoice_number}</strong>
             </small>
             <div>
               <small>
@@ -47,7 +47,7 @@ const DefaultTemplate = () => {
 
           <div className="px-0 p-1 border-top">
             <small>
-              <strong>Buyer's Order No. - {orderId}</strong>
+              <strong>Buyer's Order No. - {orderData?.order_number}</strong>
             </small>
             <div>
               <small>

@@ -35,17 +35,17 @@ const DefaultTemplate = () => {
             <Col sm="6" className="px-0">
               <div className="p-1 border">
                 <small>
-                  <strong>Invoice No. & Date:</strong>
+                  <strong>Invoice No. - {orderData?.invoice?.invoice_number}</strong>
                 </small>
-                <br />
                 <div>
-                  <strong>{invoice_number}</strong>
+                  <small>
+                    <strong>
+                      DATE - &nbsp;
+                      {orderData?.invoice?.created_at &&
+                        getDate(orderData?.invoice?.created_at)}
+                    </strong>
+                  </small>
                   <br />
-                  <strong>
-                    DT:&nbsp;
-                    {orderData?.invoice?.created_at &&
-                      getDate(orderData?.invoice?.created_at)}
-                  </strong>
                   <br />
                 </div>
               </div>
@@ -64,14 +64,14 @@ const DefaultTemplate = () => {
           <Row className="ml-0 mr-0">
             <Col sm="12" className="px-0 p-1  border">
               <small>
-                <strong>Buyer's Order No.& Date</strong>
+                <strong>Buyer's Order No. - {orderData?.order_number}</strong>
               </small>
               <div>
-                <span>
+                <small>
                   <strong>
-                    {orderId}, DATED: {orderData?.order_date}
+                    DATE - {orderData?.order_date}
                   </strong>
-                </span>
+                </small>
               </div>
             </Col>
           </Row>
