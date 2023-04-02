@@ -53,18 +53,6 @@ const InvoiceProductLists = ({ products,...rest }) => {
               </span>
             </div>
           </th>
-          {/* <th>
-            <strong>Unit Price</strong>
-            <div>
-            <span>
-                <strong>
-                  (<Translatable
-                    prefix={default_currency}
-                  />)
-                </strong>
-              </span>
-            </div>
-          </th> */}
           <th>Amount:</th>
           <th>Tax:</th>
            
