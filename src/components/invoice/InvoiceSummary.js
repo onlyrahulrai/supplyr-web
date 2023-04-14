@@ -43,42 +43,51 @@ const InvoiceSummary = () => {
           </strong>
         </span>
       </div>
-      <div className="d-flex justify-content-between">
-        <small>
-          <strong>Total(IGST):</strong>
-        </small>
-        &nbsp;
-        <span>
-          <strong>
-            {"  "}
-            <PriceDisplay amount={orderData?.igst} />
-          </strong>
-        </span>
-      </div>
-      <div className="d-flex justify-content-between">
-        <small>
-          <strong>Total(SGST):</strong>
-        </small>
-        &nbsp;
-        <span>
-          <strong>
-            {"  "}
-            <PriceDisplay amount={orderData?.sgst} />
-          </strong>
-        </span>
-      </div>
-      <div className="d-flex justify-content-between">
-        <small>
-          <strong>Total(CGST):</strong>
-        </small>
-        &nbsp;
-        <span>
-          <strong>
-            {"  "}
-            <PriceDisplay amount={orderData?.cgst} />
-          </strong>
-        </span>
-      </div>
+      {
+        orderData?.igst ? (
+          <div className="d-flex justify-content-between">
+            <small>
+              <strong>Total(IGST):</strong>
+            </small>
+            &nbsp;
+            <span>
+              <strong>
+                {"  "}
+                <PriceDisplay amount={orderData?.igst} />
+              </strong>
+            </span>
+          </div>
+        ):(
+          <>
+            <div className="d-flex justify-content-between">
+              <small>
+                <strong>Total(SGST):</strong>
+              </small>
+              &nbsp;
+              <span>
+                <strong>
+                  {"  "}
+                  <PriceDisplay amount={orderData?.sgst} />
+                </strong>
+              </span>
+            </div>
+            <div className="d-flex justify-content-between">
+              <small>
+                <strong>Total(CGST):</strong>
+              </small>
+              &nbsp;
+              <span>
+                <strong>
+                  {"  "}
+                  <PriceDisplay amount={orderData?.cgst} />
+                </strong>
+              </span>
+            </div>
+          </>
+        )
+      }
+      
+
       <div className="d-flex justify-content-between">
         <small>
           <strong>Final Amount:</strong>

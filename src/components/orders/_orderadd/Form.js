@@ -96,7 +96,7 @@ const Form = () => {
       errors.push("Please select the product!");
     }
 
-    if (!cartItem.price) {
+    if (!cartItem.price && cartItem.price !== 0) {
       errors.push("Please fill the price field");
     }
 
@@ -104,13 +104,13 @@ const Form = () => {
       errors.push("Please fill the quantity field");
     }
 
-    // if (cartItem.product.quantity <= 0) {
-    //   errors.push("You've selected an out of stock item that is not allowed!");
-    // }
+    if (cartItem.product.quantity <= 0) {
+      errors.push("You've selected an out of stock item that is not allowed!");
+    }
 
-    // if((cartItem?.set_focus === null) && cart.items.findIndex((p) => p.variant_id === cartItem.variant_id) !== -1){
-    //   errors.push(" Product is already in the cart! ")
-    // }
+    if((cartItem?.set_focus === null) && cart.items.findIndex((p) => p?.variant?.id === cartItem.variant.id) !== -1){
+      errors.push(" Product is already in the cart! ")
+    }
 
     if (errors.length > 0) {
       Swal.fire(

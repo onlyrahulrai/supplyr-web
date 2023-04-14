@@ -556,7 +556,11 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
 
           <div className="detail">
             <div className="detail-title">
-              Tax Amount&nbsp;<ShowTaxesComponent taxes={{igst:orderData?.igst,cgst:orderData?.cgst,sgst:orderData?.sgst}} />:
+              Tax Amount&nbsp;
+                <ShowTaxesComponent 
+                  taxes={
+                    orderData?.igst ? {igst:orderData?.igst} : {cgst:orderData?.cgst,sgst:orderData?.sgst}} 
+                />:
             </div>
             <div className="detail-amt">
               <PriceDisplay amount={orderData?.tax_amount} />
@@ -614,7 +618,10 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
 
             
 
-          {            <>              {                orderStatusChangeButtons?.length > 0 ? (                  <hr />                ):null              }
+          { <>              
+              {orderStatusChangeButtons?.length > 0 ? <hr /> :null}
+
+              
 
               {
                 orderStatusChangeButtons?.map(({button,status},index) => (

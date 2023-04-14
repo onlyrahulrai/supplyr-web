@@ -179,7 +179,7 @@ const Sidebar = () => {
     const isValid = validateForm();
 
     const {id,items,isFormOpen,buyer,address_id,price,tax_amount,...rest} = cart;
-    
+
     const variants = items.map(({product,set_focus,variant,tax_amount,...rest}) => ({...rest,variant_id:variant.id})) 
     
     if (isValid) {
@@ -284,6 +284,7 @@ const Sidebar = () => {
                       setIsBuyerLoading(false)
 
                       const items = cart.items.map((item) => {
+                        
                         const discount = data.product_discounts.find(
                           (discount) =>
                             discount.product.variants.includes(item?.variant?.id)
@@ -439,7 +440,9 @@ const Sidebar = () => {
         </div>
         <div className="detail">
           <div className="detail-title">
-            Tax Amount&nbsp;<ShowTaxesComponent taxes={{cgst,igst,sgst}} />:
+            Tax Amount&nbsp;<ShowTaxesComponent taxes={
+              igst ? {igst} : {cgst,sgst}
+            } />:
           </div>
           <div className="detail-amt">
             <PriceDisplay amount={cart.tax_amount} />

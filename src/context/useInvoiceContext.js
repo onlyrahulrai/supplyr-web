@@ -42,24 +42,6 @@ export const InvoiceProvider = ({ children }) => {
     }
   }, [orderId, fetchOrder]);
 
-  // const totals = orderData?.items.reduce(
-  //   (sum, item) => {
-  //     const actualPrice = parseFloat(item.price) * item.quantity;
-  //     const salePrice = parseFloat(item.actual_price) * item.quantity;
-
-  //     const _sum = {
-  //       actualPrice: sum.actualPrice + actualPrice,
-  //       salePrice: sum.salePrice + salePrice,
-  //     };
-
-  //     return _sum;
-  //   },
-  //   {
-  //     actualPrice: 0,
-  //     salePrice: 0,
-  //   }
-  // );
-
   const toWords = new ToWords();
 
   const getDate = (date) => {
