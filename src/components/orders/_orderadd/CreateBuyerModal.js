@@ -24,7 +24,7 @@ const defaultOptions = {
 const CreateBuyerModal = ({ isOpen, onToggleModal,searchInput }) => {  
   const [data, setData] = useState(defaultOptions);
   const [loading,setLoading] = useState(false);
-  const {dispatchCart,setIsOpenBuyerAddressCreateModal} = useOrderAddContext()
+  const {cart,seller_address,dispatchCart,getExtraDiscount,getValidGstRate,setIsOpenBuyerAddressCreateModal} = useOrderAddContext()
   useEffect(() => {
     if(searchInput){
       const object = new Object();
@@ -52,12 +52,39 @@ const CreateBuyerModal = ({ isOpen, onToggleModal,searchInput }) => {
 
       const extraOptions = {
         buyer:data,
-        buyer_id:data.id,
+        buyer_id:data?.id,
         address:address,
         address_id:address?.id
       }
 
-      dispatchCart({type:"ON_CREATE_BUYER",payload:extraOptions})
+      dispatchCart({
+        type: "ON_SELECT_BUYER",
+        payload: extraOptions
+      });
+
+      const items = cart?.items?.map((item) => {
+        const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
+
+        const productSpecificDiscount = data.product_discounts.find(
+          (discount) =>
+            discount.product.variants.includes(item?.variant?.id)
+        );
+
+        const generic_discount = data?.generic_discount;
+
+        const extra_discount =  productSpecificDiscount ? getExtraDiscount(item?.price ,productSpecificDiscount) * item?.quantity: generic_discount ? getExtraDiscount(item?.price ,generic_discount) * item?.quantity : 0;
+
+        return {
+          ...item,
+          extra_discount,
+          ...getValidGstRate(item,isSellerAndBuyerFromSameOrigin)
+        }
+      });
+
+      dispatchCart({
+        type: "ON_UPDATE_CART_ITEMS",
+        payload: items,
+      });
 
       setData(defaultOptions)
       onToggleModal()

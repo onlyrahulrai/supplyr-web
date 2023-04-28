@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Select from "react-select";
 import { getApiURL } from "api/utils";
 import { customStyles } from "./Sidebar";
@@ -86,7 +86,7 @@ const Form = () => {
   const {cart,cartItem, dispatchCartItem, getValidGstRate, dispatchCart,getExtraDiscount  } = useOrderAddContext();
 
   const onChange = (e) => {
-    dispatchCartItem({type:"UPDATE_PRODUCT",payload:{[e.target.name]:e.target.value ? parseFloat(e.target.value) : e.target.name === "quantity" ? cartItem?.selectCartProduct?.minimum_order_quantity : ""}})
+    dispatchCartItem({type:"UPDATE_PRODUCT",payload:{[e.target.name]:e.target.value &&   parseFloat(e.target.value)}})
   }
 
   const validateForm = () => {
@@ -110,6 +110,10 @@ const Form = () => {
 
     if((cartItem?.set_focus === null) && cart.items.findIndex((p) => p?.variant?.id === cartItem.variant.id) !== -1){
       errors.push(" Product is already in the cart! ")
+    }
+
+    if(cartItem.quantity < cartItem?.variant?.minimum_order_quantity){
+      errors.push(`Minimum ${cartItem?.variant?.minimum_order_quantity} quantity of this item is required!`)
     }
 
     if (errors.length > 0) {
@@ -138,8 +142,16 @@ const Form = () => {
 
       const taxes = getValidGstRate(cartItem)
 
-      dispatchCart({type:"ON_ADD_ITEM_TO_CART",payload:{...cartItem,...taxes}})
-      dispatchCartItem({type:"RESET"})
+      const {  price, quantity } = cartItem;
+
+      const productSpecificDiscount = cart?.buyer?.product_discounts?.find((discount) => discount?.product?.variants?.includes(cartItem?.variant?.id))
+
+      const generic_discount = cart?.buyer?.generic_discount;
+  
+      const discount =  productSpecificDiscount ? getExtraDiscount(price ,productSpecificDiscount) * quantity: generic_discount ? getExtraDiscount(price ,generic_discount) * quantity : 0;
+  
+      dispatchCart({type:"ON_ADD_ITEM_TO_CART",payload:{...cartItem,...taxes,extra_discount:discount}});
+      dispatchCartItem({type:"RESET"});
     }
   }
 
@@ -149,20 +161,15 @@ const Form = () => {
         ? product?.variants_data[0]
         : product?.variants_data;
 
-    const { id, price, minimum_order_quantity } = variant;
-
-    const discountOption = cart.buyer && cart.buyer.product_discounts.find((discount) => discount.product.variants.includes(id))
-
-    const discount = (discountOption ? getExtraDiscount(price,discountOption) : 0) * minimum_order_quantity;
+    const {  price, minimum_order_quantity } = variant;
 
     const set_focus = (cartItem.set_focus !== null) ? cartItem.set_focus : null;
 
     const data = {
       product,
       variant,
-      price:price,
+      price,
       quantity: minimum_order_quantity,
-      extra_discount: discount,
       set_focus:set_focus,
     };
 
@@ -170,11 +177,14 @@ const Form = () => {
   };
 
   return (
-    <Card className="select-product-input">
+    <Card className="select-product-input" id="order">
       <CardHeader>
         <div className="d-flex">
           <span className="mr-1 cursor-pointer">
-            <ArrowLeft size="15" onClick={() => dispatchCart({type:"ON_CLICK_TOGGLE_FORM"})} />
+            <ArrowLeft size="15" onClick={() => {
+              dispatchCart({type:"ON_CLICK_TOGGLE_FORM"})
+              dispatchCartItem({type:"RESET"})
+            }} />
           </span>
 
           <span>{(cartItem.set_focus !== null) ? "Update" : "Add"} Product</span>
@@ -198,9 +208,6 @@ const Form = () => {
           <FormGroup className="variant-field">
             <Label for="variant">Variant</Label>
 
-            {
-              console.log(" ----- Cart Item ----- ",cartItem)
-            }
 
             <Select
               options={cartItem?.product?.variants_data?.map((variant) => {
@@ -249,9 +256,8 @@ const Form = () => {
           label="Sale Price"
           placeholder="Sale Price..."
           type="text"
-          value={cartItem.price ?? 1}
+          value={cartItem?.price ?? 1}
           requiredIndicator
-          min=""
           name="price"
           onChange={onChange}
           disabled={!cartItem.product}
@@ -263,7 +269,7 @@ const Form = () => {
           label={<Translatable text="quantity" />}
           placeholder="Quantity..."
           type="number"
-          value={cartItem.quantity ?? 1}
+          value={cartItem?.quantity ?? cartItem?.variant?.minimum_order_quantity}
           requiredIndicator
           min={cartItem?.variant?.minimum_order_quantity}
           name="quantity"

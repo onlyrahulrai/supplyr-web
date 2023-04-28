@@ -224,6 +224,7 @@ const Product = (props) => {
             <Button.Ripple
               color="primary"
               onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 onClickUpdateProduct(variant?.product?.id);
               }}
             >
