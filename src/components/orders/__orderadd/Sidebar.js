@@ -1,21 +1,22 @@
 import apiClient from "api/base";
 import CustomAsyncPaginate from "components/common/CustomAsyncPaginate";
 import PriceDisplay from "components/utils/PriceDisplay";
-import { useOrderAddContext } from "context/OrderAddContext";
+import useOrderAddContext from "context/useOrderAddContext2.0";
 import React, { useState } from "react";
 import { Edit3 } from "react-feather";
 import { MdCreate } from "react-icons/md";
-import { Button, Card, CardBody } from "reactstrap";
+import { Button, Card, CardBody, Spinner } from "reactstrap";
 import { getTwoDecimalDigit, regx } from "utility/general";
 import CreateBuyerAddressModal from "./CreateBuyerAddressModal";
 import { components } from "react-select";
 import { toast } from "react-toastify";
 import Address from "components/inventory/Address";
+import CreateBuyerModal from "./CreateBuyerModal";
 import Swal from "components/utils/Swal";
-import { useHistory, useParams } from "react-router-dom";
+import { history } from "../../../history";
 import ShowTaxesComponent from "./ShowTaxesComponent";
-import SelectBuyerAddressModel from "./SelectBuyerAddressModel";
-import CreateBuyerModal from "./CreateBuyerModel";
+import SelectBuyerAddressModal from "./SelectBuyerAddressModal";
+
 
 export const customStyles = {
   control: (base) => ({
@@ -25,43 +26,86 @@ export const customStyles = {
 };
 
 const NoOptionsMessage = (props) => {
-  const { onChangeStateByKeyValue,buyerSearchInput,onUpdateBuyer } = useOrderAddContext();
+  const {
+    setIsOpenBuyerCreateModal,
+    buyerSearchInput,
+    dispatchCart,
+    setIsMenuOpen,
+    setBuyerSearchInput,
+    cart,
+    seller_address,
+    getExtraDiscount,
+    getValidGstRate
+  } = useOrderAddContext();
 
   const onToggleModal = async () => {
-    const isValid = regx.email.test(buyerSearchInput) || regx.mobileNumber.test(buyerSearchInput);
-    onChangeStateByKeyValue("isMenuOpen",false)
+    const isValid =
+      regx.email.test(buyerSearchInput) ||
+      regx.mobileNumber.test(buyerSearchInput);
+    setIsMenuOpen(false);
     if (isValid) {
       const query = new URLSearchParams({ q: buyerSearchInput }).toString();
-
       await apiClient
         .get(`/profile/buyers-search/?${query}`)
         .then(async (response) => {
           if (response.data.length === 0) {
-            onChangeStateByKeyValue("IsOpenBuyerCreateModal",false);
+            setIsOpenBuyerCreateModal((prevState) => !prevState);
           } else {
             const requestData = { buyer_id: response.data[0].id };
-
             await apiClient
               .post("/profile/sellers/", requestData)
               .then((response) => {
                 const data = response.data;
 
-                console.log(" Data ",data)
-                onUpdateBuyer(data,() => onChangeStateByKeyValue("buyerSearchInput",""))
+                const address = data.address[0]
 
+                dispatchCart({
+                  type: "ON_SELECT_BUYER",
+                  payload: {
+                    buyer: data,
+                    buyer_id: data?.id,
+                    address: address,
+                    address_id:address?.id
+                  },
+                });
+
+                const items = cart.items.map((item) => {
+                  const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
+
+                  const productSpecificDiscount = data.product_discounts.find(
+                    (discount) =>
+                      discount.product.variants.includes(item?.variant?.id)
+                  );
+
+                  const generic_discount = data?.generic_discount;
+
+                  const extra_discount =  productSpecificDiscount ? getExtraDiscount(item?.price ,productSpecificDiscount) * item?.quantity: generic_discount ? getExtraDiscount(item?.price ,generic_discount) * item?.quantity : 0;
+
+                  return {
+                    ...item,
+                    extra_discount,
+                    ...getValidGstRate(item,isSellerAndBuyerFromSameOrigin)
+                  }
+                });
+
+                dispatchCart({
+                  type: "ON_UPDATE_CART_ITEMS",
+                  payload: items,
+                });
+                setBuyerSearchInput("");
+                
                 toast.success(
                   `Seller connected with buyer (${data?.business_name})`
                 );
               })
               .catch((error) => {
-                toast.error("Couldn't search buyers.");
+                toast.error("Couldn't search buyers.")
               });
           }
-          console.log(" No Option Message ",response.data)
         })
         .catch((error) => toast.error("Couldn't search buyers."));
     } else {
-      onChangeStateByKeyValue("isOpenBuyerCreateModal",true);
+      setIsOpenBuyerCreateModal((prevState) => !prevState);
     }
   };
 
@@ -81,28 +125,36 @@ const NoOptionsMessage = (props) => {
 
 const Sidebar = () => {
   const {
-    items,
-    address,
-    buyer,
-    isMenuOpen,
-    onChangeStateByKeyValue,
+    orderId,
+    cart,
     buyerSearchInput,
-    onChangeBuyer,
+    setBuyerSearchInput,
+    isMenuOpen,
+    setIsMenuOpen,
+    isOpenBuyerCreateModal,
+    setIsOpenBuyerCreateModal,
+    isOpenBuyerAddressCreateModal,
+    setIsOpenBuyerAddressCreateModal,
+    dispatchCart,
+    getExtraDiscount,
     getValidAddress,
-    ...rest
+    getValidGstRate,
+    seller_address,
   } = useOrderAddContext();
+
   const [isOpenBuyerAddresses, setIsOpenBuyerAddresses] = useState(false);
-  const { orderId } = useParams();
-  const history = useHistory()
+  const [isBuyerLoading,setIsBuyerLoading] = useState(false)
+
+  const {igst,sgst,cgst} = cart;
 
   const validateForm = () => {
     const errors = [];
 
-    if (!items?.length) {
+    if (!cart.items.length) {
       errors.push("Please add atleast one product!");
     }
 
-    if (!buyer) {
+    if (!cart.buyer_id) {
       errors.push("Buyer isn't selected!");
     }
 
@@ -128,19 +180,25 @@ const Sidebar = () => {
   const onSubmit = async () => {
     const isValid = validateForm();
 
+    const {id,items,isFormOpen,buyer,address_id,price,tax_amount,...rest} = cart;
+
+    const variants = items.map(({product,set_focus,variant,tax_amount,...rest}) => ({...rest,variant_id:variant.id})) 
+    
     if (isValid) {
 
-      const orderitems = items.map(({price,quantity,extra_discount,variant,item_note,...rest}) => ({price,quantity,extra_discount,variant_id:variant.id,item_note}))
-
-      console.log(" Orderitems ",orderitems)
-
       const requestData = {
-        items: orderitems,
-        buyer_id:buyer.id,
-        address: address.id,
+        ...rest,
+        items: [...variants],
+        address: address_id,
+        address_id,
+        taxable_amount:parseFloat(rest.taxable_amount.toFixed(2)),
       };
 
-      let url = orderId ? `/orders/${orderId}/update/` : "/orders/";
+      let url = "/orders/";
+
+      if (orderId) {
+        url += orderId + "/update/";
+      }
 
       await apiClient
         .post(url, requestData)
@@ -158,8 +216,6 @@ const Sidebar = () => {
     }
   };
 
-  console.log(" Product Price Includes Taxes ",rest.product_price_includes_taxes)
-
   return (
     <Card>
       <CardBody>
@@ -168,14 +224,13 @@ const Sidebar = () => {
             <p>Order ID</p>
             <h2 className="text-light">#{orderId ? orderId : "New"}</h2>
           </div>
-          {buyer ? (
+          {cart.buyer ? (
             <div className="apply-coupon cursor-auto">
               <p className="text-right text-dark">From</p>
               <div className="text-right text-secondary">
-                <span>{`${buyer?.name ? `(${buyer?.name})` : ""}`}</span>
+                <span>{`${cart?.buyer?.name ? `(${cart?.buyer.name})` : ""}`}</span>
               </div>
-              <br />
-              <h4 className="text-light">{buyer?.business_name}</h4>
+              <h4 className="text-light">{cart?.buyer?.business_name}</h4>
             </div>
           ) : null}
         </div>
@@ -205,49 +260,106 @@ const Sidebar = () => {
                 }}
                 closeMenuOnSelect={false}
                 components={{ NoOptionsMessage }}
-                value={buyer}
-                onChange={onChangeBuyer}
+                value={cart.buyer}
+                onChange={async (data) => {
+                  setIsBuyerLoading(true)
+
+                  await apiClient
+                  .get(`profile/seller-contact-with-buyers-for-order/${data?.id}`)
+                  .then((response) => {
+                    const data = response.data;
+                    
+                    const address = data.address[0]
+
+                      dispatchCart({
+                        type: "ON_SELECT_BUYER",
+                        payload: {
+                          buyer: data,
+                          buyer_id: data?.id,
+                          address: address,
+                          address_id:address?.id
+                        },
+                      });
+
+                      setIsBuyerLoading(false)
+
+                      const items = cart.items.map((item) => {
+
+                        const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
+
+                        
+                        
+                        const productSpecificDiscount = data.product_discounts.find(
+                          (discount) =>
+                            discount.product.id === item?.product?.id
+                        );
+
+                        console.log("  Product Specific Discount ",productSpecificDiscount)
+
+                        const generic_discount = data?.generic_discount;
+
+                        const extra_discount =  productSpecificDiscount ? getExtraDiscount(item?.price ,productSpecificDiscount) * item?.quantity: generic_discount ? getExtraDiscount(item?.price ,generic_discount) * item?.quantity : 0;
+
+                        return {
+                          ...item,
+                          extra_discount,
+                          ...getValidGstRate({...item,extra_discount},isSellerAndBuyerFromSameOrigin)
+                        }
+                      });
+
+                      console.log(" Items ",items)
+
+                      console.log(" Generic Discount ",data.generic_discount)
+
+                      dispatchCart({
+                        type: "ON_UPDATE_CART_ITEMS",
+                        payload: items,
+                      });
+
+                      setIsMenuOpen(false);
+                    })
+                    .catch((error) => {
+                      console.log(" Error Data ",error)
+                      toast.error("couldn't select the buyer...")
+                    });
+                }}
+
                 menuIsOpen={isMenuOpen}
                 styles={{
                   noOptionsMessage: (base) => ({ ...base }),
                   ...customStyles,
                 }}
-                name="buyerSearchInput"
                 getOptionLabel={(props) => props.name}
                 getOptionValue={(props) => props.id}
                 inputValue={buyerSearchInput}
-                onInputChange={(data) => onChangeStateByKeyValue("buyerSearchInput", data)}
+                onInputChange={(data) => setBuyerSearchInput(data)}
                 onBlur={(e) => {
-                  onChangeStateByKeyValue("buyerSearchInput", e.target.value);
+                  setBuyerSearchInput(e.target.value);
                 }}
-                onMenuOpen={() => onChangeStateByKeyValue("isMenuOpen", true)}
-                onMenuClose={() => onChangeStateByKeyValue("isMenuOpen", false)}
+                onMenuOpen={() => setIsMenuOpen(true)}
+                onMenuClose={() => setIsMenuOpen(false)}
               />
               <CreateBuyerModal
-                isOpen={rest?.isOpenBuyerCreateModal}
+                isOpen={isOpenBuyerCreateModal}
                 onToggleModal={() =>
-                  onChangeStateByKeyValue(
-                    "isOpenBuyerCreateModal",
-                    !rest?.isOpenBuyerCreateModal
-                  )
+                  setIsOpenBuyerCreateModal(!isOpenBuyerCreateModal)
                 }
                 searchInput={buyerSearchInput}
               />
             </>
           ) : null}
 
-          {/* {!buyer ? (
+          {(!cart.buyer && isBuyerLoading) ? (
             <div className="text-center mt-2">
               <Spinner />
             </div>
-          ) : null} */}
-
-
-          {buyer ? (
+          ) : null}
+          
+          {cart.buyer ? (
             <div className="mt-2">
               <div className="d-flex justify-content-between align-items-center">
                 <h6 className="text-secondary">SHIPPING ADDRESS</h6>
-                {address || buyer?.address.length > 0 ? (
+                {(cart?.address || cart?.buyer?.address.length > 0) ? (
                   <span>
                     <Edit3
                       size="20"
@@ -256,7 +368,7 @@ const Sidebar = () => {
                       role="button"
                       className="pointer"
                       onClick={() =>
-                        setIsOpenBuyerAddresses((prevState) => !prevState)
+                        setIsOpenBuyerAddresses(!isOpenBuyerAddresses)
                       }
                     />{" "}
                     Edit
@@ -266,9 +378,8 @@ const Sidebar = () => {
                     <span
                       className="cursor-pointer"
                       onClick={() =>
-                        onChangeStateByKeyValue(
-                          "isOpenBuyerAddressCreateModal",
-                          !rest?.isOpenBuyerAddressCreateModal
+                        setIsOpenBuyerAddressCreateModal(
+                          (prevState) => !prevState
                         )
                       }
                     >
@@ -282,11 +393,10 @@ const Sidebar = () => {
                     </span>
 
                     <CreateBuyerAddressModal
-                      isOpen={rest?.isOpenBuyerAddressCreateModal}
+                      isOpen={isOpenBuyerAddressCreateModal}
                       onToggleModal={() =>
-                        onChangeStateByKeyValue(
-                          "isOpenBuyerAddressCreateModal",
-                          !rest?.isOpenBuyerAddressCreateModal
+                        setIsOpenBuyerAddressCreateModal(
+                          (prevState) => !prevState
                         )
                       }
                     />
@@ -294,7 +404,7 @@ const Sidebar = () => {
                 )}
               </div>
 
-              {!address ? (
+              {!cart.address ? (
                 <div className="mt-1">
                   <span>No Address Added!</span>
                 </div>
@@ -304,62 +414,58 @@ const Sidebar = () => {
             </div>
           ) : null}
 
-          {address ? (
+          {cart?.address ? (
             <>
-              <Address {...getValidAddress(address)} />
+              <Address
+                {...getValidAddress(cart.address)}
+              />
+
             </>
           ) : null}
 
-          <SelectBuyerAddressModel
-            isOpen={isOpenBuyerAddresses}
-            onToggleModal={() =>
-              setIsOpenBuyerAddresses((prevState) => !prevState)
-            }
-          />
+            <SelectBuyerAddressModal
+              isOpen={isOpenBuyerAddresses}
+              onToggleModal={() =>
+                  setIsOpenBuyerAddresses(!isOpenBuyerAddresses)
+              }
+            />
         </div>
         <hr />
         <div className="detail">
           <div className="detail-title">Subtotal</div>
           <div className="detail-amt">
-            {
-              console.log(" Subtotal  ",getTwoDecimalDigit(rest.subTotal - (rest.igst + rest.cgst + rest.sgst)))
-            }
-            <PriceDisplay amount={rest.product_price_includes_taxes ? getTwoDecimalDigit(rest.subTotal - (rest.igst + rest.cgst + rest.sgst)) : rest.subTotal} />
+            <PriceDisplay amount={cart.price} />
           </div>
         </div>
         <div className="detail">
           <div className="detail-title">Extra Discount</div>
           <div className="detail-amt discount-amt">
-            -<PriceDisplay amount={rest.extra_discount} />
-          </div>
-        </div>
-        <div className="detail">
-          <div className="detail-title">Taxable Amount:</div>
-          <div className="detail-amt">
-            <PriceDisplay amount={rest.taxable_amount} />
+            -<PriceDisplay amount={cart.total_extra_discount} />
           </div>
         </div>
         <div className="detail">
           <div className="detail-title">
-            Tax Amount&nbsp;
-            <ShowTaxesComponent
-              taxes={
-                rest.igst
-                  ? { igst: rest.igst }
-                  : { cgst: rest.cgst, sgst: rest.sgst }
-              }
-            />
-            :
+            Taxable Amount:
           </div>
           <div className="detail-amt">
-            <PriceDisplay amount={rest.igst + rest.cgst + rest.sgst} />
+            <PriceDisplay amount={getTwoDecimalDigit(cart.taxable_amount)} />
+          </div>
+        </div>
+        <div className="detail">
+          <div className="detail-title">
+            Tax Amount&nbsp;<ShowTaxesComponent taxes={
+              igst ? {igst} : {cgst,sgst}
+            } />:
+          </div>
+          <div className="detail-amt">
+            <PriceDisplay amount={cart.tax_amount} />
           </div>
         </div>
         <hr />
         <div className="detail">
           <div className="detail-title detail-total">Final Amount</div>
           <div className="detail-amt total-amt">
-            <PriceDisplay amount={rest?.total_amount} />
+            <PriceDisplay amount={getTwoDecimalDigit(cart.total_amount)} />
           </div>
         </div>
         <Button.Ripple
@@ -369,7 +475,7 @@ const Sidebar = () => {
           className="btn-block"
           onClick={onSubmit}
         >
-          {orderId ? "Update Order" : "Create Order"}
+          {!orderId ? "Create Order" : "Update Order"}
         </Button.Ripple>
       </CardBody>
     </Card>

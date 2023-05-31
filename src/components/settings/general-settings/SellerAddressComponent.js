@@ -44,9 +44,9 @@ const SellerAddressComponent = () => {
     [available_countries]
   );
 
-  useEffect(async () => {
+  useEffect(() => {
     setLoading(true)
-    await apiClient
+    apiClient
       .get("/profile/seller-address/")
       .then((response) => {
         return response.data;

@@ -1,8 +1,6 @@
 import {CreditCard, Home} from "react-feather"
 import { FaBoxes, FaUserTie } from "react-icons/fa"
-import {HiOutlineFolderAdd, HiOutlineFolder} from "react-icons/hi"
 import {MdPlaylistAddCheck, MdInput} from "react-icons/md"
-import {FiSettings} from "react-icons/fi"
 import { RiFoldersLine } from "react-icons/ri"
 import {AiOutlineUserSwitch} from "react-icons/ai"
 

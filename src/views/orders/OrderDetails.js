@@ -1,5 +1,5 @@
 import "assets/scss/pages/app-ecommerce-shop.scss";
-import { Link, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from 'react';
 
 import {
@@ -34,7 +34,7 @@ import { connect } from "react-redux";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import {GiReturnArrow} from "react-icons/gi"
-import ShowTaxesComponent from "components/orders/_orderadd/ShowTaxesComponent";
+import ShowTaxesComponent from "components/orders/__orderadd/ShowTaxesComponent";
 import Checkbox from "../../components/@vuexy/checkbox/CheckboxesVuexy";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -106,7 +106,7 @@ function OrderStatus({status_code,name, size=16}) {
   )
 }
 
-function OrderDetails({order_status_variables,order_status_options,invoice_options}) {
+function OrderDetails({order_status_variables,order_status_options,invoice_options,product_price_includes_taxes}) {
 
   const {orderId} = useParams()
   // console.log({orderId})
@@ -123,7 +123,8 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   /* ------ Order Status Variable End ----- */
 
   const sumOfTotalItemsPrice = useMemo(() => {
-    return orderData ? orderData.items.map(({price,quantity,...rest}) => price * quantity).reduce((sum,value) => (sum + value),0) : 0
+    const subTotal = orderData?.items?.map(({price,quantity,...rest}) => price * quantity).reduce((sum,value) => (sum + value),0)
+    return orderData ? product_price_includes_taxes ? subTotal - (orderData?.sgst + orderData?.cgst + orderData?.igst) : subTotal : 0
   },[orderData])
 
   const fetchOrderData = () => {
@@ -131,7 +132,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     .then(response => {
 
       // replace the order state object to order state name
-      const state_name = response.data?.address?.state.name;
+      // const state_name = response.data?.address?.state.name;
       // const _address = response.data.address ? {...response.data.address,state:state_name} : null;
       
       setIsMarkedPaid(response.data.is_paid);
@@ -152,7 +153,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     fetchOrderData()
   }, [])
 
-  const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered',"cancelled"] // Skipped 'cancelled' here as it has separate control
+  // const orderStatuses = ['awaiting_approval', 'approved', 'processed', 'dispatched', 'delivered',"cancelled"] // Skipped 'cancelled' here as it has separate control
 
   // order status change Start
   // const nextStatus = orderStatuses[orderStatuses.findIndex(s => s === orderData?.order_status) + 1]
@@ -253,7 +254,6 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     }
   }
 
-
   /* ------ Order Status Variable Start ----- */
   const handleUpdateStatusVariable = (id) => {
     const variable = orderData.status_variable_values.find((variable) => variable.id === id)
@@ -316,7 +316,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
         <Col md="10" sm="8" >
           <BreadCrumb
             breadCrumbTitle={"Order " + orderData.order_number}
-            breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</a>}
+            breadCrumbParent= {<span onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</span>}
             breadCrumbActive = {`${orderData.order_number} ${orderData.buyer_name ? `(${orderData.buyer_name})` : ""}`}
           />
         </Col>
@@ -705,6 +705,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
 const mapStateToProps = (state) => ({
   order_status_variables: state.auth.userInfo.profile.order_status_variables,
   order_status_options : state.auth.userInfo.profile.order_status_options,
+  product_price_includes_taxes:state.auth.userInfo.profile.product_price_includes_taxes,
   invoice_options:state.auth.userInfo.profile.invoice_options
 });
 

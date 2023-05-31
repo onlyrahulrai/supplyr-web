@@ -1,11 +1,7 @@
-import React from "react";
-import Select from "react-select";
-import { getApiURL } from "api/utils";
-import { customStyles } from "./Sidebar";
+import { SimpleInputField } from "components/forms/fields";
+import Translatable from "components/utils/Translatable";
+import React, { memo,useMemo } from "react";
 import { ArrowLeft, CheckCircle, Plus } from "react-feather";
-import useOrderAddContext from "context/useOrderAddContext2.0";
-import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
-import CustomAsyncPaginate from "components/common/CustomAsyncPaginate";
 import {
   Button,
   Card,
@@ -14,49 +10,18 @@ import {
   FormGroup,
   Label,
 } from "reactstrap";
-import { SimpleInputField } from "components/forms/fields";
-import Translatable from "components/utils/Translatable";
-import Swal from "components/utils/Swal";
+import { _products } from "./Main";
+import { customStyles } from "./Sidebar";
+import useOrderAddContext from "context/useOrderAddContext";
+import CustomAsyncPaginate from "components/common/CustomAsyncPaginate";
+import { getApiURL } from "api/utils";
+import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
+import Select from "react-select";
+import _Swal from "sweetalert2";
 
-const FormatOptionLabel = (props) => {
-  const { id, title, featured_image, quantity } = props;
-  const { cart } = useOrderAddContext();
+import withReactContent from "sweetalert2-react-content";
 
-  const alreadyInCart = cart.items.findIndex(
-    ({ variant }) => variant?.product.id === id
-  );
-
-  return (
-    <div className="d-flex align-items-center w-100">
-      <div>
-        <img
-          src={featured_image ? getApiURL(featured_image) : DefaultProductImage}
-          alt="featured"
-          className="float-left mr-1 img-40"
-        />
-      </div>
-      <div className="w-100 pr-5">
-        <p className="m-0" title={title}>
-          {title.length > 78 ? title.substr(0, 78) : title} -{" "}
-          {alreadyInCart !== -1 ? (
-            <span className="text-info">
-              <CheckCircle size={16} /> Added
-            </span>
-          ) : null}{" "}
-          <br />
-        </p>
-
-        <div>
-          <span
-            className={`${quantity > 0 ? "text-lightgray" : "text-danger"}`}
-          >
-            {quantity > 0 ? "In Stock" : "Out of Stock"}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
+const Swal = withReactContent(_Swal);
 
 function getVariantShortDescription(variant) {
   const desc = [
@@ -82,38 +47,122 @@ function getVariantShortDescription(variant) {
   return <span>{desc} - <b className={`${variant?.quantity > 0 ? 'text-secondary' : 'text-danger'}`}>{variant?.quantity > 0 ? "In Stock":"Out of Stock"}</b></span>;
 }
 
-const Form = () => {
-  const {cart,cartItem, dispatchCartItem, getValidGstRate, dispatchCart,getExtraDiscount  } = useOrderAddContext();
+const FormatOptionLabel = (props) => {
+  const { id, title, featured_image, quantity_all_variants: quantity } = props;
+  const { products } = useOrderAddContext();
 
-  const onChange = (e) => {
-    dispatchCartItem({type:"UPDATE_PRODUCT",payload:{[e.target.name]:e.target.value &&   parseFloat(e.target.value)}})
-  }
+  const alreadyInCart = products.findIndex(
+    ({ variant }) => variant?.product.id === id
+  );
+
+  return (
+    <div className="d-flex align-items-center w-100">
+      <div>
+        <img
+          src={featured_image ? getApiURL(featured_image) : DefaultProductImage}
+          alt="featured"
+          className="float-left mr-1 img-40"
+        />
+      </div>
+      <div className="w-100 pr-5">
+        <p className="m-0" title={title}>
+          {title.length > 78 ? title.substr(0, 78) : title} -{" "}
+          {alreadyInCart !== -1 ? (
+            <span className="text-info">
+              <CheckCircle size={16} /> Added
+            </span>
+          ) : null}{" "}
+          <br />
+        </p>
+
+        <div>
+          <span className={`${quantity > 0 ? "text-lightgray" : "text-danger"}`}>
+            {quantity > 0 ? "In Stock" : "Out of Stock"}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Form = ({ onToggleForm }) => {
+  const set_focus = false;
+  const {
+    onAddProductToCart,
+    selectedProduct,
+    onChangeSelectedProduct,
+    onChangeProduct,
+    product,
+    products,
+    isSellerAndBuyerFromTheSameState,
+    getValidGstRate,
+    calculateGstRate
+  } = useOrderAddContext();
+
+  const isProductSelected = useMemo(
+    () => (selectedProduct ? true : false),
+    [selectedProduct]
+  );
+
+  const onSelectproduct = (data) => {
+    
+    if (selectedProduct?.set_focus) {
+      data["set_focus"] = selectedProduct?.set_focus;
+    }
+
+    let variant;
+    if (data.has_multiple_variants) {
+      variant = data.variants_data[0];
+    } else {
+      variant = data.variants_data;
+    }
+
+    onChangeSelectedProduct(data);
+
+    const {
+      id,
+      price,
+      actual_price,
+      minimum_order_quantity: quantity,
+    } = variant;
+
+    const totalTaxableAmount = parseFloat((parseFloat(price) * Object.values(calculateGstRate(getValidGstRate(data.sub_categories))).reduce((sum,value) => sum + value,0))/100)
+
+    onChangeProduct({
+      variant_id:id,
+      id:null,
+      variant,
+      price:parseFloat(price),
+      actual_price:parseFloat(actual_price),
+      quantity:quantity,
+      item_note: product?.item_note,
+      extra_discount: product?.extra_discount ?? 0,
+      taxable_amount:totalTaxableAmount * parseFloat(quantity),
+      ...calculateGstRate(getValidGstRate(data.sub_categories))
+    });
+  };
 
   const validateForm = () => {
     let errors = [];
 
-    if (!cartItem.product) {
+    if (!selectedProduct) {
       errors.push("Please select the product!");
     }
 
-    if (!cartItem.price && cartItem.price !== 0) {
+    if (!product?.price) {
       errors.push("Please fill the price field");
     }
 
-    if (!cartItem.quantity) {
+    if (!product?.quantity) {
       errors.push("Please fill the quantity field");
     }
 
-    if (cartItem.product.quantity <= 0) {
+    if (product?.variant?.quantity <= 0) {
       errors.push("You've selected an out of stock item that is not allowed!");
     }
 
-    if((cartItem?.set_focus === null) && cart.items.findIndex((p) => p?.variant?.id === cartItem.variant.id) !== -1){
+    if(!selectedProduct?.set_focus && products.findIndex((p) => p.variant.id === product.variant.id) !== -1){
       errors.push(" Product is already in the cart! ")
-    }
-
-    if(cartItem.quantity < cartItem?.variant?.minimum_order_quantity){
-      errors.push(`Minimum ${cartItem?.variant?.minimum_order_quantity} quantity of this item is required!`)
     }
 
     if (errors.length > 0) {
@@ -136,58 +185,33 @@ const Form = () => {
   };
 
   const onClick = () => {
-    const isValid = validateForm()
-
-    if(isValid){
-
-      const taxes = getValidGstRate(cartItem)
-
-      const {  price, quantity } = cartItem;
-
-      const productSpecificDiscount = cart?.buyer?.product_discounts?.find((discount) => discount?.product?.variants?.includes(cartItem?.variant?.id))
-
-      const generic_discount = cart?.buyer?.generic_discount;
-  
-      const discount =  productSpecificDiscount ? getExtraDiscount(price ,productSpecificDiscount) * quantity: generic_discount ? getExtraDiscount(price ,generic_discount) * quantity : 0;
-  
-      dispatchCart({type:"ON_ADD_ITEM_TO_CART",payload:{...cartItem,...taxes,extra_discount:discount}});
-      dispatchCartItem({type:"RESET"});
+    const isvalid = validateForm();
+    if (isvalid) {
+      onAddProductToCart();
+      onToggleForm(+false);
+      onChangeSelectedProduct(null);
     }
-  }
+  };
 
-  const onChangeProduct = (product) => {
-    const variant =
-      product.has_multiple_variants
-        ? product?.variants_data[0]
-        : product?.variants_data;
+  const onChange = (e) => {
+    const _product = { ...product, [e.target.name]: e.target.value };
 
-    const {  price, minimum_order_quantity } = variant;
-
-    const set_focus = (cartItem.set_focus !== null) ? cartItem.set_focus : null;
-
-    const data = {
-      product,
-      variant,
-      price,
-      quantity: minimum_order_quantity,
-      set_focus:set_focus,
-    };
-
-    dispatchCartItem({ type: "SELECT_PRODUCT", payload:data});
+    onChangeProduct(_product);
   };
 
   return (
-    <Card className="select-product-input" id="order">
+    <Card className="select-product-input">
       <CardHeader>
         <div className="d-flex">
-          <span className="mr-1 cursor-pointer">
-            <ArrowLeft size="15" onClick={() => {
-              dispatchCart({type:"ON_CLICK_TOGGLE_FORM"})
-              dispatchCartItem({type:"RESET"})
-            }} />
+          <span className="mr-1 cursor-pointer" onClick={() => {
+            onToggleForm(+false);
+              onChangeSelectedProduct(null);
+            }}
+          >
+            <ArrowLeft size="15" />
           </span>
 
-          <span>{(cartItem.set_focus !== null) ? "Update" : "Add"} Product</span>
+          <span>{set_focus ? "Update" : "Add"} Product</span>
         </div>
       </CardHeader>
       <CardBody>
@@ -199,18 +223,17 @@ const Form = () => {
             styles={customStyles}
             formatOptionLabel={(props) => <FormatOptionLabel {...props} />}
             getOptionValue={(props) => props.id}
-            onChange={onChangeProduct}
-            value={cartItem.product ? cartItem.product : null}
+            defaultValue={selectedProduct ? selectedProduct : null}
+            onChange={onSelectproduct}
           />
         </FormGroup>
 
-        {cartItem?.product?.has_multiple_variants && (
+        {selectedProduct?.has_multiple_variants && (
           <FormGroup className="variant-field">
             <Label for="variant">Variant</Label>
 
-
             <Select
-              options={cartItem?.product?.variants_data?.map((variant) => {
+              options={selectedProduct?.variants_data?.map((variant) => {
                 const label = (
                   <div className="d-flex">
                     <div>
@@ -226,7 +249,11 @@ const Form = () => {
                     </div>
 
                     <div className="w-100">
-                      <div>{getVariantShortDescription(variant)} </div>
+                      <div>
+                        {getVariantShortDescription(variant)}
+                        {" "}
+                     
+                      </div>
                       <div className="text-lightgray">
                         &#36; {variant.price}
                       </div>
@@ -239,13 +266,18 @@ const Form = () => {
                 };
               })}
               defaultValue={{
-                label: getVariantShortDescription(cartItem?.variant),
-                value: cartItem?.variant?.id,
+                label: getVariantShortDescription(product.variant),
+                value: product.variant.id,
               }}
               onChange={({ value }) => {
-                const variant = cartItem?.product?.variants_data.find((variant) => variant.id === value);
-                
-                dispatchCartItem({type:"UPDATE_PRODUCT",payload:{variant:variant}})
+                const variant = selectedProduct?.variants_data.find(
+                  (v) => v.id === value
+                );
+                onChangeProduct({
+                  variant,
+                  price: variant?.price,
+                  quantity: variant?.minimum_order_quantity,
+                });
               }}
               styles={customStyles}
             />
@@ -256,24 +288,23 @@ const Form = () => {
           label="Sale Price"
           placeholder="Sale Price..."
           type="text"
-          value={cartItem?.price ?? 1}
+          value={product.price ?? 1}
           requiredIndicator
+          min="0"
           name="price"
           onChange={onChange}
-          disabled={!cartItem.product}
+          disabled={!isProductSelected}
         />
-
-        
 
         <SimpleInputField
           label={<Translatable text="quantity" />}
           placeholder="Quantity..."
           type="number"
-          value={cartItem?.quantity ?? cartItem?.variant?.minimum_order_quantity}
+          value={product.quantity ?? 1}
           requiredIndicator
-          min={cartItem?.variant?.minimum_order_quantity}
+          min="0"
           name="quantity"
-          disabled={!cartItem.product}
+          disabled={!isProductSelected}
           onChange={onChange}
         />
 
@@ -282,11 +313,11 @@ const Form = () => {
           color="primary"
           outline
           onClick={onClick}
-          disabled={!cartItem.product}
+          disabled={!isProductSelected}
         >
           <Plus size={14} />
           <span className="align-middle ml-25">
-            {(cartItem.set_focus !== null) ? "Update" : "Add"} Product
+            {!selectedProduct?.set_focus ? "Add" : "Update"} Product
           </span>
         </Button.Ripple>
       </CardBody>
@@ -294,4 +325,4 @@ const Form = () => {
   );
 };
 
-export default Form;
+export default memo(Form);

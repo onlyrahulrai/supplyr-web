@@ -7,11 +7,6 @@ import {
   Col,
   Button,
   Spinner,
-  Modal,
-  FormGroup,
-  ModalFooter,
-  ModalHeader,
-  ModalBody,
 } from "reactstrap";
 import { AgGridReact } from "ag-grid-react";
 
@@ -19,14 +14,11 @@ import { X, Filter, Edit3, PlusCircle } from "react-feather";
 import { history } from "../../history";
 import "assets/scss/plugins/tables/_agGridStyleOverride.scss";
 import "assets/scss/pages/users.scss";
-import { RiCheckLine, RiCheckDoubleLine, RiTruckLine } from "react-icons/ri";
 import { connect } from "react-redux";
 import Swal from "utility/sweetalert";
 import CustomPagination from "components/common/CustomPagination";
 import { OrdersApi } from "api/endpoints";
 import Select from "react-select";
-import { capitalizeString, priceFormatter } from "utility/general";
-import apiClient from "api/base";
 import PriceDisplay from "components/utils/PriceDisplay";
 
 const orderStatusLabels = {
@@ -217,34 +209,13 @@ class OrdersList extends Component {
     }
   }
 
-  async fetchBuyers(){
-    let response = undefined
-    try{
-      this.setState({isLoading:true})
-      response = await apiClient("/inventory/_seller-buyers/")
-      response = response.data
-      const buyersData = response.results
-      this.setState({
-        isLoading: false,
-        buyersData:buyersData
-      });
-    }catch(error){
-      Swal.fire("Error !", "Unable to fetch orders", "error");
-      console.log(error);
-    }
-  }
-
-
-
   switchPage(pageNumber) {
     const options = { pageNumber };
     this.state.filtersApplied && (options.filters = this.state.filtersApplied);
-    this.fetchOrders(options);
   }
 
   componentDidMount() {
     this.fetchOrders();
-    this.fetchBuyers()
   }
 
   onGridReady = (params) => {
@@ -421,111 +392,11 @@ class OrdersList extends Component {
               <div className="ag-theme-material ag-grid-table">
                 <div className="ag-grid-actions flex-wrap mb-1 border-bottom-secondary- pb-1">
                   <Row className="align-items-center">
-                    {this.isBulkOrderProcessingEnabled &&
-                    <Col lg="auto mr-auto">
-                      <Button.Ripple
-                        color="info"
-                        className="mr-1"
-                        onClick={(e) =>
-                          this.onBulkAction("change_status", "approved")
-                        }
-                      >
-                        <RiCheckLine size={16} style={{ marginRight: 10 }} />
-                        Approve
-                      </Button.Ripple>
-
-                      <Button.Ripple
-                        color="primary"
-                        className="mr-1"
-                        onClick={(e) =>
-                          this.onBulkAction("change_status", "processed")
-                        }
-                      >
-                        <RiCheckLine size={16} style={{ marginRight: 10 }} />
-                        Mark Processed
-                      </Button.Ripple>
-
-                      <Button.Ripple
-                        color="warning"
-                        className="mr-1"
-                        onClick={(e) =>
-                          this.onBulkAction("change_status", "dispatched")
-                        }
-                      >
-                        <RiTruckLine size={16} style={{ marginRight: 10 }} />
-                        Mark Dispatched
-                      </Button.Ripple>
-
-                      <Button.Ripple
-                        color="success"
-                        className="mr-1"
-                        onClick={(e) =>
-                          this.onBulkAction("change_status", "delivered")
-                        }
-                      >
-                        <RiCheckDoubleLine
-                          size={16}
-                          style={{ marginRight: 10 }}
-                        />
-                        Mark Delivered
-                      </Button.Ripple>
-                    </Col>
-                    }
                     <Col lg="auto">
                       {/* Right aligned button */}
                       <Button color="primary" onClick={() => history.push('/orders/add')}>
                         <PlusCircle size="15" className="mr-1" /> New Order
                       </Button>
-
-                      <Modal
-                        isOpen={this.state.modal}
-                        toggle={this.toggleModal}
-                        className="modal-dialog-centered"
-                      >
-                        <ModalHeader toggle={this.toggleModal}>
-                          Select Buyer:
-                        </ModalHeader>
-                        <ModalBody>
-                          <FormGroup>
-                            <Select 
-                              options={this.state.buyersData.map((result) => ({
-                                value: result.buyer.id,
-                                label: capitalizeString(result.buyer.name),
-                                email:result.buyer.email,
-                                business_name:capitalizeString(result.buyer.business_name),
-                                mobile_number:result.buyer.mobile_number
-                              }))}
-                              formatOptionLabel={(props) => {
-                                const { label, email,business_name,mobile_number } = props;
-
-                                return (
-                                  <div>
-                                    <div>
-                                      {label} {" "} ({business_name})
-                                    </div>
-                                    <div className="text-lightgray">
-                                      <span>{mobile_number}</span> | <span>{email} </span>
-                                    </div>
-                                  </div>
-                                )
-                              }}
-                              value={this.state.buyer}
-                              onChange={(value) => this.setState({ buyer: value })}
-                              styles={this.customStyles}
-                            />
-                            {this.state.error && (<small className="text-danger mt-1 text-sm">Please! select the buyer. This is required.</small>)}
-                          </FormGroup>
-                        </ModalBody>
-                        <ModalFooter>
-                          <Button
-                            color="primary"
-                            outline
-                            onClick={this.buyerSelect}
-                          >
-                            Save
-                          </Button>
-                        </ModalFooter>
-                      </Modal>
                     </Col>
                   </Row>
                 </div>

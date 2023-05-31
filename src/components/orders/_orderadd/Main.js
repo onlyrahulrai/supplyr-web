@@ -1,36 +1,45 @@
-import useOrderAddContext from "context/useOrderAddContext2.0";
-import React, { useState } from "react";
-import { Plus } from "react-feather";
-import { Button } from "reactstrap";
-import Form from "./Form";
+import React, { useState,memo } from "react";
+
 import Product from "./Product";
+import Form from "./Form";
+import { Button } from "reactstrap";
+import { Plus } from "react-feather";
+import useOrderAddContext from "context/useOrderAddContext";
+
 
 const Main = () => {
-  const {cart,cartItem,dispatchCart} = useOrderAddContext();
+  const [isOpen, setIsOpen] = useState(false);
+  const { products,selectedProduct} =
+ useOrderAddContext();
+
+  const onToggleForm = (value) => {
+    setIsOpen(value);
+  };
+
 
   return (
     <div>
-      {(cart.items.length && !cartItem.product) ? (
+      {products.length ? (
         <Button.Ripple
           color="primary"
           outline
           className="mb-1  btn-icon"
-          onClick={() => dispatchCart({type:"ON_CLICK_TOGGLE_FORM"})}
+          onClick={() => onToggleForm(+true)}
         >
           <Plus size="20" />{" "}
           <span className="align-middle ml-25">Add New Product</span>
         </Button.Ripple>
       ) : null}
 
-      {(!cart.items.length > 0 || cart.isFormOpen || cartItem.product) ? (
-        <Form />
+      {!products.length > 0 || isOpen || selectedProduct ? (
+        <Form onToggleForm={onToggleForm} />
       ) : null}
 
-      {cart.items.map((product, index) => (
+      {products.map((product, index) => (
         <Product product={product} key={index} position={index} />
       ))}
     </div>
   );
 };
 
-export default Main;
+export default memo(Main);

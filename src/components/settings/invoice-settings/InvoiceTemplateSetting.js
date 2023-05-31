@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardBody, CardHeader, Button, Badge, Spinner } from "reactstrap";
+import { Card, CardBody, CardHeader, Button} from "reactstrap";
 import { AiOutlineEye } from "react-icons/ai";
 import { FiSave } from "react-icons/fi";
 import InvoiceTemplateViewModal from "components/settings/invoice-settings/InvoiceTemplateViewModal";
@@ -16,22 +16,20 @@ const InvoiceTemplateSettings = () => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error,setError] = useState(null)
   const [invoiceTemplates,setInvoiceTemplates] = useState([])
 
   const { invoice_template } = useSelector(
     (state) => state.auth.userInfo.profile
   );
 
-  React.useEffect(async () => {
+  React.useEffect(() => {
     setLoading(true)
-    await apiClient.get('orders/invoice-templates/')
+    apiClient.get('orders/invoice-templates/')
     .then((response) => {
       setInvoiceTemplates(response.data)
       setLoading(false)
     })
     .catch((error) => {
-      setError(error.message)
       setLoading(false)
     })
   },[])

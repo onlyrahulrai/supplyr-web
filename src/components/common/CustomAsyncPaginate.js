@@ -10,7 +10,9 @@ const CustomAsyncPaginate = ({ path, value,onChange, ...rest }) => {
     page: 1,
   };
 
-  const loadOptions = async (search, page) => {
+  
+  
+  const loadOptions = async (search, page) => {   
     const url =
       search.length || page
         ? `${path}?${new URLSearchParams({ search, page })}`
@@ -36,7 +38,7 @@ const CustomAsyncPaginate = ({ path, value,onChange, ...rest }) => {
 
  const loadPageOptions = async (q, prevOptions, { page }) => {
     const { options, hasMore } = await loadOptions(q, page);
-
+    console.log(" Custom Async Paginate ",q)
     return {
       options,
       hasMore,

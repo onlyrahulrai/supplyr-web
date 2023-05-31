@@ -50,7 +50,7 @@ const Transaction = (props) => {
   const sellerBuyerConnections = async () => {
     setIsLoading(true);
     await apiClient
-      .get("/inventory/_seller-buyers/", {
+      .get("discounts/seller-contact-with-buyers/", {
         params: {
           pagination: "False",
         },
@@ -286,8 +286,13 @@ const Transaction = (props) => {
                                       userId={props.userId}
                                     />
                                   </td>
-                                  <td>{ledger?.payment && ledger?.amount}</td>
-                                  <td>{ledger?.order && ledger?.amount}</td>
+                                  <td>{!(ledger.transaction_type === "order_created") ? ledger?.amount : null}</td>
+                                  
+                                  <td>
+                                    {
+                                      (ledger.transaction_type === "order_created") ? ledger?.amount : null
+                                    } 
+                                  </td>
                                   <td>{ledger.balance}</td>
                                 </tr>
                               ))}

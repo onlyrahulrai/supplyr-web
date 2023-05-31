@@ -6,7 +6,7 @@ import {connect} from "react-redux"
 
 
 const OrderPrefixSetting = (props) => {
-    const {order_number_prefix,user_settings} = props
+    const {order_number_prefix} = props
     const [value,setValue] = useState(order_number_prefix || "")
 
 

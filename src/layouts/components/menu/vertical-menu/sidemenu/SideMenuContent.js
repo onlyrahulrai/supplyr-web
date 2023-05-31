@@ -115,7 +115,6 @@ class SideMenuContent extends Component {
         activeGroups:["inventory"],
         currentActiveGroup:["inventory"],
         tempArr:["inventory"],
-        activeGroup:["inventory"],
       })
     }
   }
@@ -141,7 +140,6 @@ class SideMenuContent extends Component {
           activeGroup:["inventory"],
           currentActiveGroup:["inventory"],
           tempArr:["inventory"],
-          activeGroup:["inventory"],
         })
       }
     }

@@ -2,7 +2,7 @@ import apiClient from "api/base";
 import { connect } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { Card, CardBody, Col, Row, Spinner, Table, Button } from "reactstrap";
-import { Delete, Edit2, PlusCircle, Trash } from "react-feather";
+import { Edit2, PlusCircle, Trash } from "react-feather";
 import Swal from "sweetalert2";
 import { history } from "../../history";
 import NetworkError from "components/common/NetworkError";
@@ -11,7 +11,6 @@ const CategoryList = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingError, setLoadingError] = useState(null);
   const [categories, setCategories] = useState([]);
-  const seller = props.user.name;
 
   useEffect(() => {
     apiClient

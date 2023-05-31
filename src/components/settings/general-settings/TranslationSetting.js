@@ -6,7 +6,6 @@ import {connect} from "react-redux"
 
 
 const TranslationSetting = (props) => {
-    const {user_setting_config,...rest} = props;
     const [translations,setTranslations] = useState(props.translations)
 
     const handleSubmit = async (e) => {

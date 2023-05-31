@@ -5,7 +5,6 @@ import "../../assets/scss/plugins/tables/_agGridStyleOverride.scss";
 import { Component } from "react";
 import { getApiURL } from "api/utils";
 import ProductDummyImage from "assets/img/svg/cart.svg";
-import { priceFormatter } from "utility/general";
 import Swal from "sweetalert2";
 import {
   Button,

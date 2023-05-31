@@ -1,5 +1,5 @@
 import apiClient from "api/base";
-import useOrderAddContext from "context/useOrderAddContext";
+import useOrderAddContext from "context/useOrderAddContext2.0";
 import React, { useEffect,useState } from "react";
 import {
   Modal,
@@ -24,7 +24,7 @@ const defaultOptions = {
 const CreateBuyerModal = ({ isOpen, onToggleModal,searchInput }) => {  
   const [data, setData] = useState(defaultOptions);
   const [loading,setLoading] = useState(false);
-
+  const {cart,seller_address,dispatchCart,getExtraDiscount,getValidGstRate,setIsOpenBuyerAddressCreateModal} = useOrderAddContext()
   useEffect(() => {
     if(searchInput){
       const object = new Object();
@@ -40,16 +40,51 @@ const CreateBuyerModal = ({ isOpen, onToggleModal,searchInput }) => {
     }
   },[setData,searchInput])
 
-  const {setBuyer,setIsOpenBuyerAddressCreateModal,setOrderInfo} = useOrderAddContext()
-
   const onSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
+
     await apiClient.post("/profile/buyer-create/",data)
     .then((response) => {
-      setBuyer(response.data)
+      const data = response.data;
 
-      setOrderInfo((prevState) => ({...prevState,buyer_id:response.data.id}))
+      const address = data.address.length ? data.address[0] : null;
+
+      const extraOptions = {
+        buyer:data,
+        buyer_id:data?.id,
+        address:address,
+        address_id:address?.id
+      }
+
+      dispatchCart({
+        type: "ON_SELECT_BUYER",
+        payload: extraOptions
+      });
+
+      const items = cart?.items?.map((item) => {
+        const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
+
+        const productSpecificDiscount = data.product_discounts.find(
+          (discount) =>
+            discount.product.variants.includes(item?.variant?.id)
+        );
+
+        const generic_discount = data?.generic_discount;
+
+        const extra_discount =  productSpecificDiscount ? getExtraDiscount(item?.price ,productSpecificDiscount) * item?.quantity: generic_discount ? getExtraDiscount(item?.price ,generic_discount) * item?.quantity : 0;
+
+        return {
+          ...item,
+          extra_discount,
+          ...getValidGstRate(item,isSellerAndBuyerFromSameOrigin)
+        }
+      });
+
+      dispatchCart({
+        type: "ON_UPDATE_CART_ITEMS",
+        payload: items,
+      });
 
       setData(defaultOptions)
       onToggleModal()

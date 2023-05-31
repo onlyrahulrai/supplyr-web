@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import {
-  Card,
-  CardBody,
   Nav,
   NavItem,
   NavLink,
@@ -10,7 +8,6 @@ import {
 } from "reactstrap";
 import "../../../assets/scss/pages/account-settings.scss";
 import classnames from "classnames";
-import {_CurrenciesData} from "../../../assets/data/CurrenciesData"
 import InvoicePrefixSetting from "components/settings/invoice-settings/InvoicePrefixSetting";
 import { connect } from "react-redux";
 import InvoiceTemplateSetting from "../../../components/settings/invoice-settings/InvoiceTemplateSetting";

@@ -5,54 +5,69 @@ import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import React, { useEffect, useState } from "react";
 import { Clipboard, Check, Edit3, X } from "react-feather";
-import { Button, Card, CardBody, FormGroup, Input, Label } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  FormGroup,
+  Input,
+  Label,
+} from "reactstrap";
 import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
-import { useOrderAddContext } from "../../../context/OrderAddContext";
+import useOrderAddContext from "../../../context/useOrderAddContext2.0";
 import EditExtraDiscountComponent from "./EditExtraDiscountComponent";
 
+
 const Product = (props) => {
-  const { items, onChangeStateByKeyValue, onChangeInItemsValue, setCartItem,onRemoveItemFromCart } =
-    useOrderAddContext();
+  const { cart, dispatchCart, dispatchCartItem,getValidGstRate } = useOrderAddContext();
   const [fieldName, setFieldName] = useState("");
 
-  const { variant, price, quantity, extra_discount, item_note } = props.product;
+  const {
+    variant,
+    price,
+    quantity,
+    extra_discount,
+    item_note,
+  } = props.product;
 
-  const [extraDiscount, setExtraDiscount] = useState(extra_discount);
-
-  // console.log(" Extra Discount ",extraDiscount)
-
+  const [extraDiscount, setExtraDiscount] = useState(0);
   const [itemNote, setItemNote] = useState(item_note);
 
   useEffect(() => {
-    setExtraDiscount(extra_discount);
-  }, [props]);
+      setExtraDiscount(extra_discount)
+  },[props])
 
   const onClickUpdateProduct = async (id) => {
     await apiClient(`orders/product/${id}`)
       .then((response) => {
-        setCartItem({
-          ...props.product,
-          product: response.data,
-          set_focus: props.position,
+        dispatchCartItem({
+          type: "ON_LOAD_ORDER_ITEM",
+          payload: {
+            ...props.product,
+            product: response.data,
+            set_focus: props.position,
+          },
         });
+        dispatchCart({ type: "ON_CLICK_TOGGLE_FORM" });
       })
       .catch((error) => console.log(" ----- Error ----- ", error));
   };
 
+  const onRemoveProductFromCart = (id) => {
+    dispatchCart({ type: "ON_REMOVE_ITEM_FROM_CART", payload: id });
+  };
+
   const onUpdateExtraDiscount = () => {
-    const cartitems = items.map((item, index) => {
+    const items = cart.items.map((item, index) => {
       if (index === props.position) {
-        const cartitem = {
-          ...item,
-          extra_discount: parseFloat(extraDiscount || 0),
-        };
-        return { ...cartitem };
+        const _item = { ...item, extra_discount: (extraDiscount || 0) }
+
+        return {..._item,...getValidGstRate(_item)}
       }
       return item;
     });
 
-    onChangeInItemsValue(cartitems);
-
+    dispatchCart({ type: "ON_UPDATE_CART_ITEMS", payload: items });
     setFieldName("");
   };
 
@@ -93,18 +108,19 @@ const Product = (props) => {
                 Item Price (Per Unit): <PriceDisplay amount={price} />
               </p>
             </div>
-
-            <div
-              className="delivery-date w-100 d-flex flex-column"
-              style={{ marginTop: "0.5rem" }}
-            >
-              {variant.product.has_multiple_variants ? (
-                <div className="item-company mb-half">
-                  <div className="company-name">
-                    <VariantLabel variantData={variant} />
+            
+            <div className="delivery-date w-100 d-flex flex-column" style={{marginTop:"0.5rem"}}>
+              {
+                variant.product.has_multiple_variants ? (
+                  <div className="item-company mb-half">
+                    <div className="company-name">
+                      <VariantLabel
+                          variantData={variant}
+                          />
+                    </div>
                   </div>
-                </div>
-              ) : null}
+                ) : null
+              }
 
               {!fieldName || fieldName !== "item_note" ? (
                 <>
@@ -115,7 +131,9 @@ const Product = (props) => {
                       onClick={() => setFieldName("item_note")}
                     >
                       <span>
-                        <Clipboard size={24} />
+                        <Clipboard
+                          size={24}
+                        />
                         &nbsp;
                         <strong>ADD AN NOTE ITEM</strong>
                       </span>
@@ -153,54 +171,52 @@ const Product = (props) => {
                   <Check
                     size={24}
                     onClick={() => {
-                      const cartitems = items.map((item, index) => {
+                      const items = cart.items.map((item, index) => {
                         return index === props.position
                           ? { ...item, item_note: itemNote }
                           : item;
                       });
-
-                      onChangeStateByKeyValue("items", cartitems);
-
+                      dispatchCart({
+                        type: "ON_UPDATE_CART_ITEMS",
+                        payload: items,
+                      });
                       setFieldName("");
                     }}
                     className="text-primary border mt-1 ml-1 rounded-full border-primary cursor-pointer"
                   />
                 </div>
               ) : null}
+
             </div>
+
+            
+
           </div>
         </CardBody>
         <div className="item-options text-center">
           <div className="item-wrapper">
             <div className="item-cost">
               <span className="item-price">
-                <small style={{ fontWeight: "bold" }}>
-                  Price: <PriceDisplay amount={price * quantity} />
-                </small>
-              </span>
-              <br />
+                <small style={{fontWeight:"bold"}}>Price: <PriceDisplay amount={price * quantity} /></small>
+              </span><br />
               <span className="item-price">
-                <small style={{ fontWeight: "bold" }}>
-                  Extra Discount:{" "}
-                  <PriceDisplay amount={extraDiscount ? extraDiscount : 0} />
-                </small>
-                {!fieldName || fieldName !== "extra_discount" ? (
-                  <Edit3
-                    size={24}
-                    onClick={() => setFieldName("extra_discount")}
-                    color="blue"
-                    className="ml-0"
-                  />
+                  <small style={{fontWeight:"bold"}}>Extra Discount: <PriceDisplay amount={extraDiscount ? extraDiscount : 0} /></small>{!fieldName || fieldName !== "extra_discount" ? (
+                    <Edit3
+                      size={24}
+                      onClick={() => setFieldName("extra_discount")}
+                      color="blue"
+                      className="ml-0"
+                    />
                 ) : null}
               </span>
 
-              <EditExtraDiscountComponent
-                isOpen={fieldName === "extra_discount"}
+              <EditExtraDiscountComponent 
+                isOpen={(fieldName === "extra_discount")} 
                 productPrice={price * quantity}
-                onToggleModal={() => setFieldName("")}
-                onSave={onUpdateExtraDiscount}
-                extraDiscount={extraDiscount}
-                setExtraDiscount={setExtraDiscount}
+                onToggleModal={() => setFieldName("")} 
+                onSave={onUpdateExtraDiscount} 
+                extraDiscount={extraDiscount} 
+                setExtraDiscount={setExtraDiscount} 
               />
             </div>
           </div>
@@ -208,14 +224,18 @@ const Product = (props) => {
             <Button.Ripple
               color="primary"
               onClick={() => {
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
                 onClickUpdateProduct(variant?.product?.id);
               }}
             >
               <Edit3 size={15} />
             </Button.Ripple>
 
-            <Button.Ripple color="danger" className="ml-1" onClick={() => onRemoveItemFromCart(props.position)}>
+            <Button.Ripple
+              color="danger"
+              className="ml-1"
+              onClick={() => onRemoveProductFromCart(props.position)}
+            >
               <X size={15} />
             </Button.Ripple>
           </div>

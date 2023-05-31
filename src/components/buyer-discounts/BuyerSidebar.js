@@ -28,15 +28,13 @@ class BuyerSidebar extends React.Component {
     };
   }
 
-  
-
   fetchBuyers = () => {
     this.setState({ loading: true });
     let url;
     if (this.state.value) {
-      url = `inventory/_seller-buyers/?search=${this.state.value}&page=${this.state.page}&size=${8}`;
+      url = `discounts/seller-contact-with-buyers/?search=${this.state.value}&page=${this.state.page}&size=${8}`;
     } else {
-      url = `inventory/_seller-buyers/?page=${this.state.page}&size=${8}`;
+      url = `discounts/seller-contact-with-buyers/?page=${this.state.page}&size=${8}`;
     }
 
     apiClient.get(url).then((res) => {
@@ -77,12 +75,7 @@ class BuyerSidebar extends React.Component {
     this.debouncedLog(e.target.value)
   }
 
-
-
-  
-
   render() {
-    console.log("---- state ---- ", this.state.buyers);
     return (
       <React.Fragment>
         <div className="mr-2 mt-1">
@@ -111,10 +104,9 @@ class BuyerSidebar extends React.Component {
                 key={index}
                 title={connection.buyer.business_name}
                 discount={connection?.generic_discount}
-                noOfProducts={connection?.product_discounts.length}
+                noOfProducts={connection?.discount_assigned_products_length}
                 buyerName={`${capitalizeString(connection.buyer.name)} (${connection.buyer.email})`}
-                onClick={() => this.props.onClick(connection)}
-                buyer={this.props.buyer}
+                buyer={connection.buyer}
               />
           ))}
           <div className="d-flex align-items-center pb-5 justify-content-center">

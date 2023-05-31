@@ -1,11 +1,11 @@
 import { Component, lazy } from "react";
 import { connect } from "react-redux";
 import Wizard from "components/profiling/ProfilingWizardComponent";
-import { UserCheck, FileText, CheckCircle, Package} from "react-feather";
+import { UserCheck, FileText, CheckCircle} from "react-feather";
 
 const Verification = lazy(() => import("./_Verification"));
 const Profiling = lazy(() => import("./_Profiling"));
-const Categories = lazy(() => import("./_Categories"));
+// const Categories = lazy(() => import("./_Categories"));
 const Approval = lazy(() => import("./_Approval"));
 
 class ProfilingWizard extends Component {
