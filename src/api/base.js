@@ -41,6 +41,7 @@ apiClient.authorize = token => {
 }
 
 apiClient.deauthorize = () => {
+    localStorage.removeItem("token")
     delete apiClient.defaults.headers.common['Authorization'];
 }
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Card, CardBody, CardHeader, Button, Badge } from "reactstrap";
-import invoiceTemplateData from "../../../assets/data/InvoiceTemplateData";
+import { Card, CardBody, CardHeader, Button, Badge, Spinner } from "reactstrap";
 import { AiOutlineEye } from "react-icons/ai";
 import { FiSave } from "react-icons/fi";
 import InvoiceTemplateViewModal from "components/settings/invoice-settings/InvoiceTemplateViewModal";
@@ -9,19 +8,36 @@ import _Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import { Check } from "react-feather";
 import { useSelector } from "react-redux";
+import { getMediaURL } from "api/utils";
 
 const Swal = withReactContent(_Swal);
 
 const InvoiceTemplateSettings = () => {
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { template: template_slug } = useSelector(
-    (state) => state.auth.userInfo.profile.invoice_options
+  const [loading, setLoading] = useState(true);
+  const [error,setError] = useState(null)
+  const [invoiceTemplates,setInvoiceTemplates] = useState([])
+
+  const { invoice_template } = useSelector(
+    (state) => state.auth.userInfo.profile
   );
 
+  React.useEffect(async () => {
+    setLoading(true)
+    await apiClient.get('orders/invoice-templates/')
+    .then((response) => {
+      setInvoiceTemplates(response.data)
+      setLoading(false)
+    })
+    .catch((error) => {
+      setError(error.message)
+      setLoading(false)
+    })
+  },[])
+
   const onClick = (id) => {
-    const template = invoiceTemplateData.find((template) => template.id === id);
+    const template = invoiceTemplates.find((template) => template.id === id);
     setSelectedTemplate(template);
     setIsOpen((prevState) => !prevState);
   };
@@ -29,11 +45,8 @@ const InvoiceTemplateSettings = () => {
   const onSave = async (template) => {
     setLoading(true);
     const data = {
-      setting: "invoice-template-setting",
-      data: {
-        template: template.slug,
-      },
-    };
+      invoice_template: template.id,
+    }
 
     await apiClient
       .put("profile/seller-profile-settings/", data)
@@ -53,7 +66,7 @@ const InvoiceTemplateSettings = () => {
         });
         setLoading(false);
       });
-  };
+  }; 
 
   return (
     <Card>
@@ -61,10 +74,10 @@ const InvoiceTemplateSettings = () => {
         <h2>Invoice Template Settings</h2>
       </CardHeader>
       <CardBody className="card-columns">
-        {invoiceTemplateData.map((template, index) => (
+        {invoiceTemplates.map((template, index) => (
           <Card key={index}>
             <img
-              src={template.picture}
+              src={getMediaURL(template.image_url)}
               alt={template.name}
               className="w-100 rounded card-img-top border"
             />
@@ -72,7 +85,7 @@ const InvoiceTemplateSettings = () => {
               <div className="d-flex justify-content-between">
                 <h4>{template.name}</h4>
 
-                {template_slug === template.slug ? (
+                {invoice_template === template.id ? (
                   <span className="rounded text-warning">
                     Selected <Check  />
                   </span>
@@ -90,7 +103,7 @@ const InvoiceTemplateSettings = () => {
                 <Button.Ripple
                   color="primary"
                   onClick={() => onSave(template)}
-                  disabled={loading ||template_slug === template.slug }
+                  disabled={loading || invoice_template === template.id }
                 >
                   <FiSave /> Save
                 </Button.Ripple>
@@ -101,7 +114,7 @@ const InvoiceTemplateSettings = () => {
                   onToggle={() => setIsOpen(!isOpen)}
                   template={selectedTemplate}
                   onSave={onSave}
-                  name={template_slug}
+                  invoice_template={invoice_template}
                 />
               ) : null}
             </CardBody>

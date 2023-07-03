@@ -10,7 +10,7 @@ const Main = () => {
 
   return (
     <div>
-      {cart.items.length ? (
+      {(cart.items.length && !cartItem.product) ? (
         <Button.Ripple
           color="primary"
           outline

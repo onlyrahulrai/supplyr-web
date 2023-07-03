@@ -39,18 +39,16 @@ const OrderPrefixSetting = (props) => {
         <CardBody>
           <Form onSubmit={handleSubmit} className='pb-2'>
               
-                {
-                  user_settings?.translatables.includes("order_number_prefix") && (
-                    <FormGroup row className='align-item-center'>
-                      <Col md="3" className='d-flex align-items-center'>
-                          <Label>Order number prefix</Label>
-                      </Col>
-                      <Col md="9">
-                        <Input type="text" placeholder="Add order number prefix..." name='order_number_prefix' onChange={(e) => setValue(e.target.value)} value={value}  />
-                      </Col>
-                    </FormGroup>
-                  )
-                }
+                
+            <FormGroup row className='align-item-center'>
+              <Col md="3" className='d-flex align-items-center'>
+                <Label>Order number prefix</Label>
+              </Col>
+              <Col md="9">
+                <Input type="text" placeholder="Add order number prefix..." name='order_number_prefix' onChange={(e) => setValue(e.target.value)} value={value}  />
+              </Col>
+            </FormGroup>
+                  
                 
               <FormGroup row>
                 <Col md={{size:9,offset:3}} >

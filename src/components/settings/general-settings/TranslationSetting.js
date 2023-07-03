@@ -34,24 +34,22 @@ const TranslationSetting = (props) => {
         <CardBody>
           <Form onSubmit={handleSubmit} className='pb-2'>
               
-                {
-                  user_setting_config?.translatables.includes("quantity") && (
-                    <FormGroup row className='align-item-center'>
-                      <Col md="3" className='d-flex align-items-center'>
-                          <Label>Quantity Translation</Label>
-                      </Col>
-                      <Col md="9">
-                        <Input type="text" placeholder="Add quantity translation..." name='quantity' onChange={(e) => setTranslations((prevState) => ({...prevState,quantity:e.target.value}))} value={translations?.quantity || ""} maxLength={25} required />
-                      </Col>
-                    </FormGroup>
-                  )
-                }
+               
+            <FormGroup row className='align-item-center'>
+              <Col md="3" className='d-flex align-items-center'>
+                <Label>Quantity Translation</Label>
+              </Col>
+              <Col md="9">
+                <Input type="text" placeholder="Add quantity translation..." name='quantity' onChange={(e) => setTranslations((prevState) => ({...prevState,quantity:e.target.value}))} value={translations?.quantity || ""} maxLength={25} required />
+              </Col>
+            </FormGroup>
+                 
                 
-              <FormGroup row>
-                <Col md={{size:9,offset:3}} >
-                  <Button.Ripple type="submit" color="primary">Save</Button.Ripple>
-                </Col>
-              </FormGroup>
+            <FormGroup row>
+              <Col md={{size:9,offset:3}} >
+                <Button.Ripple type="submit" color="primary">Save</Button.Ripple>
+              </Col>
+            </FormGroup>
           </Form>
         </CardBody>
       </Card>

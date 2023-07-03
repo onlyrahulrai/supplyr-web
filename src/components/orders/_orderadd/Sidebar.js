@@ -69,21 +69,22 @@ const NoOptionsMessage = (props) => {
                   },
                 });
 
-
                 const items = cart.items.map((item) => {
-                  const discount = data.product_discounts.find(
+                  const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
+
+                  const productSpecificDiscount = data.product_discounts.find(
                     (discount) =>
                       discount.product.variants.includes(item?.variant?.id)
                   );
 
-                  const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
+                  const generic_discount = data?.generic_discount;
 
-                  let extra_discount = discount ? getExtraDiscount(item.price,discount) * item.quantity : 0;
+                  const extra_discount =  productSpecificDiscount ? getExtraDiscount(item?.price ,productSpecificDiscount) * item?.quantity: generic_discount ? getExtraDiscount(item?.price ,generic_discount) * item?.quantity : 0;
 
                   return {
                     ...item,
                     extra_discount,
-                    ...getValidGstRate({...item,extra_discount},isSellerAndBuyerFromSameOrigin)
+                    ...getValidGstRate(item,isSellerAndBuyerFromSameOrigin)
                   }
                 });
 
@@ -94,15 +95,15 @@ const NoOptionsMessage = (props) => {
                 setBuyerSearchInput("");
                 
                 toast.success(
-                  `Seller connected with buyer (${data.business_name})`
+                  `Seller connected with buyer (${data?.business_name})`
                 );
               })
               .catch((error) => {
-                console.log(" ---- Error ---- ", error);
+                toast.error("Couldn't search buyers.")
               });
           }
         })
-        .catch((error) => console.log(" ----- Failed to search buyer ----- ",error));
+        .catch((error) => toast.error("Couldn't search buyers."));
     } else {
       setIsOpenBuyerCreateModal((prevState) => !prevState);
     }
@@ -140,6 +141,7 @@ const Sidebar = () => {
     getValidGstRate,
     seller_address,
   } = useOrderAddContext();
+
   const [isOpenBuyerAddresses, setIsOpenBuyerAddresses] = useState(false);
   const [isBuyerLoading,setIsBuyerLoading] = useState(false)
 
@@ -262,8 +264,6 @@ const Sidebar = () => {
                 onChange={async (data) => {
                   setIsBuyerLoading(true)
 
-                  console.log(" ----- Data ----- ",data)
-
                   await apiClient
                   .get(`/inventory/seller-buyers/${data?.id}`)
                   .then((response) => {
@@ -284,16 +284,18 @@ const Sidebar = () => {
                       setIsBuyerLoading(false)
 
                       const items = cart.items.map((item) => {
+
+                        const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
                         
-                        const discount = data.product_discounts.find(
+                        const productSpecificDiscount = data.product_discounts.find(
                           (discount) =>
                             discount.product.variants.includes(item?.variant?.id)
                         );
 
-                        const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
+                        const generic_discount = data?.generic_discount;
 
-                        let extra_discount = discount ? getExtraDiscount(item.price,discount) * item.quantity : 0;
-
+                        const extra_discount =  productSpecificDiscount ? getExtraDiscount(item?.price ,productSpecificDiscount) * item?.quantity: generic_discount ? getExtraDiscount(item?.price ,generic_discount) * item?.quantity : 0;
+                        
                         return {
                           ...item,
                           extra_discount,
@@ -308,7 +310,9 @@ const Sidebar = () => {
 
                       setIsMenuOpen(false);
                     })
-                    .catch((error) => console.log(" ---- Error ---- ",error));
+                    .catch((error) => {
+                      toast.error("couldn't select the buyer...")
+                    });
                 }}
 
                 menuIsOpen={isMenuOpen}

@@ -1,5 +1,5 @@
 import "assets/scss/pages/app-ecommerce-shop.scss";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useMemo, useState } from 'react';
 
 import {
@@ -201,7 +201,9 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
     await apiClient.post("/orders/generate-invoice/",data)
     .then((response) => {
       setIsLoading(false)
-      history.push(`/orders/${orderId}/invoice/${response.data.id}`)
+      console.log(" ----- Invoice Data ----- ",response.data)
+      // history.push(`/orders/${orderId}/invoice/${response.data.id}`)
+      window.open(getMediaURL(response.data.invoice_pdf))
     })
     .catch((error) => {
       Swal.fire({
@@ -680,8 +682,9 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
             </>
           }
 
-          {isAllowedToGenerateInvoice(invoice_options.generate_at_status).includes(orderData.order_status) &&
-              <Button.Ripple color="warning" block className="btn-block mt-2" onClick={handleGenerateInvoice}>
+          {isAllowedToGenerateInvoice(invoice_options.generate_at_status).includes(orderData.order_status) && 
+              <Button.Ripple color="warning" block className="btn-block mt-2" onClick={orderData?.invoice?.order ? () => window.open(getMediaURL(orderData?.invoice?.invoice_pdf),'_blank'): handleGenerateInvoice}>
+              {/* <Button.Ripple color="warning" block className="btn-block mt-2" onClick={handleGenerateInvoice}> */}
                 <BsReceipt size={20} color={"white"} />
                 {orderData?.invoice?.order ? " View Invoice" :" Generate Invoice" }
               </Button.Ripple>
