@@ -104,7 +104,7 @@ function DetailPage(props) {
       <Fragment>
         <BreadCrumb
           breadCrumbTitle="Product Details"
-          breadCrumbParent={<a href="#" onClick={e => { e.preventDefault(); history.push(`/products/`) }}>All Products</a>}
+          breadCrumbParent={<span onClick={e => { e.preventDefault(); history.push(`/products/`) }}>All Products</span>}
           breadCrumbActive={productData.title}
         />
 

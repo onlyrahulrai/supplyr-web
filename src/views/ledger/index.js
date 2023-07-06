@@ -27,6 +27,7 @@ import withReactContent from "sweetalert2-react-content";
 import DescriptionComponent from "./DescriptionComponent";
 import { connect } from "react-redux";
 import CustomPagination from "components/common/CustomPagination";
+import { MdOutlineNoteAlt } from "react-icons/md";
 
 const Swal = withReactContent(_Swal);
 
@@ -49,7 +50,7 @@ const Transaction = (props) => {
   const sellerBuyerConnections = async () => {
     setIsLoading(true);
     await apiClient
-      .get("/inventory/_seller-buyers/", {
+      .get("discounts/seller-contact-with-buyers/", {
         params: {
           pagination: "False",
         },
@@ -263,6 +264,19 @@ const Transaction = (props) => {
                               </tr>
                             </thead>
                             <tbody>
+                              {
+                                !ledgers?.data?.length ? (
+                                  <tr>
+                                    <td colSpan={5} className="text-center">
+                                      <div className="d-flex justify-content-center align-items-center flex-column" style={{minHeight:"298px"}}>
+                                        <MdOutlineNoteAlt size={32} className="text-danger" /> 
+                                        No Ledger Found
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ) : null
+                              }
+
                               {ledgers?.data?.map((ledger, index) => (
                                 <tr key={index}>
                                   <td>{formateDate(ledger.created_at)}</td>
@@ -272,8 +286,13 @@ const Transaction = (props) => {
                                       userId={props.userId}
                                     />
                                   </td>
-                                  <td>{ledger?.payment && ledger?.amount}</td>
-                                  <td>{ledger?.order && ledger?.amount}</td>
+                                  <td>{!(ledger.transaction_type === "order_created") ? ledger?.amount : null}</td>
+                                  
+                                  <td>
+                                    {
+                                      (ledger.transaction_type === "order_created") ? ledger?.amount : null
+                                    } 
+                                  </td>
                                   <td>{ledger.balance}</td>
                                 </tr>
                               ))}

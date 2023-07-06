@@ -18,6 +18,10 @@ const DescriptionComponent = (props) => {
         description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> <strong>cancelled by</strong> {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
     }
 
+    else if(ledger.transaction_type === "order_returned"){
+        description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> <strong>returned by</strong> {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
+    }
+
     else if(ledger.transaction_type === "order_created"){
         description = <p>Order <Link to={`/orders/${ledger.order.order_number}`}>#{ledger.order.order_number}</Link> <strong>created by</strong> {checkCreatedBy(userId,ledger?.order?.created_by)}</p>
     }

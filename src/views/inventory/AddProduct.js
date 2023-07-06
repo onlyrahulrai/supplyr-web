@@ -882,7 +882,7 @@ function AddProduct(props) {
 
   const [tags, setTags] = useState([...props.profile.tags]);
   const [vendors, setVendors] = useState([...props.profile.vendors]);
-  const [country, setCountry] = useState([...CountryData]);
+  const [country] = useState([...CountryData]);
   const [allowInventoryTracking, setAllowInventoryTracking] = useState("no");
   const [allowOverselling, setAllowOverselling] = useState("no");
 
@@ -1084,22 +1084,21 @@ function AddProduct(props) {
 
   console.log("Basic Data------>>>>>>>",basicData.weight_value ? true : false);
 
-  return (
+return (
     <>
       <h4></h4>
       <BreadCrumb
         breadCrumbTitle={productSlug ? "EDIT PRODUCT" : "ADD NEW PRODUCT"}
         breadCrumbActive={initialData?.title ?? "New Product"}
         breadCrumbParent={
-          <a
-            href="#"
+          <span
             onClick={(e) => {
               e.preventDefault();
               history.push(`/products/`);
             }}
           >
             All Products
-          </a>
+          </span>
         }
       />
       <hr />
@@ -1139,7 +1138,7 @@ function AddProduct(props) {
                   filterOption={({ label, value, data }, searchString) => {
                     if (!searchString) return true;
                     const subcat = props.profile.sub_categories.filter(
-                      (sc) => sc.id == value
+                      (sc) => sc.id === value
                       );
                       
                     // return false

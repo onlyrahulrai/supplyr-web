@@ -8,7 +8,6 @@ import {
 } from "reactstrap";
 import "../../../assets/scss/pages/account-settings.scss";
 import classnames from "classnames";
-import {_CurrenciesData} from "../../../assets/data/CurrenciesData"
 import CurrencySetting from "components/settings/general-settings/CurrencySetting";
 import TranslationSetting from "components/settings/general-settings/TranslationSetting";
 import { connect } from "react-redux";

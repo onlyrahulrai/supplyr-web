@@ -33,8 +33,8 @@ const Invoice =  () => {
             <React.Fragment>
                 <BreadCrumb
                     breadCrumbTitle={"Invoice for Order #" + orderId}
-                    breadCrumbParent= {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</a>}
-                    breadCrumbActive = {<a href="#" onClick={e => {e.preventDefault(); history.push(`/orders/${orderId}`)}}>{`Order #${orderId}`}</a>}
+                    breadCrumbParent= {<span onClick={e => {e.preventDefault(); history.push(`/orders/`)}}>All Orders</span>}
+                    breadCrumbActive = {<span onClick={e => {e.preventDefault(); history.push(`/orders/${orderId}`)}}>{`Order #${orderId}`}</span>}
                 />
                 <Row>
                 <Col className="mb-1 invoice-header" md="5" sm="12">

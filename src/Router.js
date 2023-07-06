@@ -5,12 +5,15 @@ import { history } from "./history";
 import { connect } from "react-redux";
 import Spinner from "./components/@vuexy/spinner/Loading-spinner";
 import { ContextLayout } from "./utility/context/Layout";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 
 // import { OrderAddProvider } from "context/useOrderAddContext";
 
-import { OrderAddProvider } from "context/useOrderAddContext2.0";
+import  OrderAddProvider  from "context/OrderAddContext";
 
 import { InvoiceProvider } from "context/useInvoiceContext";
+import { BuyerDiscountProvider } from "context/useBuyerDiscountContext";
 
 // Route-based code splitting
 const Home = lazy(() => import("./views/pages/Home"));
@@ -38,7 +41,7 @@ const OrderDetails = lazy(() => import("views/orders/OrderDetails"));
 
 // const OrderAdd = lazy(() => import("views/orders/OrderAdd"));
 
-const OrderAdd = lazy(() => import("views/orders/_OrderAdd"));
+const OrderAdd = lazy(() => import("views/orders/OrderAdd"));
 
 const Ledger = lazy(() => import("views/ledger"))
 
@@ -238,7 +241,7 @@ class AppRouter extends React.Component {
           <AppRoute 
             path="/orders/update/:orderId" 
             component={() => (
-              <OrderAddProvider>
+              <OrderAddProvider history={history}>
                 <OrderAdd />
               </OrderAddProvider>
             )}  
@@ -247,7 +250,7 @@ class AppRouter extends React.Component {
           <AppRoute 
             path="/orders/add" 
             component={() => (
-              <OrderAddProvider>
+              <OrderAddProvider history={history}>
                 <OrderAdd />
               </OrderAddProvider>
             )}  
@@ -267,7 +270,10 @@ class AppRouter extends React.Component {
           <AppRoute path="/ledger" component={Ledger} />
 
           
-          <AppRoute path="/buyer-discounts" component={BuyerDiscounts} />
+          <AppRoute path="/buyer-discounts" component={() => (
+            <BuyerDiscountProvider>
+              <BuyerDiscounts />
+            </BuyerDiscountProvider>)} />
           <AppRoute path="/management/salespersons" component={Salespersons} />
 
           <PublicOnlyAppRoute path="/login" component={login} fullLayout />
@@ -282,6 +288,7 @@ class AppRouter extends React.Component {
 
           <AppRoute component={error404} fullLayout />
         </Switch>
+        <ToastContainer />
       </Router>
     );
   }

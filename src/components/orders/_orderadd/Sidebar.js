@@ -1,22 +1,26 @@
-import apiClient from "api/base";
-import CustomAsyncPaginate from "components/common/CustomAsyncPaginate";
-import PriceDisplay from "components/utils/PriceDisplay";
-import useOrderAddContext from "context/useOrderAddContext2.0";
-import React, { useState } from "react";
-import { Edit3 } from "react-feather";
-import { MdCreate } from "react-icons/md";
+import React, { useState, memo } from "react";
 import { Button, Card, CardBody, Spinner } from "reactstrap";
-import { getTwoDecimalDigit, regx } from "utility/general";
-import CreateBuyerAddressModal from "./CreateBuyerAddressModal";
-import { components } from "react-select";
-import { toast } from "react-toastify";
+import { Edit3 } from "react-feather";
 import Address from "components/inventory/Address";
-import CreateBuyerModal from "./CreateBuyerModal";
-import Swal from "components/utils/Swal";
-import { history } from "../../../history";
-import ShowTaxesComponent from "./ShowTaxesComponent";
-import SelectBuyerAddressModal from "./SelectBuyerAddressModal";
+import CustomAsyncPaginate from "components/common/CustomAsyncPaginate";
+import useOrderAddContext from "context/useOrderAddContext";
+import SelectBuyerModal from "./SelectBuyerModal";
+import PriceDisplay from "components/utils/PriceDisplay";
 
+import { components } from "react-select";
+
+import apiClient from "api/base";
+import { history } from "../../../history";
+import CreateBuyerModal from "./CreateBuyerModal";
+import { MdCreate } from "react-icons/md";
+import CreateBuyerAddressModal from "./CreateBuyerAddressModal";
+import {toast} from "react-toastify";
+
+import _Swal from "sweetalert2";
+import withReactContent from "sweetalert2-react-content";
+import { regx } from "utility/general";
+
+const Swal = withReactContent(_Swal);
 
 export const customStyles = {
   control: (base) => ({
@@ -26,88 +30,46 @@ export const customStyles = {
 };
 
 const NoOptionsMessage = (props) => {
-  const {
-    setIsOpenBuyerCreateModal,
-    buyerSearchInput,
-    dispatchCart,
-    setIsMenuOpen,
-    setBuyerSearchInput,
-    cart,
-    seller_address,
-    getExtraDiscount,
-    getValidGstRate
-  } = useOrderAddContext();
+  const { setIsOpenBuyerCreateModal,buyerSearchInput,onChangeOrderInfo,setBuyer,setIsMenuOpen,setBuyerSearchInput,setIsBuyerLoaded } = useOrderAddContext();
 
   const onToggleModal = async () => {
-    const isValid =
-      regx.email.test(buyerSearchInput) ||
-      regx.mobileNumber.test(buyerSearchInput);
-    setIsMenuOpen(false);
-    if (isValid) {
-      const query = new URLSearchParams({ q: buyerSearchInput }).toString();
-      await apiClient
-        .get(`/profile/buyers-search/?${query}`)
-        .then(async (response) => {
-          if (response.data.length === 0) {
-            setIsOpenBuyerCreateModal((prevState) => !prevState);
-          } else {
-            const requestData = { buyer_id: response.data[0].id };
-            await apiClient
-              .post("/profile/sellers/", requestData)
-              .then((response) => {
-                const data = response.data;
+    const isValid = regx.email.test(buyerSearchInput) || regx.mobileNumber.test(buyerSearchInput);
+    setIsMenuOpen(false)
+    if(isValid){
+      const query = new URLSearchParams({q:buyerSearchInput}).toString()
+      await apiClient.get(`/profile/buyers-search/?${query}`)
+      .then(async (response) => {
+        if(response.data.length === 0){
+          setIsOpenBuyerCreateModal((prevState) => !prevState);
+        }else{
+          setIsBuyerLoaded(true)
+          const requestData = {buyer_id:response.data[0].id}
+          await apiClient.post('/profile/sellers/',requestData)
+          .then((response) => {
+            const data = response.data;
 
-                const address = data.address[0]
+            console.log(" ---- Data ---- ",data)
 
-                dispatchCart({
-                  type: "ON_SELECT_BUYER",
-                  payload: {
-                    buyer: data,
-                    buyer_id: data?.id,
-                    address: address,
-                    address_id:address?.id
-                  },
-                });
-
-                const items = cart.items.map((item) => {
-                  const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
-
-                  const productSpecificDiscount = data.product_discounts.find(
-                    (discount) =>
-                      discount.product.variants.includes(item?.variant?.id)
-                  );
-
-                  const generic_discount = data?.generic_discount;
-
-                  const extra_discount =  productSpecificDiscount ? getExtraDiscount(item?.price ,productSpecificDiscount) * item?.quantity: generic_discount ? getExtraDiscount(item?.price ,generic_discount) * item?.quantity : 0;
-
-                  return {
-                    ...item,
-                    extra_discount,
-                    ...getValidGstRate(item,isSellerAndBuyerFromSameOrigin)
-                  }
-                });
-
-                dispatchCart({
-                  type: "ON_UPDATE_CART_ITEMS",
-                  payload: items,
-                });
-                setBuyerSearchInput("");
-                
-                toast.success(
-                  `Seller connected with buyer (${data?.business_name})`
-                );
-              })
-              .catch((error) => {
-                toast.error("Couldn't search buyers.")
-              });
-          }
-        })
-        .catch((error) => toast.error("Couldn't search buyers."));
-    } else {
+            onChangeOrderInfo({
+              address: data?.address[0],
+              buyer_id: data?.id,
+            });
+            setBuyer(data);
+            setBuyerSearchInput("")
+            setIsBuyerLoaded(false)
+            toast.success(`Seller connected with buyer (${data.business_name})`)
+          })
+          .catch((error) => {
+            console.log(" ---- Error ---- ",error)
+          })
+        }
+      })
+      .catch((error) => console.log(" ----- Failed to search buyer ----- "))
+      
+    }else{
       setIsOpenBuyerCreateModal((prevState) => !prevState);
     }
-  };
+  }
 
   return (
     <components.NoOptionsMessage {...props}>
@@ -125,38 +87,52 @@ const NoOptionsMessage = (props) => {
 
 const Sidebar = () => {
   const {
+    buyer,
+    setBuyer,
+    orderInfo,
+    onChangeOrderInfo,
+    getTotalOfProducts,
+    products,
     orderId,
-    cart,
-    buyerSearchInput,
-    setBuyerSearchInput,
-    isMenuOpen,
-    setIsMenuOpen,
+    getTotalExtraDiscount,
+
+    // Buyer creation modal states start
     isOpenBuyerCreateModal,
     setIsOpenBuyerCreateModal,
     isOpenBuyerAddressCreateModal,
     setIsOpenBuyerAddressCreateModal,
-    dispatchCart,
-    getExtraDiscount,
-    getValidAddress,
-    getValidGstRate,
-    seller_address,
+    // Buyer creation modal states end
+    buyerSearchInput,
+    setBuyerSearchInput,
+    isMenuOpen,
+    setIsMenuOpen,
+    isBuyerLoaded,
+    orderData,
+    getAddressWithStateName,
+    totalTaxAmount,
+    totalIGST,
+    totalCGST,
+    totalSGST,
+    setProducts,
+    calculateGstRate,
+    getValidGstRate
   } = useOrderAddContext();
-
   const [isOpenBuyerAddresses, setIsOpenBuyerAddresses] = useState(false);
-  const [isBuyerLoading,setIsBuyerLoading] = useState(false)
-
-  const {igst,sgst,cgst} = cart;
 
   const validateForm = () => {
     const errors = [];
 
-    if (!cart.items.length) {
+    if (!products.length) {
       errors.push("Please add atleast one product!");
     }
 
-    if (!cart.buyer_id) {
+    if (!orderInfo?.buyer_id) {
       errors.push("Buyer isn't selected!");
     }
+
+    // if (orderInfo?.buyer_id && !orderInfo?.address) {
+    //   errors.push("Buyer address isn't selected!");
+    // }
 
     if (errors.length > 0) {
       Swal.fire(
@@ -180,18 +156,34 @@ const Sidebar = () => {
   const onSubmit = async () => {
     const isValid = validateForm();
 
-    const {id,items,isFormOpen,buyer,address_id,price,tax_amount,...rest} = cart;
-
-    const variants = items.map(({product,set_focus,variant,tax_amount,...rest}) => ({...rest,variant_id:variant.id})) 
-    
-    if (isValid) {
-
-      const requestData = {
+    const variants = products.map(
+      ({
+        variant,
+        extra_discount,
+        price,
+        actual_price,
+        quantity,
+        ...rest
+      }) => ({
+        variant_id: variant.id,
+        extra_discount: parseFloat(extra_discount ?? 0),
+        price: parseFloat(price),
+        actual_price: parseFloat(actual_price),
+        quantity: parseInt(quantity),
         ...rest,
+      })
+    );
+
+    if (isValid) {
+      const requestData = {
         items: [...variants],
-        address: address_id,
-        address_id,
-        taxable_amount:parseFloat(rest.taxable_amount.toFixed(2)),
+        buyer_id: orderInfo.buyer_id,
+        address: orderInfo?.address?.id,
+        total_extra_discount: getTotalExtraDiscount,
+        taxable_amount:totalTaxAmount,
+        igst:totalIGST,
+        cgst:totalCGST,
+        sgst:totalSGST
       };
 
       let url = "/orders/";
@@ -208,10 +200,10 @@ const Sidebar = () => {
         })
         .catch((error) => {
           Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "🙏We can't process your data to create new order.So please try after some time later.",
-          });
+            icon:"error",
+            title:"Error",
+            text:"🙏We can't process your data to create new order.So please try after some time later."
+          })
         });
     }
   };
@@ -222,15 +214,15 @@ const Sidebar = () => {
         <div className="coupons">
           <div className="coupons-title">
             <p>Order ID</p>
-            <h2 className="text-light">#{orderId ? orderId : "New"}</h2>
+            <h2 className="text-light">#{orderId ? orderData.order_number : "New"}</h2>
           </div>
-          {cart.buyer ? (
+          {buyer ? (
             <div className="apply-coupon cursor-auto">
               <p className="text-right text-dark">From</p>
               <div className="text-right text-secondary">
-                <span>{`${cart?.buyer?.name ? `(${cart?.buyer.name})` : ""}`}</span>
+                <span>{`${buyer.name ? `(${buyer.name})` : ""}`}</span>
               </div>
-              <h4 className="text-light">{cart?.buyer?.business_name}</h4>
+              <h4 className="text-light">{buyer?.business_name}</h4>
             </div>
           ) : null}
         </div>
@@ -260,61 +252,42 @@ const Sidebar = () => {
                 }}
                 closeMenuOnSelect={false}
                 components={{ NoOptionsMessage }}
-                value={cart.buyer}
+                value={buyer}
                 onChange={async (data) => {
-                  setIsBuyerLoading(true)
-
-                  await apiClient
-                  .get(`/inventory/seller-buyers/${data?.id}`)
+                  await apiClient.get(`/inventory/seller-buyers/${data?.id}`)
                   .then((response) => {
+                    setIsMenuOpen(false)
                     const data = response.data;
-                    
-                    const address = data.address[0]
 
-                      dispatchCart({
-                        type: "ON_SELECT_BUYER",
-                        payload: {
-                          buyer: data,
+                    console.log(" ---- Data ---- ",data)
+
+                    onChangeOrderInfo({
+                          address: data?.address[0],
                           buyer_id: data?.id,
-                          address: address,
-                          address_id:address?.id
-                        },
-                      });
-
-                      setIsBuyerLoading(false)
-
-                      const items = cart.items.map((item) => {
-
-                        const isSellerAndBuyerFromSameOrigin = seller_address?.state?.id === address?.state?.id;
-                        
-                        const productSpecificDiscount = data.product_discounts.find(
-                          (discount) =>
-                            discount.product.variants.includes(item?.variant?.id)
-                        );
-
-                        const generic_discount = data?.generic_discount;
-
-                        const extra_discount =  productSpecificDiscount ? getExtraDiscount(item?.price ,productSpecificDiscount) * item?.quantity: generic_discount ? getExtraDiscount(item?.price ,generic_discount) * item?.quantity : 0;
-                        
-                        return {
-                          ...item,
-                          extra_discount,
-                          ...getValidGstRate({...item,extra_discount},isSellerAndBuyerFromSameOrigin)
-                        }
-                      });
-
-                      dispatchCart({
-                        type: "ON_UPDATE_CART_ITEMS",
-                        payload: items,
-                      });
-
-                      setIsMenuOpen(false);
-                    })
-                    .catch((error) => {
-                      toast.error("couldn't select the buyer...")
                     });
-                }}
+                    setBuyer(data);
 
+                    const getExtraDiscount = (price, discount) => {
+                      return discount.discount_type === "percentage"
+                        ? (parseFloat(price) * parseFloat(discount.discount_value)) / 100
+                        : discount.discount_type === "amount" ? parseFloat(discount.discount_value) : 0;
+                    };
+
+                    setProducts((products) => products.map((product) => {
+                      const discount = data.product_discounts.find((discount) => discount.product.id === product.variant.product.id)
+
+                      const _product = {...product,...calculateGstRate(getValidGstRate(product.price,product.variant.product.sub_categories))}
+        
+                      if(discount){
+                          return {..._product,extra_discount:getExtraDiscount(_product.price,discount)}
+                      }
+                      return _product
+                    }))
+                  })
+                  .catch((error) =>  {
+                    toast.error("Failed to select this buyer.")
+                  })
+                }}
                 menuIsOpen={isMenuOpen}
                 styles={{
                   noOptionsMessage: (base) => ({ ...base }),
@@ -324,9 +297,7 @@ const Sidebar = () => {
                 getOptionValue={(props) => props.id}
                 inputValue={buyerSearchInput}
                 onInputChange={(data) => setBuyerSearchInput(data)}
-                onBlur={(e) => {
-                  setBuyerSearchInput(e.target.value);
-                }}
+                onBlur={(e) => {setBuyerSearchInput(e.target.value)}}
                 onMenuOpen={() => setIsMenuOpen(true)}
                 onMenuClose={() => setIsMenuOpen(false)}
               />
@@ -340,17 +311,18 @@ const Sidebar = () => {
             </>
           ) : null}
 
-          {(!cart.buyer && isBuyerLoading) ? (
-            <div className="text-center mt-2">
-              <Spinner />
-            </div>
-          ) : null}
-          
-          {cart.buyer ? (
+          {
+            !buyer && isBuyerLoaded ? (
+              <div className="text-center mt-2">
+                <Spinner />
+              </div>  
+            ):null 
+          }
+          {buyer ? (
             <div className="mt-2">
               <div className="d-flex justify-content-between align-items-center">
                 <h6 className="text-secondary">SHIPPING ADDRESS</h6>
-                {(cart?.address || cart?.buyer?.address.length > 0) ? (
+                {orderInfo?.address ? (
                   <span>
                     <Edit3
                       size="20"
@@ -382,7 +354,7 @@ const Sidebar = () => {
                       />{" "}
                       Create
                     </span>
-
+                    
                     <CreateBuyerAddressModal
                       isOpen={isOpenBuyerAddressCreateModal}
                       onToggleModal={() =>
@@ -395,68 +367,56 @@ const Sidebar = () => {
                 )}
               </div>
 
-              {!cart.address ? (
-                <div className="mt-1">
-                  <span>No Address Added!</span>
-                </div>
-              ) : (
-                ""
-              )}
+              {
+                !orderInfo?.address ? (
+                  <div className="mt-1">
+                    <span>No Address Added!</span>
+                  </div>
+                ):""
+              }
+              
             </div>
           ) : null}
 
-          {cart?.address ? (
+          {orderInfo?.address ? (
             <>
-              <Address
-                {...getValidAddress(cart.address)}
-              />
+              <Address {...getAddressWithStateName} />
 
+              <SelectBuyerModal
+                isOpen={isOpenBuyerAddresses}
+                onToggleModal={() =>
+                  setIsOpenBuyerAddresses(!isOpenBuyerAddresses)
+                }
+              />
             </>
           ) : null}
-
-            <SelectBuyerAddressModal
-              isOpen={isOpenBuyerAddresses}
-              onToggleModal={() =>
-                  setIsOpenBuyerAddresses(!isOpenBuyerAddresses)
-              }
-            />
         </div>
         <hr />
         <div className="detail">
-          <div className="detail-title">Subtotal</div>
+          <div className="detail-title">Total MRP</div>
           <div className="detail-amt">
-            <PriceDisplay amount={cart.price} />
+            <PriceDisplay amount={getTotalOfProducts ?? 0} />
+          </div>
+        </div>
+        <div className="detail">
+          <div className="detail-title">Total Taxable Amount</div>
+          <div className="detail-amt">
+            <PriceDisplay amount={totalTaxAmount ?? 0} />
           </div>
         </div>
         <div className="detail">
           <div className="detail-title">Extra Discount</div>
           <div className="detail-amt discount-amt">
-            -<PriceDisplay amount={cart.total_extra_discount} />
-          </div>
-        </div>
-        <div className="detail">
-          <div className="detail-title">
-            Taxable Amount:
-          </div>
-          <div className="detail-amt">
-            <PriceDisplay amount={getTwoDecimalDigit(cart.taxable_amount)} />
-          </div>
-        </div>
-        <div className="detail">
-          <div className="detail-title">
-            Tax Amount&nbsp;<ShowTaxesComponent taxes={
-              igst ? {igst} : {cgst,sgst}
-            } />:
-          </div>
-          <div className="detail-amt">
-            <PriceDisplay amount={cart.tax_amount} />
+            -<PriceDisplay amount={getTotalExtraDiscount ?? 0} />
           </div>
         </div>
         <hr />
         <div className="detail">
-          <div className="detail-title detail-total">Final Amount</div>
+          <div className="detail-title detail-total">Total</div>
           <div className="detail-amt total-amt">
-            <PriceDisplay amount={getTwoDecimalDigit(cart.total_amount)} />
+            <PriceDisplay
+              amount={((parseFloat(getTotalOfProducts) + totalTaxAmount) - getTotalExtraDiscount).toFixed(2)}
+            />
           </div>
         </div>
         <Button.Ripple
@@ -473,4 +433,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default memo(Sidebar);

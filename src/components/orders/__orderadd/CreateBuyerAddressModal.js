@@ -1,5 +1,5 @@
 import apiClient from "api/base";
-import {useOrderAddContext} from "context/OrderAddContext";
+import useOrderAddContext from "context/useOrderAddContext2.0";
 import React, { useMemo, useState } from "react";
 import {
   Modal,
@@ -30,28 +30,53 @@ const initialData = {
 
 const CreateBuyerAddressModal = ({ isOpen, onToggleModal }) => {
   const [country,setCountry] = useState("");  
-  const { buyer,onChangeStateByKeyValue, onChangeBuyerAddress } = useOrderAddContext();
-  const [data, setData] = useState({...initialData,name:buyer?.name,phone:buyer?.mobile_number});
+  const { cart,dispatchCart,setIsOpenBuyerAddressCreateModal,getExtraDiscount,seller_address,getValidGstRate } = useOrderAddContext();
+  const [data, setData] = useState({...initialData,name:cart?.buyer?.name,phone:cart?.buyer?.mobile_number});
   const [loading,setLoading] = useState(false)
 
-  const _available_countries = useMemo(() => buyer && [...new Set(buyer?.states?.map(st=>st.country))] ,[buyer])
+  const _available_countries = useMemo(() => cart.buyer && [...new Set(cart.buyer?.states?.map(st=>st.country))] ,[cart.buyer])
 
-  const countries = useMemo(() => buyer && CountryData.filter((country) => _available_countries.includes(country.value)) ,[buyer])
+  const countries = useMemo(() => cart.buyer && CountryData.filter((country) => _available_countries.includes(country.value)) ,[cart.buyer])
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
-    await apiClient.post(`/profile/buyer-address/?buyer_id=${buyer?.id}`,data)
+    await apiClient.post(`/profile/buyer-address/?buyer_id=${cart?.buyer?.id}`,data)
     .then((response) => {
         const data = response.data;
 
-        setData(initialData)
-        
-        setLoading(false)
+        const items = cart.items.map((item) => {
+          const discount = cart?.buyer?.product_discounts.find(
+            (discount) =>
+              discount.product.variants.includes(item.variant.id)
+          );
 
-        onChangeBuyerAddress(data, () => onChangeStateByKeyValue("isOpenBuyerAddressCreateModal",false))
+          const isSellerAndBuyerFromSameOrigin = seller_address.state.id === data?.state?.id;
+
+          let extra_discount = discount ? getExtraDiscount(item.price,discount) * item.quantity : 0;
+
+          return {
+            ...item,
+            extra_discount,
+            ...getValidGstRate({...item,extra_discount},isSellerAndBuyerFromSameOrigin)
+          }
+        });
+
+        const extraOptions = {
+          address:data,
+          address_id:data.id,
+          buyer:{...cart.buyer,address:[data]},
+        }
+
+        dispatchCart({type:"ON_UPDATE_ADDRESS",payload:extraOptions})
+        dispatchCart({type:"ON_UPDATE_CART_ITEMS",payload:items})
+
         
-        toast.success("Buyer address has created successfully.");
+
+        setData(initialData)
+        setLoading(false)
+        toast.success("Buyer address has created successfully.")
+        setIsOpenBuyerAddressCreateModal((prevState) => !prevState)
     })
     .catch((error) => {
       toast.error("Failed to create buyer address!.")
@@ -60,11 +85,10 @@ const CreateBuyerAddressModal = ({ isOpen, onToggleModal }) => {
 
   const onChange = (e) => {
     setData((prevState) => ({ ...prevState, [e.target.name]: e.target.value }));
-
     if(e.target.name === "pin" && (e.target.value.trim().length === 6) && country?.value === "IN"){
       fetchPinCodeDetails(e.target.value)
         .then(data => {
-          const state = buyer?.states?.find(({name,...rest}) => name.toLowerCase() === data.state.toLowerCase())
+          const state = cart.buyer?.states?.find(({name,...rest}) => name.toLowerCase() === data.state.toLowerCase())
 
           setData((prevState) => ({...prevState,city:data.district,state_id:state?.id || ""}))
         })
@@ -143,8 +167,8 @@ const CreateBuyerAddressModal = ({ isOpen, onToggleModal }) => {
           
           <Select
             placeholder="Select State..."
-            options={buyer?.states?.filter((st) => st.country === country.value)}
-            value={buyer?.states?.find((st) => st.id === data.state_id)}
+            options={cart.buyer?.states?.filter((st) => st.country === country.value)}
+            value={cart.buyer?.states?.find((st) => st.id === data.state_id)}
             onChange={(data) => setData((prevState) => ({...prevState,state_id:data.id}))}
             getOptionValue={(props) => props.id}
             getOptionLabel={(props) => props.name}

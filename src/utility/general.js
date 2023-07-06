@@ -20,7 +20,7 @@ export const priceFormatterDollar = _price => <span>&#36; {numberFormatter(_pric
 
 
 export const capitalizeString = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+  return str?.charAt(0)?.toUpperCase() + str?.slice(1)
 }
 
 export const calculateTotals = (items) => {
@@ -99,4 +99,6 @@ export const regx = new Object( {
   email: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
   mobileNumber: /^(\+91|0)?\s?\d{10}$/,
 })
-export const getTwoDecimalDigit = (digit) => parseFloat(digit.toFixed(2));
+export const getTwoDecimalDigit = (digit) => {
+  return parseFloat(parseFloat(digit).toFixed(2))
+}

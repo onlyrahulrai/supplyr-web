@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import Select from "react-select";
 import { getApiURL } from "api/utils";
+import { customStyles } from "./Sidebar";
 import { ArrowLeft, CheckCircle, Plus } from "react-feather";
-import {useOrderAddContext} from "context/OrderAddContext";
+import useOrderAddContext from "context/useOrderAddContext2.0";
 import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
 import CustomAsyncPaginate from "components/common/CustomAsyncPaginate";
 import {
@@ -17,30 +18,13 @@ import { SimpleInputField } from "components/forms/fields";
 import Translatable from "components/utils/Translatable";
 import Swal from "components/utils/Swal";
 
-const customStyles = {
-  menuPortal: (base) => ({
-    ...base,
-    zIndex: 9999,
-  }),
-  control: (base) => ({
-    ...base,
-    height: 50,
-    minHeight: 50,
-    div: {
-      overflow: "initial",
-    },
-  }),
-};
-
 const FormatOptionLabel = (props) => {
   const { id, title, featured_image, quantity } = props;
+  const { cart } = useOrderAddContext();
 
-  const { items } = useOrderAddContext();
-
-  const alreadyInCart = items.findIndex(
+  const alreadyInCart = cart.items.findIndex(
     ({ variant }) => variant?.product.id === id
   );
-
 
   return (
     <div className="d-flex align-items-center w-100">
@@ -95,49 +79,15 @@ export function getVariantShortDescription(variant) {
         </span>
       );
     });
-  return (
-    <span>
-      {desc} -{" "}
-      <b
-        className={`${
-          variant?.quantity > 0 ? "text-secondary" : "text-danger"
-        }`}
-      >
-        {variant?.quantity > 0 ? "In Stock" : "Out of Stock"}
-      </b>
-    </span>
-  );
+  return <span>{desc} - <b className={`${variant?.quantity > 0 ? 'text-secondary' : 'text-danger'}`}>{variant?.quantity > 0 ? "In Stock":"Out of Stock"}</b></span>;
 }
 
-const initialState = {
-  variant: null,
-  product: null,
-  quantity: 0,
-  price: 0,
-  item_note:"",
-  extra_discount:0,
-  set_focus:null
-};
-
 const Form = () => {
-  const {items,getProductExtraValues, onAddProductToCart,cartItem,setCartItem,onFormClose} = useOrderAddContext();
+  const {cart,cartItem, dispatchCartItem, getValidGstRate, dispatchCart,getExtraDiscount  } = useOrderAddContext();
 
-  const onChangeProduct = (product) => {
-    const variant = product.has_multiple_variants
-      ? product?.variants_data[0]
-      : product?.variants_data;
-
-    console.log(" Product ",product)
-
-    setCartItem({
-      product,
-      variant,
-      quantity: variant?.minimum_order_quantity,
-      price: variant?.price,
-    });
-  };
-
-  const onChange = (e) => setCartItem({[e.target.name]:e.target.value})
+  const onChange = (e) => {
+    dispatchCartItem({type:"UPDATE_PRODUCT",payload:{[e.target.name]:e.target.value &&   parseFloat(e.target.value)}})
+  }
 
   const validateForm = () => {
     let errors = [];
@@ -158,11 +108,11 @@ const Form = () => {
       errors.push("You've selected an out of stock item that is not allowed!");
     }
 
-    if((cartItem?.set_focus === null) && items.findIndex((p) => p?.variant?.id === cartItem.variant.id) !== -1){
+    if((cartItem?.set_focus === null) && cart.items.findIndex((p) => p?.variant?.id === cartItem.variant.id) !== -1){
       errors.push(" Product is already in the cart! ")
     }
 
-    if(cartItem.quantity && (cartItem.quantity < cartItem?.variant?.minimum_order_quantity)){
+    if(cartItem.quantity < cartItem?.variant?.minimum_order_quantity){
       errors.push(`Minimum ${cartItem?.variant?.minimum_order_quantity} quantity of this item is required!`)
     }
 
@@ -189,23 +139,55 @@ const Form = () => {
     const isValid = validateForm()
 
     if(isValid){
-      const values = getProductExtraValues(cartItem)
 
-      onAddProductToCart({...cartItem,...values},() => {
-        setCartItem(initialState)
-      })
+      const taxes = getValidGstRate(cartItem)
+
+      const {  price, quantity } = cartItem;
+
+      const productSpecificDiscount = cart?.buyer?.product_discounts?.find((discount) => discount?.product?.variants?.includes(cartItem?.variant?.id))
+
+      const generic_discount = cart?.buyer?.generic_discount;
+  
+      const discount =  productSpecificDiscount ? getExtraDiscount(price ,productSpecificDiscount) * quantity: generic_discount ? getExtraDiscount(price ,generic_discount) * quantity : 0;
+  
+      dispatchCart({type:"ON_ADD_ITEM_TO_CART",payload:{...cartItem,...taxes,extra_discount:discount}});
+      dispatchCartItem({type:"RESET"});
     }
   }
+
+  const onChangeProduct = (product) => {
+    const variant =
+      product.has_multiple_variants
+        ? product?.variants_data[0]
+        : product?.variants_data;
+
+    const {  price, minimum_order_quantity } = variant;
+
+    const set_focus = (cartItem.set_focus !== null) ? cartItem.set_focus : null;
+
+    const data = {
+      product,
+      variant,
+      price,
+      quantity: minimum_order_quantity,
+      set_focus:set_focus,
+    };
+
+    dispatchCartItem({ type: "SELECT_PRODUCT", payload:data});
+  };
 
   return (
     <Card className="select-product-input" id="order">
       <CardHeader>
         <div className="d-flex">
-          <span className="mr-1 cursor-pointer" onClick={onFormClose}>
-            <ArrowLeft size="15" />
+          <span className="mr-1 cursor-pointer">
+            <ArrowLeft size="15" onClick={() => {
+              dispatchCart({type:"ON_CLICK_TOGGLE_FORM"})
+              dispatchCartItem({type:"RESET"})
+            }} />
           </span>
 
-          <span>{false ? "Update" : "Add"} Product</span>
+          <span>{(cartItem.set_focus !== null) ? "Update" : "Add"} Product</span>
         </div>
       </CardHeader>
       <CardBody>
@@ -218,13 +200,14 @@ const Form = () => {
             formatOptionLabel={(props) => <FormatOptionLabel {...props} />}
             getOptionValue={(props) => props.id}
             onChange={onChangeProduct}
-            value={cartItem.product}
+            value={cartItem.product ? cartItem.product : null}
           />
         </FormGroup>
 
         {cartItem?.product?.has_multiple_variants && (
           <FormGroup className="variant-field">
             <Label for="variant">Variant</Label>
+
 
             <Select
               options={cartItem?.product?.variants_data?.map((variant) => {
@@ -260,11 +243,9 @@ const Form = () => {
                 value: cartItem?.variant?.id,
               }}
               onChange={({ value }) => {
-                const variant = cartItem?.product?.variants_data.find(
-                  (variant) => variant.id === value
-                );
-
-                setCartItem({variant,price:variant?.price,quantity:variant?.minimum_order_quantity})
+                const variant = cartItem?.product?.variants_data.find((variant) => variant.id === value);
+                
+                dispatchCartItem({type:"UPDATE_PRODUCT",payload:{variant:variant}})
               }}
               styles={customStyles}
             />
@@ -275,21 +256,25 @@ const Form = () => {
           label="Sale Price"
           placeholder="Sale Price..."
           type="text"
+          value={cartItem?.price ?? 1}
           requiredIndicator
           name="price"
-          value={cartItem?.price}
           onChange={onChange}
+          disabled={!cartItem.product}
         />
+
+        
 
         <SimpleInputField
           label={<Translatable text="quantity" />}
           placeholder="Quantity..."
           type="number"
+          value={cartItem?.quantity ?? cartItem?.variant?.minimum_order_quantity}
           requiredIndicator
+          min={cartItem?.variant?.minimum_order_quantity}
           name="quantity"
-          min={cartItem?.minimum_order_quantity}
+          disabled={!cartItem.product}
           onChange={onChange}
-          value={cartItem?.quantity}
         />
 
         <Button.Ripple
@@ -297,6 +282,7 @@ const Form = () => {
           color="primary"
           outline
           onClick={onClick}
+          disabled={!cartItem.product}
         >
           <Plus size={14} />
           <span className="align-middle ml-25">

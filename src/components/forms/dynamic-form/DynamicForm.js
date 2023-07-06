@@ -32,7 +32,7 @@ class DynamicForm extends Component {
         if (fieldSchema.dependentFieldsSet) {
             let renderedDependentFields = []
             fieldSchema.dependentFieldsSet.map(dependentFields => {
-                if(dependentFields.displayOnValue!==undefined && values[fieldSchema.name] == dependentFields.displayOnValue){
+                if(dependentFields.displayOnValue!==undefined && values[fieldSchema.name] === dependentFields.displayOnValue){
                     renderedDependentFields = dependentFields.fields.map(dependentFieldSchema => {
                         return (
                             this.getDynamicField(dependentFieldSchema, values, errors)

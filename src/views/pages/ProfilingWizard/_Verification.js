@@ -78,10 +78,10 @@ const UnverifiedSymbol = () => (
 );
 
 const EditButton = ({ onClick }) => (
-  <a onClick={onClick}>
+  <span onClick={onClick}>
     <Edit3 size={13} color="#2196f3" />
     <span style={{ color: "#2196f3" }}> edit</span>
-  </a>
+  </span>
 );
 
 const EmailEditForm = ({ onClose, onSuccess }) => {
@@ -439,12 +439,12 @@ const Verification = (props) => {
                   {!isSendingVerificationMail && (
                     <Send size={13} color="#2196f3" />
                   )}{" "}
-                  <a
+                  <span
                     style={styles.resendMailBtn}
                     onClick={resendVerificationMail}
                   >
                     Resend Verification Mail
-                  </a>
+                  </span>
                 </Col>
               )}
             </Row>
@@ -526,7 +526,7 @@ const Verification = (props) => {
                                 style={{ marginRight: 5 }}
                               />
                             )}
-                            <a
+                            <span
                               className="small"
                               style={styles.resendMailBtn}
                               onClick={(e) =>
@@ -535,7 +535,7 @@ const Verification = (props) => {
                               }
                             >
                               Resend OTP
-                            </a>
+                            </span>
                           </>
                         )}
                       </div>

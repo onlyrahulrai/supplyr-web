@@ -424,7 +424,7 @@ const CategoryAdd = (props) => {
                           isPageRenderReady && (
                             <>
                               {
-                                console.log(category.filter((c) => c.value != props.match.params.categoryId))
+                                console.log(category.filter((c) => c.value !== props.match.params.categoryId))
                               }
                                 {(!(basicData.parent === null) || !haveSubCategory) && (
                                   <SimpleInputField
@@ -441,7 +441,7 @@ const CategoryAdd = (props) => {
                                           ) || ""
                                         }
                                         menuPlacement="auto"
-                                        options={_categoryId ? category.filter((c) => c.value != _categoryId) : category}
+                                        options={_categoryId ? category.filter((c) => c.value !== _categoryId) : category}
                                         menuPortalTarget={document.body}
                                         
                                         styles={{

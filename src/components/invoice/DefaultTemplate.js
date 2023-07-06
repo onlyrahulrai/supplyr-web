@@ -1,7 +1,5 @@
-import PriceDisplay from "components/utils/PriceDisplay";
 import useInvoiceContext from "context/useInvoiceContext";
 import React from "react";
-import { useParams } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import Consignee from "./Consignee";
 import Exporter from "./Exporter";
@@ -9,8 +7,7 @@ import InvoiceProductLists from "./InvoiceProductLists";
 import InvoiceSummary from "./InvoiceSummary";
 
 const DefaultTemplate = () => {
-  const { orderId, invoiceNumber:invoice_number } = useParams();
-  const { orderData, getTotals, toWords} = useInvoiceContext();
+  const { orderData, toWords} = useInvoiceContext();
 
   const getDate = (date) => {
     let _date = new Date(date);

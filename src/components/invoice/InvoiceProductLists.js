@@ -9,7 +9,7 @@ import { getTwoDecimalDigit } from "utility/general";
 const InvoiceProductLists = ({ products,...rest }) => {
   const { default_currency,product_price_includes_taxes } =
     useSelector((state) => state.auth.userInfo.profile);
-  const {getTotals,orderData} = useInvoiceContext()
+  const {orderData} = useInvoiceContext()
 
   return (
     <Table responsive className="table-hover-animation">

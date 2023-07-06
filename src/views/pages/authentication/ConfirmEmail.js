@@ -19,7 +19,7 @@ export default function ConfirmEmail(props) {
         apiClient.post(url, { key })
             .then(response => {
                 console.log(response)
-                if (response.data.detail == 'ok') {
+                if (response.data.detail === 'ok') {
                     setResponseOk(true)
                     if (isAuthenticated) {
                         setTimeout(() => {

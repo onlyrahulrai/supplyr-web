@@ -1,7 +1,6 @@
 import { Component } from "react";
 import { Card, CardHeader, CardBody, Button } from "reactstrap";
 import { Clock } from "react-feather";
-import { RiContactsBookLine } from "react-icons/ri";
 import apiClient from "api/base";
 import {connect} from "react-redux"
 
@@ -17,7 +16,7 @@ class Approval extends Component {
 
   render() {
     
-    if (this.props.user.user_status == "profile_created") {
+    if (this.props.user.user_status === "profile_created") {
       return (
         <div className="mt-3 col-xl-6 col-lg-8 col-md-10 col-12 mx-auto">
           <Card>
@@ -41,7 +40,7 @@ class Approval extends Component {
         </div>
       );
     } 
-    else if (this.props.user.user_status == "pending_approval") 
+    else if (this.props.user.user_status === "pending_approval") 
     {
       return (
         <div className="mt-3 col-lg-6 mx-auto">
@@ -58,7 +57,7 @@ class Approval extends Component {
         </div>
       );
     }
-    else if (this.props.user.user_status == "rejected") 
+    else if (this.props.user.user_status === "rejected") 
     {
       return (
         <div className="mt-3 col-lg-6 mx-auto">
@@ -81,7 +80,7 @@ class Approval extends Component {
         </div>
       )
     }
-    else if (this.props.user.user_status == "need_more_information") 
+    else if (this.props.user.user_status === "need_more_information") 
     {
       return (
         <div className="mt-3 col-lg-6 mx-auto">
@@ -108,7 +107,7 @@ class Approval extends Component {
         </div>
       )
     }
-    else if (this.props.user.user_status == "permanently_rejected") 
+    else if (this.props.user.user_status === "permanently_rejected") 
     {
       return (
         <div className="mt-3 col-lg-6 mx-auto">

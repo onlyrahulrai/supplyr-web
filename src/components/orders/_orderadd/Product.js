@@ -1,80 +1,97 @@
 import apiClient from "api/base";
 import { getApiURL } from "api/utils";
-import VariantLabel from "components/inventory/VariantLabel";
 import PriceDisplay from "components/utils/PriceDisplay";
-import Translatable from "components/utils/Translatable";
-import React, { useEffect, useState } from "react";
-import { Clipboard, Check, Edit3, X } from "react-feather";
+import useOrderAddContext from "context/useOrderAddContext";
+import React, { memo, useMemo, useState } from "react";
+import { Check, Clipboard, Edit3, X } from "react-feather";
 import {
   Button,
   Card,
   CardBody,
+  Col,
   FormGroup,
   Input,
   Label,
+  Row,
 } from "reactstrap";
 import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
-import useOrderAddContext from "../../../context/useOrderAddContext2.0";
-import EditExtraDiscountComponent from "./EditExtraDiscountComponent";
-
+import { _products } from "./Main";
+import {toast} from "react-toastify";
+import Translatable from "components/utils/Translatable";
 
 const Product = (props) => {
-  const { cart, dispatchCart, dispatchCartItem,getValidGstRate } = useOrderAddContext();
-  const [fieldName, setFieldName] = useState("");
+  const { id, variant, quantity, price, extra_discount, item_note,igst,cgst,sgst,taxable_amount } =
+    props.product;
+  const { position } = props;
 
   const {
-    variant,
-    price,
-    quantity,
-    extra_discount,
-    item_note,
-  } = props.product;
+    onRemoveProductToCart,
+    products,
+    onChangeSelectedProduct,
+    onChangeProduct,
+    setProduct,
+    product,
+    setProducts,
+    sumOfObjectValue
+  } = useOrderAddContext();
+  const [fieldName, setFieldName] = useState(null);
 
-  const [extraDiscount, setExtraDiscount] = useState(0);
-  const [itemNote, setItemNote] = useState(item_note);
+  const onClickUpdateProduct = async (variant_id) => {
+    try {
+      const {
+        variant: {
+          product: { id },
+        },
+      } = products.find((product) => product.variant.id === variant_id);
 
-  useEffect(() => {
-      setExtraDiscount(extra_discount)
-  },[props])
+      const response = await apiClient(`orders/product/${id}`);
 
-  const onClickUpdateProduct = async (id) => {
-    await apiClient(`orders/product/${id}`)
-      .then((response) => {
-        dispatchCartItem({
-          type: "ON_LOAD_ORDER_ITEM",
-          payload: {
-            ...props.product,
-            product: response.data,
-            set_focus: props.position,
-          },
-        });
-        dispatchCart({ type: "ON_CLICK_TOGGLE_FORM" });
-      })
-      .catch((error) => console.log(" ----- Error ----- ", error));
+      const instance = products.find(
+        (product) => product?.variant?.id === variant_id
+      );
+
+      onChangeProduct(instance);
+      setFieldName(null)
+
+      onChangeSelectedProduct({ ...response.data, set_focus: variant_id });
+    } catch (error) {
+      toast.warning("Failed to update this product so please try another once!")
+    }
   };
 
-  const onRemoveProductFromCart = (id) => {
-    dispatchCart({ type: "ON_REMOVE_ITEM_FROM_CART", payload: id });
+  const onChange = (e) => {
+    setProduct((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const onUpdateExtraDiscount = () => {
-    const items = cart.items.map((item, index) => {
-      if (index === props.position) {
-        const _item = { ...item, extra_discount: (extraDiscount || 0) }
-
-        return {..._item,...getValidGstRate(_item)}
-      }
-      return item;
-    });
-
-    dispatchCart({ type: "ON_UPDATE_CART_ITEMS", payload: items });
-    setFieldName("");
+  const onClick = (name) => {
+    setProduct(props.product);
+    setFieldName(name);
   };
 
+  const onClickSave = () => {
+    const _products = [...products];
+
+    const data = {...product};
+
+    data['extra_discount'] = product.extra_discount !== '' ? product.extra_discount : 0;
+
+    _products[position] = data;
+
+    setProduct({});
+    setProducts(_products);
+    setFieldName(null);
+  };
+
+  const getProductTaxesPercentage = useMemo(() => {
+    return sumOfObjectValue({igst:parseFloat(igst),sgst:parseFloat(sgst),cgst:parseFloat(cgst)})
+  },[props.product])
   return (
     <Card className="ecommerce-card">
       <div
-        className="card-content"
+       className="card-content"
         style={{ gridTemplateColumns: "1fr 3fr 1.5fr" }}
       >
         <div className="item-img text-center">
@@ -90,49 +107,98 @@ const Product = (props) => {
         </div>
         <CardBody>
           <div className="item-name">
-            <h4>{variant?.title}</h4>
-            <p
-              className={`${
-                variant.quantity > 0 ? "stock-status-in" : "text-danger"
-              }`}
-            >
-              {variant.quantity > 0 ? "In Stock" : "Out of stock"}
-            </p>
+            <h4>{variant?.product?.title}</h4>
+            <p className={`${variant.quantity > 0 ? 'stock-status-in' : 'text-danger'}`}>{variant.quantity > 0 ? "In Stock" : "Out of stock"}</p>
             <div className="item-quantity">
-              <p className="quantity-title">
-                <Translatable text="quantity" />: {quantity}
-              </p>
+              <p className="quantity-title"><Translatable text="quantity" />: {quantity}</p>
             </div>
-            <div className="item-quantity">
-              <p className="quantity-title mb-0">
-                Item Price (Per Unit): <PriceDisplay amount={price} />
-              </p>
-            </div>
-            
-            <div className="delivery-date w-100 d-flex flex-column" style={{marginTop:"0.5rem"}}>
-              {
-                variant.product.has_multiple_variants ? (
-                  <div className="item-company mb-half">
-                    <div className="company-name">
-                      <VariantLabel
-                          variantData={variant}
-                          />
-                    </div>
-                  </div>
-                ) : null
-              }
+            <div className="delivery-date mt-1 rounded d-flex align-items-center">
+              <div
+                className="d-flex align-items-center"
+                style={{ width: "65%" }}
+              >
+                <b style={{ color: "#000" }}>
+                  <i>Extra Discount:</i>{" "}
+                </b>
 
+                <span className="offers ml-1">
+                  <PriceDisplay amount={extra_discount ? extra_discount : 0} />
+                </span>
+                {!fieldName || fieldName !== "extra_discount" ? (
+                  <Edit3
+                    size={24}
+                    onClick={() => onClick("extra_discount")}
+                    color="blue"
+                    className="ml-1"
+                  />
+                ) : null}
+              </div>
+              {fieldName === "extra_discount" ? (
+                <div className="d-flex align-items-center">
+                  <Input
+                    placeholder="Extra discount..."
+                    value={product?.extra_discount ?? 0}
+                    name="extra_discount"
+                    onChange={onChange}
+                    type="number"
+                    min={0}
+                    style={{ width: "55%", marginLeft: "5px" }}
+                  />{" "}
+                  <span
+                    className="text-primary cursor-pointer"
+                    onClick={onClickSave}
+                  >
+                    &nbsp;&nbsp;
+                    <Edit3 size={16} /> Save
+                  </span>
+                </div>
+              ) : null}
+            </div>
+
+            <Row>
+              <Col className="delivery-date mt-1 rounded d-flex align-items-center">
+                <div
+                  className="d-flex align-items-center"
+                >
+                  <b style={{ color: "#000" }}>
+                    <i>Tax Percentage:</i>{" "}
+                  </b>
+
+                  <span className="offers ml-1">
+                    {`${getProductTaxesPercentage}%`}
+                  </span>
+                </div>
+              </Col>
+
+              <Col  className="delivery-date mt-1 rounded d-flex align-items-center">
+                  <div
+                    className="d-flex align-items-center"
+                    style={{ width: "65%" }}
+                  >
+                    <b style={{ color: "#000" }}>
+                      <i>Tax Amount:</i>{" "}
+                    </b>
+
+                    <span className="offers ml-1">
+                      <PriceDisplay amount={taxable_amount ? taxable_amount : 0} />
+                    </span>
+                  </div>
+              </Col>
+            </Row>
+
+            <div className="delivery-date mt-1 w-100 d-flex align-items-center">
               {!fieldName || fieldName !== "item_note" ? (
                 <>
-                  {!itemNote ? (
+                  {!item_note ? (
                     <div
-                      className="d-flex text-primary align-items-center cursor-pointer"
+                      className="d-flex text-primary align-items-center"
                       style={{ width: "60%" }}
-                      onClick={() => setFieldName("item_note")}
                     >
                       <span>
                         <Clipboard
                           size={24}
+                          onClick={() => onClick("item_note")}
+                          className="cursor-pointer"
                         />
                         &nbsp;
                         <strong>ADD AN NOTE ITEM</strong>
@@ -143,10 +209,10 @@ const Product = (props) => {
                       <b style={{ color: "#000" }}>
                         <i>Item Note:</i>{" "}
                       </b>{" "}
-                      &nbsp; {itemNote}
+                      &nbsp; {item_note}
                       <span
                         className="text-primary cursor-pointer"
-                        onClick={() => setFieldName("item_note")}
+                        onClick={() => onClick("item_note")}
                       >
                         &nbsp;&nbsp;
                         <Edit3 size={16} /> Edit
@@ -162,80 +228,48 @@ const Product = (props) => {
                     <Input
                       type="text"
                       placeholder="Notes..."
-                      value={itemNote}
+                      value={product?.item_note ?? ""}
                       name="item_note"
-                      onChange={(e) => setItemNote(e.target.value)}
+                      onChange={onChange}
                     />
                   </FormGroup>
 
                   <Check
                     size={24}
-                    onClick={() => {
-                      const items = cart.items.map((item, index) => {
-                        return index === props.position
-                          ? { ...item, item_note: itemNote }
-                          : item;
-                      });
-                      dispatchCart({
-                        type: "ON_UPDATE_CART_ITEMS",
-                        payload: items,
-                      });
-                      setFieldName("");
-                    }}
+                    onClick={onClickSave}
                     className="text-primary border mt-1 ml-1 rounded-full border-primary cursor-pointer"
                   />
                 </div>
               ) : null}
-
             </div>
-
-            
-
           </div>
         </CardBody>
         <div className="item-options text-center">
           <div className="item-wrapper">
             <div className="item-cost">
-              <span className="item-price">
-                <small style={{fontWeight:"bold"}}>Price: <PriceDisplay amount={price * quantity} /></small>
-              </span><br />
-              <span className="item-price">
-                  <small style={{fontWeight:"bold"}}>Extra Discount: <PriceDisplay amount={extraDiscount ? extraDiscount : 0} /></small>{!fieldName || fieldName !== "extra_discount" ? (
-                    <Edit3
-                      size={24}
-                      onClick={() => setFieldName("extra_discount")}
-                      color="blue"
-                      className="ml-0"
-                    />
-                ) : null}
+              <h5 className="item-price">
+                <PriceDisplay amount={price * quantity} />
+              </h5>
+              <span className="item-price"> 
+                (<PriceDisplay amount={price} /> x {quantity > 1 ? `${quantity} Units` : `${quantity} Unit` }) 
               </span>
-
-              <EditExtraDiscountComponent 
-                isOpen={(fieldName === "extra_discount")} 
-                productPrice={price * quantity}
-                onToggleModal={() => setFieldName("")} 
-                onSave={onUpdateExtraDiscount} 
-                extraDiscount={extraDiscount} 
-                setExtraDiscount={setExtraDiscount} 
-              />
             </div>
+
+
+            {/* <div className="item-cost">
+              <h5 className="item-price border-top mt-2 pt-1">Total Price</h5>
+
+              <span className="item-price">
+                (<PriceDisplay amount={parseFloat(taxable_amount) + (parseFloat(price) * parseFloat(quantity))} />) 
+              </span>
+            </div> */}
+
           </div>
           <div className="wishlist">
-            <Button.Ripple
-              color="primary"
-              onClick={() => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-                onClickUpdateProduct(variant?.product?.id);
-              }}
-            >
+            <Button.Ripple color="primary" onClick={() => onClickUpdateProduct(variant?.id)}>
               <Edit3 size={15} />
             </Button.Ripple>
-
-            <Button.Ripple
-              color="danger"
-              className="ml-1"
-              onClick={() => onRemoveProductFromCart(props.position)}
-            >
+            <Button.Ripple color="danger" className="ml-1" onClick={() => onRemoveProductToCart(variant?.id)}>
               <X size={15} />
             </Button.Ripple>
           </div>
@@ -245,4 +279,4 @@ const Product = (props) => {
   );
 };
 
-export default Product;
+export default memo(Product);
