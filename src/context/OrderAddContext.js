@@ -126,15 +126,14 @@ class OrderAddProvider extends React.Component {
   });
 
   getExtraDiscount = (price, discount) => {
-    return discount?.discount_type == "percentage"
+    return Math.min(price,discount?.discount_type == "percentage"
       ? (price * discount?.discount_value) / 100
       : discount?.discount_type == "amount"
       ? discount?.discount_value
-      : 0;
+      : 0);
   };
 
   getGstAmount = (price, default_gst_rate) => {
-    console.log(" Price and Default GST Rate ", price, typeof default_gst_rate);
     return this.props.user.profile.product_price_includes_taxes
       ? price - (price * 100) / (default_gst_rate + 100)
       : (price * default_gst_rate) / 100;
@@ -155,7 +154,7 @@ class OrderAddProvider extends React.Component {
       ? discountAssignedProduct
       : genericDiscount;
 
-    const extra_discount = item.extra_discount ? parseFloat(item.extra_discount) :  getTwoDecimalDigit(
+    const extra_discount = (item.extra_discount && item.set_focus !== null && item.price !== 0) ? parseFloat(item.extra_discount) :  getTwoDecimalDigit(
       this.getExtraDiscount(price, buyerDiscount) * parseInt(item.quantity)
     )
 
@@ -177,8 +176,6 @@ class OrderAddProvider extends React.Component {
       priceAfterExtraDiscount,
       parseFloat(defaultGstRate)
     );
-
-    console.log(" Extra Discount, Price After Extra Discount, GST Amount and Default gst rate ",extra_discount,priceAfterExtraDiscount,gstAmount,defaultGstRate)
 
     const taxable_amount = getTwoDecimalDigit(
       (this.props.user.profile.product_price_includes_taxes
@@ -274,13 +271,11 @@ class OrderAddProvider extends React.Component {
   };
 
   onAddProductToCart = (cartitem, callback) => {
-    console.log(" Cart Item ",cartitem)
-
     const items =
       (cartitem.set_focus !== null)
         ? this.state.items.map((item, index) => {
             if (index === cartitem.set_focus) {
-              return { ...cartitem,...this.getProductExtraValues(cartitem) ,set_focus: false };
+              return { ...cartitem,...this.getProductExtraValues(cartitem) ,set_focus: null };
             }
             return item;
           })

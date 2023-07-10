@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Select from "react-select";
 import { getApiURL } from "api/utils";
 import { ArrowLeft, CheckCircle, Plus } from "react-feather";
@@ -120,7 +120,7 @@ const initialState = {
 };
 
 const Form = () => {
-  const {items,getProductExtraValues, onAddProductToCart,cartItem,setCartItem,onFormClose} = useOrderAddContext();
+  const {items, onAddProductToCart,cartItem,setCartItem,onFormClose,getProductExtraValues} = useOrderAddContext();
 
   const onChangeProduct = (product) => {
     const variant = product.has_multiple_variants
@@ -136,8 +136,6 @@ const Form = () => {
       price: variant?.price,
     });
   };
-
-  const onChange = (e) => setCartItem({[e.target.name]:e.target.value})
 
   const validateForm = () => {
     let errors = [];
@@ -189,9 +187,7 @@ const Form = () => {
     const isValid = validateForm()
 
     if(isValid){
-      const values = getProductExtraValues(cartItem)
-
-      onAddProductToCart({...cartItem,...values},() => {
+      onAddProductToCart(cartItem,() => {
         setCartItem(initialState)
       })
     }
@@ -277,9 +273,15 @@ const Form = () => {
           type="text"
           requiredIndicator
           name="price"
+          min={0}
           value={cartItem?.price}
-          onChange={onChange}
+          onChange={(e) => setCartItem({[e.target.name]:e.target.value ? Math.max(0,parseFloat(e.target.value)) : 0})}
+          disabled={!cartItem.product}
         />
+
+        {
+          console.log(" CartItem ",cartItem)
+        }
 
         <SimpleInputField
           label={<Translatable text="quantity" />}
@@ -287,9 +289,9 @@ const Form = () => {
           type="number"
           requiredIndicator
           name="quantity"
-          min={cartItem?.minimum_order_quantity}
-          onChange={onChange}
+          onChange={(e) => setCartItem({[e.target.name]:Math.max(cartItem?.variant?.minimum_order_quantity,parseInt(e.target.value))})}
           value={cartItem?.quantity}
+          disabled={!cartItem.product}
         />
 
         <Button.Ripple
