@@ -20,13 +20,13 @@ const EditExtraDiscountComponent = ({
   setExtraDiscount,
 }) => {
   return (
-    <Modal isOpen={isOpen} toggle={onToggleModal} className="modal-xs" centered>
+    <Modal isOpen={isOpen} toggle={onToggleModal} size="xs" centered>
       <ModalHeader toggle={onToggleModal} >
         <span>Edit Extra Discount</span>
       </ModalHeader>
       <ModalBody className="position-relative">
-        <div className="d-flex align-items-center justify-content-center">
-          <FormGroup row className="align-items-center justify-content-center mb-0">
+        <FormGroup className="d-flex flex-column p-2 mb-0">
+          <div className="d-flex justify-content-between align-items-center">
             <Label htmlFor="extra_discount">Extra Discount</Label>
             <Input
               placeholder="Extra discount..."
@@ -37,8 +37,9 @@ const EditExtraDiscountComponent = ({
               min={0}
               style={{ width: "55%", marginLeft: "5px" }}
             />{" "}
-          </FormGroup>
-        </div>
+          </div>
+          <span className="text-right text-secondary">(Per Unit)</span>
+        </FormGroup>
       </ModalBody>
       <ModalFooter>
         <Button.Ripple color="danger" outline onClick={onToggleModal}>

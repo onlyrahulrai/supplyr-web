@@ -124,7 +124,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
 
   const sumOfTotalItemsPrice = useMemo(() => {
     const subTotal = orderData?.items?.map(({price,quantity,...rest}) => price * quantity).reduce((sum,value) => (sum + value),0)
-    return orderData ? product_price_includes_taxes ? subTotal - (orderData?.sgst + orderData?.cgst + orderData?.igst) : subTotal : 0
+    return  subTotal 
   },[orderData])
 
   const fetchOrderData = () => {
@@ -406,7 +406,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
                   </span><br />
                   <span className="item-price">
                       <small style={{fontWeight:"bold"}}>
-                        Extra Discount: <PriceDisplay amount={item.extra_discount ? item.extra_discount : 0} />
+                        Extra Discount: <PriceDisplay amount={item.extra_discount ? item.extra_discount * item.quantity : 0} />
                       </small>
                   </span>
                 </div>
@@ -622,8 +622,6 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
 
           { <>              
               {orderStatusChangeButtons?.length > 0 ? <hr /> :null}
-
-              
 
               {
                 orderStatusChangeButtons?.map(({button,status},index) => (

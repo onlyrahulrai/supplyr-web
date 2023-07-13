@@ -9,9 +9,10 @@ import { Button, Card, CardBody, FormGroup, Input, Label } from "reactstrap";
 import DefaultProductImage from "../../../assets/img/pages/default_product_image.png";
 import { useOrderAddContext } from "../../../context/OrderAddContext";
 import EditExtraDiscountComponent from "./EditExtraDiscountComponent";
+import { getTwoDecimalDigit } from "utility/general";
 
 const Product = (props) => {
-  const { items, onChangeStateByKeyValue, onChangeInItemsValue, setCartItem,onRemoveItemFromCart } =
+  const { items, onChangeStateByKeyValue, onChangeInItemsValue, setCartItem,onRemoveItemFromCart,getGstAmount,getProductRate } =
     useOrderAddContext();
   const [fieldName, setFieldName] = useState("");
 
@@ -40,13 +41,17 @@ const Product = (props) => {
   };
 
   const onUpdateExtraDiscount = () => {
+
+    const extra_discount = getTwoDecimalDigit(parseFloat(extraDiscount || 0));
+
     const cartitems = items.map((item, index) => {
       if (index === props.position) {
         const cartitem = {
           ...item,
-          extra_discount: parseFloat(extraDiscount || 0),
+          extra_discount,
+          ...getProductRate(item,extra_discount,getGstAmount(item,extra_discount))
         };
-        return { ...cartitem };
+        return cartitem;
       }
       return item;
     });
@@ -182,7 +187,7 @@ const Product = (props) => {
               <span className="item-price">
                 <small style={{ fontWeight: "bold" }}>
                   Extra Discount:{" "}
-                  <PriceDisplay amount={extraDiscount ? extraDiscount : 0} />
+                  <PriceDisplay amount={extraDiscount ? extraDiscount * quantity : 0} />
                 </small>
                 {!fieldName || fieldName !== "extra_discount" ? (
                   <Edit3
@@ -196,7 +201,7 @@ const Product = (props) => {
 
               <EditExtraDiscountComponent
                 isOpen={fieldName === "extra_discount"}
-                productPrice={price * quantity}
+                productPrice={price}
                 onToggleModal={() => setFieldName("")}
                 onSave={onUpdateExtraDiscount}
                 extraDiscount={extraDiscount}

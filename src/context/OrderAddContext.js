@@ -27,7 +27,7 @@ class OrderAddProvider extends React.Component {
       items: [],
       buyer: null,
       address: null,
-      extra_discount: 0,
+      total_extra_discount: 0,
       igst: 0,
       sgst: 0,
       cgst: 0,
@@ -61,9 +61,9 @@ class OrderAddProvider extends React.Component {
 
           const subTotal = rest.items.reduce((previousItem,currentItem) => previousItem + (parseFloat(currentItem.price) * parseFloat(currentItem.quantity)) ,0)
 
-          const items = rest.items.map(({product_variant,...rest}) => ({...rest,variant:product_variant}))
+          const items = rest.items.map(({product_variant,...rest}) => ({...rest,variant:product_variant,total_extra_discount:rest.extra_discount * rest.quantity}))
 
-          this.setState({ ...rest,extra_discount:total_extra_discount,subTotal,items }, () => this.setState({ loading: false }));
+          this.setState({ ...rest,total_extra_discount,subTotal,items }, () => this.setState({ loading: false }));
         })
         .catch((error) => {
           Swal.fire({
@@ -82,8 +82,7 @@ class OrderAddProvider extends React.Component {
 
   onChangeStateByKeyValue = (key, value) =>
     this.setState(
-      (prevState) => ({ ...prevState, [key]: value }),
-      () => console.log(" State ", this.state)
+      (prevState) => ({ ...prevState, [key]: value })
     );
 
   onChangeBuyer = async (data) => {
@@ -125,40 +124,28 @@ class OrderAddProvider extends React.Component {
     state: address?.state?.name,
   });
 
-  getExtraDiscount = (price, discount) => {
+  getExtraDiscount = (item) => {
+    const discountAssignedProduct = this.state.buyer?.product_discounts?.find(
+      (discount) => discount.product.id === item?.product?.id
+    );
+
+    const price = parseFloat(item.price);
+
+    const genericDiscount = this.state.buyer?.generic_discount || {};
+
+    const discount = discountAssignedProduct
+      ? discountAssignedProduct
+      : genericDiscount;
+
     return Math.min(price,discount?.discount_type == "percentage"
-      ? (price * discount?.discount_value) / 100
+      ? (price * Math.min(100,discount?.discount_value)) / 100
       : discount?.discount_type == "amount"
       ? discount?.discount_value
       : 0);
   };
 
-  getGstAmount = (price, default_gst_rate) => {
-    return this.props.user.profile.product_price_includes_taxes
-      ? price - (price * 100) / (default_gst_rate + 100)
-      : (price * default_gst_rate) / 100;
-  };
-
-  getProductExtraValues = (item) => {
-    const discountAssignedProduct = this.state.buyer?.product_discounts?.find(
-      (discount) => discount.product.id === item?.product?.id
-    );
-
-    const price = parseFloat(item.price)
-
-    const subTotal = price * parseInt(item.quantity);
-
-    const genericDiscount = this.state.buyer?.generic_discount || {};
-
-    const buyerDiscount = discountAssignedProduct
-      ? discountAssignedProduct
-      : genericDiscount;
-
-    const extra_discount = (item.extra_discount && item.set_focus !== null && item.price !== 0) ? parseFloat(item.extra_discount) :  getTwoDecimalDigit(
-      this.getExtraDiscount(price, buyerDiscount) * parseInt(item.quantity)
-    )
-
-    const priceAfterExtraDiscount = (subTotal - extra_discount);
+  getGstAmount = (item, extra_discount) => {
+    const price = (parseFloat(item.price) - extra_discount);
 
     const subCategories = item?.variant?.product?.sub_categories;
 
@@ -168,41 +155,66 @@ class OrderAddProvider extends React.Component {
           subCategories.includes(overrideCategory?.category?.id)
       );
 
-    const defaultGstRate = gstAssignedCategory
+    const default_gst_rate = gstAssignedCategory
       ? parseFloat(gstAssignedCategory?.default_gst_rate)
       : parseFloat(this.props.user.profile.default_gst_rate);
 
-    const gstAmount = this.getGstAmount(
-      priceAfterExtraDiscount,
-      parseFloat(defaultGstRate)
-    );
+    return this.props.user.profile.product_price_includes_taxes
+      ? price - (price * 100) / (default_gst_rate + 100)
+      : (price * default_gst_rate) / 100;
+  };
 
-    const taxable_amount = getTwoDecimalDigit(
+  getProductRate = (item,extra_discount,gst_amount) => {
+    const priceAfterExtraDiscount = (item.price - extra_discount);
+
+    const gstAmountWithQuantity = getTwoDecimalDigit(gst_amount) * parseInt(item.quantity)
+
+    const taxableAmountWithoutQuantity = getTwoDecimalDigit(
       (this.props.user.profile.product_price_includes_taxes
-        ? (priceAfterExtraDiscount - gstAmount)
-        : priceAfterExtraDiscount)
-    );
+        ? (priceAfterExtraDiscount - gst_amount)
+        : priceAfterExtraDiscount) 
+    ) 
+
+    const taxable_amount = taxableAmountWithoutQuantity * parseInt(item.quantity)
 
     const taxes =
       this.props.user.profile.addresses.state.id ===
       this.state?.address?.state?.id
         ? {
-            cgst: getTwoDecimalDigit(gstAmount / 2),
-            sgst: getTwoDecimalDigit(gstAmount / 2),
+            cgst: (getTwoDecimalDigit(gst_amount / 2) * parseInt(item.quantity)),
+            sgst: (getTwoDecimalDigit(gst_amount / 2) * parseInt(item.quantity)),
             igst: 0,
           }
-        : { cgst: 0, sgst: 0, igst: getTwoDecimalDigit(gstAmount) };
+        : { cgst: 0, sgst: 0, igst: (getTwoDecimalDigit(gst_amount) * parseInt(item.quantity))};
 
-    const total_amount = getTwoDecimalDigit(
-      (taxable_amount + gstAmount)
-    );
+    const total_amount = getTwoDecimalDigit(taxable_amount + gstAmountWithQuantity);
+
+    const total_extra_discount = extra_discount * parseInt(item.quantity);
 
     return {
       taxable_amount,
-      extra_discount,
       total_amount,
+      total_extra_discount,
+      ...taxes
+    }
+  }
+
+  getProductExtraValues = (item) => {
+    const price = parseFloat(item.price);
+
+    const subTotal = price * parseInt(item.quantity);
+
+    const extra_discount = item.extra_discount !== null ? getTwoDecimalDigit(this.getExtraDiscount(item)) : item.extra_discount;
+
+    const gstAmount = this.getGstAmount(
+        item,
+        extra_discount
+    )
+
+    return {
       subTotal,
-      ...taxes,
+      extra_discount,
+      ...this.getProductRate(item,extra_discount,gstAmount)
     };
   };
 
@@ -221,14 +233,14 @@ class OrderAddProvider extends React.Component {
               "igst",
               "sgst",
               "cgst",
-              "extra_discount",
+              "total_extra_discount",
             ].includes(key)
           ) {
             if (!object.hasOwnProperty(key)) {
               object[key] = 0;
             }
 
-            object[key] += currentItem[key] 
+            object[key] += currentItem[key]
           }
         }
 
@@ -241,7 +253,7 @@ class OrderAddProvider extends React.Component {
         igst: 0,
         sgst: 0,
         cgst: 0,
-        extra_discount: 0,
+        total_extra_discount: 0,
         subTotal:0,
       }
     );
@@ -250,7 +262,7 @@ class OrderAddProvider extends React.Component {
       igst: getTwoDecimalDigit(extraValues.igst),
       cgst: getTwoDecimalDigit(extraValues.cgst),
       sgst: getTwoDecimalDigit(extraValues.sgst),
-      extra_discount: getTwoDecimalDigit(extraValues.extra_discount),
+      total_extra_discount: getTwoDecimalDigit(extraValues.total_extra_discount),
       taxable_amount: getTwoDecimalDigit(extraValues.taxable_amount),
       total_amount: getTwoDecimalDigit(extraValues.total_amount),
       subTotal: extraValues.subTotal,
@@ -328,7 +340,6 @@ class OrderAddProvider extends React.Component {
   };
 
   onRemoveItemFromCart = (id) => {
-    console.log(" Id and items ",id,this.state.items)
     const items = this.state.items.filter((item,index) => index !== id);
 
     this.setState({ items, ...this.getCartExtraValues(items) });
@@ -339,6 +350,8 @@ class OrderAddProvider extends React.Component {
       <OrderAddContext.Provider
         value={{
           ...this.state,
+          getGstAmount:this.getGstAmount,
+          getProductRate:this.getProductRate,
           onChangeStateByKeyValue: this.onChangeStateByKeyValue,
           onChangeCartByKeyValue: this.onChangeCartByKeyValue,
           onChangeBuyer: this.onChangeBuyer,
