@@ -158,7 +158,7 @@ const Sidebar = () => {
     }
   };
 
-  console.log(" Product Price Includes Taxes ",rest.product_price_includes_taxes)
+  // console.log(" Product Price Includes Taxes ",rest.product_price_includes_taxes)
 
   return (
     <Card>
@@ -321,16 +321,13 @@ const Sidebar = () => {
         <div className="detail">
           <div className="detail-title">Subtotal</div>
           <div className="detail-amt">
-            {
-              console.log(" Subtotal  ",getTwoDecimalDigit(rest.subTotal - (rest.igst + rest.cgst + rest.sgst)))
-            }
             <PriceDisplay amount={rest.product_price_includes_taxes ? getTwoDecimalDigit(rest.subTotal - (rest.igst + rest.cgst + rest.sgst)) : rest.subTotal} />
           </div>
         </div>
         <div className="detail">
           <div className="detail-title">Extra Discount</div>
           <div className="detail-amt discount-amt">
-            -<PriceDisplay amount={rest.extra_discount} />
+            -<PriceDisplay amount={rest.total_extra_discount || 0} />
           </div>
         </div>
         <div className="detail">

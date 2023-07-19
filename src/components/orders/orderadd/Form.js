@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Select from "react-select";
 import { getApiURL } from "api/utils";
 import { ArrowLeft, CheckCircle, Plus } from "react-feather";
@@ -12,8 +12,8 @@ import {
   CardHeader,
   FormGroup,
   Label,
+  Form
 } from "reactstrap";
-import { SimpleInputField } from "components/forms/fields";
 import Translatable from "components/utils/Translatable";
 import Swal from "components/utils/Swal";
 
@@ -119,15 +119,13 @@ const initialState = {
   set_focus:null
 };
 
-const Form = () => {
-  const {items,getProductExtraValues, onAddProductToCart,cartItem,setCartItem,onFormClose} = useOrderAddContext();
+const CartForm = () => {
+  const {items, onAddProductToCart,cartItem,setCartItem,onFormClose,} = useOrderAddContext();
 
   const onChangeProduct = (product) => {
     const variant = product.has_multiple_variants
       ? product?.variants_data[0]
       : product?.variants_data;
-
-    console.log(" Product ",product)
 
     setCartItem({
       product,
@@ -136,8 +134,6 @@ const Form = () => {
       price: variant?.price,
     });
   };
-
-  const onChange = (e) => setCartItem({[e.target.name]:e.target.value})
 
   const validateForm = () => {
     let errors = [];
@@ -185,13 +181,13 @@ const Form = () => {
     }
   };
 
-  const onClick = () => {
-    const isValid = validateForm()
+  const onSubmit = (e) => {
+    e.preventDefault()
+
+    const isValid = validateForm();
 
     if(isValid){
-      const values = getProductExtraValues(cartItem)
-
-      onAddProductToCart({...cartItem,...values},() => {
+      onAddProductToCart(cartItem,() => {
         setCartItem(initialState)
       })
     }
@@ -209,103 +205,116 @@ const Form = () => {
         </div>
       </CardHeader>
       <CardBody>
-        <FormGroup className="item-add">
-          <Label for={`item-name`}>Product Name</Label>
+        <Form onSubmit={onSubmit}>
+          <FormGroup className="item-add">
+            <Label for={`item-name`}>Product Name</Label>
 
-          <CustomAsyncPaginate
-            path="inventory/products/"
-            styles={customStyles}
-            formatOptionLabel={(props) => <FormatOptionLabel {...props} />}
-            getOptionValue={(props) => props.id}
-            onChange={onChangeProduct}
-            value={cartItem.product}
-          />
-        </FormGroup>
-
-        {cartItem?.product?.has_multiple_variants && (
-          <FormGroup className="variant-field">
-            <Label for="variant">Variant</Label>
-
-            <Select
-              options={cartItem?.product?.variants_data?.map((variant) => {
-                const label = (
-                  <div className="d-flex">
-                    <div>
-                      <img
-                        src={
-                          variant.featured_image
-                            ? getApiURL(variant.featured_image)
-                            : ""
-                        }
-                        alt="featured"
-                        className="float-left mr-1 img-40"
-                      />
-                    </div>
-
-                    <div className="w-100">
-                      <div>{getVariantShortDescription(variant)} </div>
-                      <div className="text-lightgray">
-                        &#36; {variant.price}
-                      </div>
-                    </div>
-                  </div>
-                );
-                return {
-                  label: label,
-                  value: variant.id,
-                };
-              })}
-              defaultValue={{
-                label: getVariantShortDescription(cartItem?.variant),
-                value: cartItem?.variant?.id,
-              }}
-              onChange={({ value }) => {
-                const variant = cartItem?.product?.variants_data.find(
-                  (variant) => variant.id === value
-                );
-
-                setCartItem({variant,price:variant?.price,quantity:variant?.minimum_order_quantity})
-              }}
+            <CustomAsyncPaginate
+              path="inventory/products/"
               styles={customStyles}
+              formatOptionLabel={(props) => <FormatOptionLabel {...props} />}
+              getOptionValue={(props) => props.id}
+              onChange={onChangeProduct}
+              value={cartItem.product}
             />
           </FormGroup>
-        )}
 
-        <SimpleInputField
-          label="Sale Price"
-          placeholder="Sale Price..."
-          type="text"
-          requiredIndicator
-          name="price"
-          value={cartItem?.price}
-          onChange={onChange}
-        />
+          {cartItem?.product?.has_multiple_variants && (
+            <FormGroup className="variant-field">
+              <Label for="variant">Variant</Label>
 
-        <SimpleInputField
-          label={<Translatable text="quantity" />}
-          placeholder="Quantity..."
-          type="number"
-          requiredIndicator
-          name="quantity"
-          min={cartItem?.minimum_order_quantity}
-          onChange={onChange}
-          value={cartItem?.quantity}
-        />
+              <Select
+                options={cartItem?.product?.variants_data?.map((variant) => {
+                  const label = (
+                    <div className="d-flex">
+                      <div>
+                        <img
+                          src={
+                            variant.featured_image
+                              ? getApiURL(variant.featured_image)
+                              : ""
+                          }
+                          alt="featured"
+                          className="float-left mr-1 img-40"
+                        />
+                      </div>
 
-        <Button.Ripple
-          className="btn-icon"
-          color="primary"
-          outline
-          onClick={onClick}
-        >
-          <Plus size={14} />
-          <span className="align-middle ml-25">
-            {(cartItem.set_focus !== null) ? "Update" : "Add"} Product
-          </span>
-        </Button.Ripple>
+                      <div className="w-100">
+                        <div>{getVariantShortDescription(variant)} </div>
+                        <div className="text-lightgray">
+                          &#36; {variant.price}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                  return {
+                    label: label,
+                    value: variant.id,
+                  };
+                })}
+                defaultValue={{
+                  label: getVariantShortDescription(cartItem?.variant),
+                  value: cartItem?.variant?.id,
+                }}
+                onChange={({ value }) => {
+                  const variant = cartItem?.product?.variants_data.find(
+                    (variant) => variant.id === value
+                  );
+
+                  setCartItem({variant,price:variant?.price,quantity:variant?.minimum_order_quantity})
+                }}
+                styles={customStyles}
+              />
+            </FormGroup>
+          )}
+
+          <FormGroup>
+            <Label for={`price`}>Sale Price</Label>
+
+            <input 
+              id="price" 
+              name="price" 
+              placeholder="Sale Price..."  
+              type="text"  
+              className="form-control" 
+              value={cartItem?.price}
+              onChange={(e) => setCartItem({[e.target.name]:parseFloat(e.target.value || 0)})}
+              required={true} 
+              disabled={!cartItem.product}
+            />
+          </FormGroup>
+
+          <FormGroup>
+            <Label htmlFor="quantity"><Translatable text="quantity" /></Label>
+            <input 
+              id="quantity" 
+              name="quantity" 
+              placeholder="Quantity..." 
+              type="number" 
+              className="form-control" 
+              value={cartItem?.quantity}
+              onChange={(e) => setCartItem({[e.target.name]:Math.max(cartItem?.variant?.minimum_order_quantity
+                ,parseFloat(e.target.value))})}
+              required={true} 
+              disabled={!cartItem.product}
+            />
+          </FormGroup>
+
+          <Button.Ripple
+            className="btn-icon"
+            color="primary"
+            outline
+            type="submit"
+          >
+            <Plus size={14} />
+            <span className="align-middle ml-25">
+              {(cartItem.set_focus !== null) ? "Update" : "Add"} Product
+            </span>
+          </Button.Ripple>
+        </Form>
       </CardBody>
     </Card>
   );
 };
 
-export default Form;
+export default CartForm;

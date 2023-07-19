@@ -30,7 +30,7 @@ const Product = (props) => {
   const [loading,setLoading] = useState(false)
 
   const variant = useMemo(() => {
-    return rest?.product?.has_multiple_variants ? rest?.product?.variants_data?.find((variant) => variant?.id === rest?.variant) : rest?.product?.variants_data
+    return rest?.product?.has_multiple_variants ? rest?.product?.variants_data[0] : rest?.product?.variants_data
   },[rest])
 
   const onDeleteGenericDiscount = async () => {
