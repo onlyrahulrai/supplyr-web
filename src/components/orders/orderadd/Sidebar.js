@@ -130,7 +130,7 @@ const Sidebar = () => {
 
     if (isValid) {
 
-      const orderitems = items.map(({price,quantity,extra_discount,variant,item_note,...rest}) => ({price,quantity,extra_discount,variant_id:variant.id,item_note}))
+      const orderitems = items.map(({price,quantity,extra_discount,variant,item_note,subtotal,...rest}) => ({price,quantity,extra_discount,variant_id:variant.id,item_note,subtotal}))
 
       console.log(" Orderitems ",orderitems)
 
@@ -157,8 +157,6 @@ const Sidebar = () => {
         });
     }
   };
-
-  // console.log(" Product Price Includes Taxes ",rest.product_price_includes_taxes)
 
   return (
     <Card>
@@ -235,12 +233,6 @@ const Sidebar = () => {
               />
             </>
           ) : null}
-
-          {/* {!buyer ? (
-            <div className="text-center mt-2">
-              <Spinner />
-            </div>
-          ) : null} */}
 
 
           {buyer ? (
@@ -321,7 +313,7 @@ const Sidebar = () => {
         <div className="detail">
           <div className="detail-title">Subtotal</div>
           <div className="detail-amt">
-            <PriceDisplay amount={rest.product_price_includes_taxes ? getTwoDecimalDigit(rest.subTotal - (rest.igst + rest.cgst + rest.sgst)) : rest.subTotal} />
+            <PriceDisplay amount={rest.subtotal} />
           </div>
         </div>
         <div className="detail">
@@ -349,7 +341,7 @@ const Sidebar = () => {
             :
           </div>
           <div className="detail-amt">
-            <PriceDisplay amount={rest.igst + rest.cgst + rest.sgst} />
+            <PriceDisplay amount={getTwoDecimalDigit(rest.igst + rest.cgst + rest.sgst)} />
           </div>
         </div>
         <hr />

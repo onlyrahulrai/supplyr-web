@@ -33,7 +33,7 @@ class OrderAddProvider extends React.Component {
       cgst: 0,
       total_amount: 0,
       taxable_amount: 0,
-      subTotal: 0,
+      subtotal: 0,
       cartItem: initialCartItemState,
       isMenuOpen: false,
       isOpenBuyerCreateModal: false,
@@ -59,11 +59,9 @@ class OrderAddProvider extends React.Component {
             this.props.history.push(`/orders/${this.props.match.params.orderId}/`);
           }
 
-          const subTotal = rest.items.reduce((previousItem,currentItem) => previousItem + (parseFloat(currentItem.price) * parseFloat(currentItem.quantity)) ,0)
-
           const items = rest.items.map(({product_variant,...rest}) => ({...rest,variant:product_variant,total_extra_discount:rest.extra_discount * rest.quantity}))
 
-          this.setState({ ...rest,total_extra_discount,subTotal,items }, () => this.setState({ loading: false }));
+          this.setState({ ...rest,total_extra_discount,items }, () => this.setState({ loading: false }));
         })
         .catch((error) => {
           Swal.fire({
@@ -165,46 +163,34 @@ class OrderAddProvider extends React.Component {
   };
 
   getProductRate = (item,extra_discount,gst_amount) => {
-    const priceAfterExtraDiscount = (item.price - extra_discount);
 
-    const gstAmountWithQuantity = getTwoDecimalDigit(gst_amount) * parseInt(item.quantity)
+    const taxes = (this.props.user.profile.addresses.state.id === this.state?.address?.state?.id) ? {
+      cgst: getTwoDecimalDigit((gst_amount / 2) * parseInt(item.quantity)),
+      sgst: getTwoDecimalDigit((gst_amount / 2) * parseInt(item.quantity)),
+      igst: 0,
+    } : { cgst: 0, sgst: 0, igst: getTwoDecimalDigit(gst_amount * parseInt(item.quantity))};
 
-    const taxableAmountWithoutQuantity = getTwoDecimalDigit(
-      (this.props.user.profile.product_price_includes_taxes
-        ? (priceAfterExtraDiscount - gst_amount)
-        : priceAfterExtraDiscount) 
-    ) 
+    const subtotal = getTwoDecimalDigit((this.props.user.profile.product_price_includes_taxes ? (item.price  - gst_amount) : item.price) * parseInt(item.quantity));
+        
+    const extraDiscountWithQuantity = extra_discount * parseInt(item.quantity);
 
-    const taxable_amount = taxableAmountWithoutQuantity * parseInt(item.quantity)
+    const taxable_amount = getTwoDecimalDigit(subtotal - extraDiscountWithQuantity) 
 
-    const taxes =
-      this.props.user.profile.addresses.state.id ===
-      this.state?.address?.state?.id
-        ? {
-            cgst: (getTwoDecimalDigit(gst_amount / 2) * parseInt(item.quantity)),
-            sgst: (getTwoDecimalDigit(gst_amount / 2) * parseInt(item.quantity)),
-            igst: 0,
-          }
-        : { cgst: 0, sgst: 0, igst: (getTwoDecimalDigit(gst_amount) * parseInt(item.quantity))};
+    const gstAmountWithQuantity = gst_amount * parseInt(item.quantity)
 
     const total_amount = getTwoDecimalDigit(taxable_amount + gstAmountWithQuantity);
-
-    const total_extra_discount = extra_discount * parseInt(item.quantity);
 
     return {
       taxable_amount,
       total_amount,
-      total_extra_discount,
+      total_extra_discount:getTwoDecimalDigit(extraDiscountWithQuantity),
+      subtotal,
       ...taxes
     }
   }
 
   getProductExtraValues = (item) => {
-    const price = parseFloat(item.price);
-
-    const subTotal = price * parseInt(item.quantity);
-
-    const extra_discount = item.extra_discount !== null ? getTwoDecimalDigit(this.getExtraDiscount(item)) : item.extra_discount;
+    const extra_discount = item.extra_discount !== null ? this.getExtraDiscount(item) : item.extra_discount;
 
     const gstAmount = this.getGstAmount(
         item,
@@ -212,7 +198,6 @@ class OrderAddProvider extends React.Component {
     )
 
     return {
-      subTotal,
       extra_discount,
       ...this.getProductRate(item,extra_discount,gstAmount)
     };
@@ -226,7 +211,7 @@ class OrderAddProvider extends React.Component {
         for (let key in currentItem) {
           if (
             [
-              "subTotal",
+              "subtotal",
               "price",
               "taxable_amount",
               "total_amount",
@@ -254,7 +239,7 @@ class OrderAddProvider extends React.Component {
         sgst: 0,
         cgst: 0,
         total_extra_discount: 0,
-        subTotal:0,
+        subtotal:0,
       }
     );
 
@@ -265,7 +250,7 @@ class OrderAddProvider extends React.Component {
       total_extra_discount: getTwoDecimalDigit(extraValues.total_extra_discount),
       taxable_amount: getTwoDecimalDigit(extraValues.taxable_amount),
       total_amount: getTwoDecimalDigit(extraValues.total_amount),
-      subTotal: extraValues.subTotal,
+      subtotal: getTwoDecimalDigit(extraValues.subtotal),
       isFormOpen: false,
     };
   };

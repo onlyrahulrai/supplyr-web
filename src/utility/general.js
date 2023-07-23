@@ -100,5 +100,5 @@ export const regx = new Object( {
   mobileNumber: /^(\+91|0)?\s?\d{10}$/,
 })
 export const getTwoDecimalDigit = (digit) => {
-  return parseFloat(parseFloat(digit).toFixed(2))
+  return parseFloat(digit.toFixed(2))
 }
