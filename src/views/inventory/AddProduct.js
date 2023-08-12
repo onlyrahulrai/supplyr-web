@@ -1076,13 +1076,11 @@ function AddProduct(props) {
     };
   }
 
-  const createOption = (label: string) => ({
+  const createOption = (label) => ({
     id: label.toLowerCase().replace(/\W/g, ""),
     label: label.toLowerCase(),
     new: true,
   });
-
-  console.log("Basic Data------>>>>>>>",basicData.weight_value ? true : false);
 
 return (
     <>
@@ -1185,7 +1183,7 @@ return (
                   value={basicData?.tags || ""}
                   options={tags}
                   getOptionValue={(option) => option["id"]}
-                  onCreateOption={(inputValue: any) => {
+                  onCreateOption={(inputValue) => {
                     console.log("hello from tags create:-----> ", inputValue);
                     const newOption = createOption(inputValue);
                     console.groupEnd();
@@ -1235,10 +1233,10 @@ return (
                     }
                   }}
                   showNewOptionAtTop={false}
-                  value={basicData?.vendors || ""}
+                  value={Object.keys(basicData?.vendors || {})?.length ? basicData?.vendors : ""}
                   options={vendors}
                   getOptionValue={(option) => option["id"]}
-                  onCreateOption={(inputValue: any) => {
+                  onCreateOption={(inputValue) => {
                     const newOption = createOption(inputValue);
                     console.groupEnd();
 
@@ -1379,14 +1377,24 @@ return (
               </Col>
             </Row>
 
-            <UploadGallery
-              onChange={(images) => {
-                setProductImages(images);
-              }}
-              initialImages={initialData?.images}
-              isRenderable={isPageRenderReady}
-            />
-            <br />
+            {
+              isPageRenderReady ? (
+                <>
+                  <div className="position-relative">
+                    <UploadGallery
+                      onChange={(images) => {
+                        setProductImages(images);
+                      }}
+                      initialImages={initialData?.images}
+                      isRenderable={isPageRenderReady}
+                      productImages={productImages}
+                    />
+                  </div>
+                  <br />
+                </>
+              ):null
+            }
+            
 
             <FormGroup>
               <Row>
