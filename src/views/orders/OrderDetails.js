@@ -122,10 +122,6 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
   const [isFormLoading,setIsFormLoading] = useState(false)
   /* ------ Order Status Variable End ----- */
 
-  const sumOfTotalItemsPrice = useMemo(() => {
-    const subTotal = orderData?.items?.map(({price,quantity,...rest}) => price * quantity).reduce((sum,value) => (sum + value),0)
-    return  subTotal 
-  },[orderData])
 
   const fetchOrderData = () => {
     OrdersApi.retrieve(orderId)
@@ -541,17 +537,17 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
           </div>
           <div className="detail">
             <div className="detail-title">Subtotal</div>
-            <div className="detail-amt"><PriceDisplay amount={sumOfTotalItemsPrice} /></div>
+            <div className="detail-amt"><PriceDisplay amount={orderData?.subtotal || 0} /></div>
           </div>
 
           <div className="detail">
             <div className="detail-title">Extra Discount</div>
-            <div className="detail-amt discount-amt"><PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
+            <div className="detail-amt discount-amt">-<PriceDisplay amount={orderData?.total_extra_discount || 0} /></div>
           </div>
 
           <div className="detail">
             <div className="detail-title">Taxable Amount</div>
-            <div className="detail-amt discount-amt">
+            <div className="detail-amt">
               <PriceDisplay amount={orderData?.taxable_amount ?? 0} />
             </div>
           </div>

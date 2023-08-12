@@ -138,19 +138,19 @@ const CartForm = () => {
   const validateForm = () => {
     let errors = [];
 
-    if (!cartItem.product) {
+    if (!cartItem?.product) {
       errors.push("Please select the product!");
     }
 
-    if (!cartItem.price && cartItem.price !== 0) {
+    if (!cartItem?.price && cartItem.price !== 0) {
       errors.push("Please fill the price field");
     }
 
-    if (!cartItem.quantity) {
+    if (!cartItem?.quantity) {
       errors.push("Please fill the quantity field");
     }
 
-    if (cartItem.product.quantity <= 0) {
+    if (cartItem?.product?.quantity <= 0) {
       errors.push("You've selected an out of stock item that is not allowed!");
     }
 
@@ -158,7 +158,7 @@ const CartForm = () => {
       errors.push(" Product is already in the cart! ")
     }
 
-    if(cartItem.quantity && (cartItem.quantity < cartItem?.variant?.minimum_order_quantity)){
+    if(cartItem?.quantity && (cartItem?.quantity < cartItem?.variant?.minimum_order_quantity)){
       errors.push(`Minimum ${cartItem?.variant?.minimum_order_quantity} quantity of this item is required!`)
     }
 

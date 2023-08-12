@@ -212,6 +212,7 @@ class OrdersList extends Component {
   switchPage(pageNumber) {
     const options = { pageNumber };
     this.state.filtersApplied && (options.filters = this.state.filtersApplied);
+    this.fetchOrders(options);
   }
 
   componentDidMount() {
@@ -430,7 +431,10 @@ class OrdersList extends Component {
               <CustomPagination
                 pageCount={this.state.totalPages}
                 initialPage={1}
-                onPageChange={(data) => this.switchPage(data.selected + 1)}
+                onPageChange={(data) => {
+                  console.log(" React Paginate Data ",data)
+                  this.switchPage(data.selected + 1)
+                }}
               />
             </CardBody>
           </Card>
