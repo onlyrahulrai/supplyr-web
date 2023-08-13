@@ -136,8 +136,8 @@ const Sidebar = () => {
 
       const requestData = {
         items: orderitems,
-        buyer_id:buyer.id,
-        address: address.id,
+        buyer_id:buyer?.id,
+        address: address?.id,
       };
 
       let url = orderId ? `/orders/${orderId}/update/` : "/orders/";
@@ -333,9 +333,7 @@ const Sidebar = () => {
             Tax Amount&nbsp;
             <ShowTaxesComponent
               taxes={
-                rest.igst
-                  ? { igst: rest.igst }
-                  : { cgst: rest.cgst, sgst: rest.sgst }
+                { cgst: rest.cgst, sgst: rest.sgst,igst: rest.igst }
               }
             />
             :

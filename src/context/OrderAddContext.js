@@ -164,13 +164,13 @@ class OrderAddProvider extends React.Component {
 
   getProductRate = (item,extra_discount,gst_amount) => {
 
-    const taxes = (this.props.user.profile.addresses.state.id === this.state?.address?.state?.id) ? {
+    const taxes = (this.props.user.profile?.addresses?.state?.id === this.state?.address?.state?.id) ? {
       cgst: getTwoDecimalDigit((gst_amount / 2) * parseInt(item.quantity)),
       sgst: getTwoDecimalDigit((gst_amount / 2) * parseInt(item.quantity)),
       igst: 0,
     } : { cgst: 0, sgst: 0, igst: getTwoDecimalDigit(gst_amount * parseInt(item.quantity))};
 
-    const subtotal = getTwoDecimalDigit((this.props.user.profile.product_price_includes_taxes ? (item.price  - gst_amount) : item.price) * parseInt(item.quantity));
+    const subtotal = getTwoDecimalDigit((this.props.user.profile?.product_price_includes_taxes ? (item.price  - gst_amount) : item.price) * parseInt(item.quantity));
         
     const extraDiscountWithQuantity = extra_discount * parseInt(item.quantity);
 

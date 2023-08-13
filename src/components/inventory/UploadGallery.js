@@ -90,6 +90,8 @@ const UploadImageFromURLModal = (props) => {
         title:"Warning",
         text:error.message
       })
+
+      setLoading(false)
     }
   }
 

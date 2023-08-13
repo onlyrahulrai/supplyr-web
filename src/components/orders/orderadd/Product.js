@@ -187,7 +187,7 @@ const Product = (props) => {
               <span className="item-price">
                 <small style={{ fontWeight: "bold" }}>
                   Extra Discount:{" "}
-                  <PriceDisplay amount={extraDiscount ? extraDiscount * quantity : 0} />
+                  <PriceDisplay amount={extraDiscount ? getTwoDecimalDigit(extraDiscount * quantity) : 0} />
                 </small>
                 {!fieldName || fieldName !== "extra_discount" ? (
                   <Edit3

@@ -38,6 +38,7 @@ import ShowTaxesComponent from "components/orders/__orderadd/ShowTaxesComponent"
 import Checkbox from "../../components/@vuexy/checkbox/CheckboxesVuexy";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getTwoDecimalDigit } from "utility/general";
 
 
 // import { productsList } from "./cartData";
@@ -402,7 +403,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
                   </span><br />
                   <span className="item-price">
                       <small style={{fontWeight:"bold"}}>
-                        Extra Discount: <PriceDisplay amount={item.extra_discount ? item.extra_discount * item.quantity : 0} />
+                        Extra Discount: <PriceDisplay amount={item.extra_discount ? getTwoDecimalDigit(item.extra_discount * item.quantity) : 0} />
                       </small>
                   </span>
                 </div>
@@ -557,7 +558,7 @@ function OrderDetails({order_status_variables,order_status_options,invoice_optio
               Tax Amount&nbsp;
                 <ShowTaxesComponent 
                   taxes={
-                    orderData?.igst ? {igst:orderData?.igst} : {cgst:orderData?.cgst,sgst:orderData?.sgst}} 
+                    {cgst:orderData?.cgst,sgst:orderData?.sgst,igst:orderData?.igst}} 
                 />:
             </div>
             <div className="detail-amt">
