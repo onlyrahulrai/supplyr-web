@@ -36,7 +36,6 @@ import Chip from "components/@vuexy/chips/ChipComponent";
 import MultipleOptionsInput from "components/inventory/MultipleOptionsInput";
 import CreatableOptionsSelect from "components/inventory/CreatableOptionsSelect";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import "assets/scss/inventory/add-product.scss";
 import cloneGenerator from "rfdc";
 import _Swal from "sweetalert2";

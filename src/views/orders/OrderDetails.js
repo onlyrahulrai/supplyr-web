@@ -34,10 +34,9 @@ import { connect } from "react-redux";
 import PriceDisplay from "components/utils/PriceDisplay";
 import Translatable from "components/utils/Translatable";
 import {GiReturnArrow} from "react-icons/gi"
-import ShowTaxesComponent from "components/orders/__orderadd/ShowTaxesComponent";
+import ShowTaxesComponent from "../../components/orders/orderadd/ShowTaxesComponent";
 import Checkbox from "../../components/@vuexy/checkbox/CheckboxesVuexy";
 import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { getTwoDecimalDigit } from "utility/general";
 
 

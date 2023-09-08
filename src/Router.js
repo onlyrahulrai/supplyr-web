@@ -14,6 +14,7 @@ import  OrderAddProvider  from "context/OrderAddContext";
 
 import { InvoiceProvider } from "context/useInvoiceContext";
 import { BuyerDiscountProvider } from "context/useBuyerDiscountContext";
+import PartialFulfillmentOrderDetailsProvider from "context/PartialFulfillmentOrderDetailsContext";
 
 // Route-based code splitting
 const Home = lazy(() => import("./views/pages/Home"));
@@ -39,7 +40,7 @@ const OrdersList = lazy(() => import("views/orders/OrdersList"));
 
 const OrderDetails = lazy(() => import("views/orders/OrderDetails"));
 
-// const OrderAdd = lazy(() => import("views/orders/OrderAdd"));
+const PartialFulfillmentOrderDetails = lazy(() => import("views/orders/PartialFulfillmentOrderDetails"));
 
 const OrderAdd = lazy(() => import("views/orders/OrderAdd"));
 
@@ -256,8 +257,6 @@ class AppRouter extends React.Component {
             )}  
           />
 
-          {/* <AppRoute path="/orders/:buyerId/update/:orderId" component={_OrderAdd} /> */}
-
           <AppRoute path="/orders/:orderId/invoice/:invoiceNumber" component={() => (
             <InvoiceProvider>
               <Invoice />
@@ -265,6 +264,16 @@ class AppRouter extends React.Component {
           )} />
 
           <AppRoute path="/orders/:orderId" component={OrderDetails} />
+
+          <AppRoute 
+            path="/partial-fulfillment-orders/:orderId" 
+            component={() => (
+              <PartialFulfillmentOrderDetailsProvider>
+                <PartialFulfillmentOrderDetails />
+              </PartialFulfillmentOrderDetailsProvider>
+            )} 
+          />
+
           <AppRoute path="/orders" component={OrdersList} />
 
           <AppRoute path="/ledger" component={Ledger} />
@@ -274,6 +283,7 @@ class AppRouter extends React.Component {
             <BuyerDiscountProvider>
               <BuyerDiscounts />
             </BuyerDiscountProvider>)} />
+
           <AppRoute path="/management/salespersons" component={Salespersons} />
 
           <PublicOnlyAppRoute path="/login" component={login} fullLayout />

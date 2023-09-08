@@ -25,7 +25,7 @@ import { getApiURL } from "api/utils";
 import ManualConditionsComponent from "components/inventory/ManualConditionsComponent";
 
 import AutomatedCategoryComponent from "components/inventory/AutomatedCategoryComponent";
-import "react-toastify/dist/ReactToastify.css";
+
 
 // import { RuleValueComponent } from "components/inventory/RuleValueComponent";
 import withReactContent from "sweetalert2-react-content";

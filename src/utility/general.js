@@ -1,4 +1,4 @@
-export const numberFormatter = (n) => {
+export const numberFormatter = (n="") => {
     const [preDecimal, postDecimal] = n.toString().split('.');
     let formattedNumber = null
     if (n <100000) {

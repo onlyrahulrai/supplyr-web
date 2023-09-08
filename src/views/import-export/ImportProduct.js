@@ -14,8 +14,6 @@ import XLSX from "xlsx"
 import { DownloadCloud, Search } from "react-feather"
 import { useDropzone } from "react-dropzone"
 import { toast, ToastContainer } from "react-toastify"
-
-import "react-toastify/dist/ReactToastify.css"
 import "../../assets/scss/plugins/extensions/toastr.scss"
 import "../../assets/scss/plugins/extensions/dropzone.scss"
 
