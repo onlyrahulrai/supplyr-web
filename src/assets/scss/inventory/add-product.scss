@@ -1,0 +1,39 @@
+.variantListItem:hover svg {
+    visibility: visible !important;
+}
+
+.variantRemoveIcon:hover>svg {
+    stroke: crimson;
+}
+
+.rug .rug-items.__card {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    min-height: auto;
+}
+.rug-items.__card.__sorting>div:first-child {
+    position: relative;
+}
+
+.rug-items.__card.__sorting>div:first-child .rug-card {
+    border: 5px solid indigo;
+}
+
+.rug-items.__card.__sorting>div:first-child .rug-card::before {
+    background: indigo;
+    content: 'FEATURED';
+    bottom: -2px;
+    left: 0px;
+    position: absolute;
+    clip-path: polygon(0 0, 80% 0, 100% 100%, 0% 100%);;
+    color: white;
+    padding: 3px 25px 3px 10px;
+    font-size: 12px;
+    z-index: 1;
+    // border-radius: 4px;
+    font-weight: bold;
+}
+
+.rug .rug-handle:before {
+    border-radius: 4px;
+    border: 4px dotted #aeb4b7
+}
